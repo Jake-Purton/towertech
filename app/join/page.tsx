@@ -1,9 +1,53 @@
 "use client";
 
-import React, { useState } from 'react';
+import { useEffect, useState } from "react";
+import { socket } from "../../socket";
 
 const JoinPage: React.FC = () => {
     const [number, setNumber] = useState('');
+    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [transport, setTransport] = useState<string>("N/A");
+    const [message, setMessage] = useState<string>("No message");
+
+    
+    
+    useEffect(() => {
+        // Check if the socket is already connected on component mount
+        if (socket.connected) {
+            onConnect();
+        }
+        
+        function onMessage(msg: string) {
+            setMessage(msg);
+            alert(msg);
+        }
+
+        function onConnect() {
+            setIsConnected(true);
+            setTransport(socket.io.engine.transport.name);
+
+            socket.io.engine.on("upgrade", (transport: { name: string }) => {
+            setTransport(transport.name);
+            });
+        }
+
+        function onDisconnect() {
+            setIsConnected(false);
+            setTransport("N/A");
+        }
+
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("message", onMessage);
+
+
+        return () => {
+            // Cleanup function to remove event listeners
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+            socket.off("message", onMessage);
+        };
+    }, []);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -12,11 +56,12 @@ const JoinPage: React.FC = () => {
 
     const callFunction = (num: string) => {
         console.log(`Number submitted: ${num}`);
+        socket.emit("join", num);
     };
 
     return (
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-            <h1 className="text-4xl font-bold text-orange-500">Join Us</h1>
+            <h1 className="text-4xl font-bold text-orange-500">Join Code</h1>
             <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
                 <label className="text-lg font-medium">
                     <input

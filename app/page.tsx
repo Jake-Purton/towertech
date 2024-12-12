@@ -30,10 +30,9 @@ export default function Home() {
     }
 
     function onMessage(msg: string) {
-      console.log("Received message:", msg);
       setMessage(msg);
     }
-
+    
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("message", onMessage);

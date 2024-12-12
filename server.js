@@ -19,7 +19,13 @@ app.prepare().then(() => {
     socket.on("message", (msg) => {
       console.log("Received message:", msg);
       // Respond to the message
-      socket.emit("message", `Message received: ${msg}`);
+      socket.emit("message", `Hello from server`);
+    });
+    // listen for server join message
+    socket.on("join", (room) => {
+      console.log("Joining room:", room);
+      socket.join(room);
+      io.to(room).emit("message", `User joined room: ${room}`);
     });
     // ...
   });
