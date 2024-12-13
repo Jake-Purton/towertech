@@ -19,7 +19,7 @@ const JoinPage: React.FC = () => {
         
         function onMessage(msg: string) {
             setMessage(msg);
-            alert(msg);
+            console.log(msg);
         }
 
         function onConnect() {
@@ -56,7 +56,7 @@ const JoinPage: React.FC = () => {
 
     const callFunction = (num: string) => {
         console.log(`Number submitted: ${num}`);
-        socket.emit("join", num);
+        socket.emit("join", { userId: socket.id, room: num });
     };
 
     return (

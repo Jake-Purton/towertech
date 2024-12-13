@@ -9,6 +9,8 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+var rooms_dict = {};
+
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
@@ -22,12 +24,17 @@ app.prepare().then(() => {
       socket.emit("message", `Hello from server`);
     });
     // listen for server join message
-    socket.on("join", (room) => {
+    socket.on("join", ({ userId, room }) => {
       console.log("Joining room:", room);
-      socket.join(room);
-      io.to(room).emit("message", `User joined room: ${room}`);
+
+      if (room in rooms_dict) {
+        rooms_dict[room].push(socket.id);
+        socket.join(room);
+        io.to(room).emit("message", `User joined room: ${room}`);
+      } else {
+        io.to(userId).emit("message", "Room does not exist");
+      }
     });
-    // ...
   });
 
   httpServer
