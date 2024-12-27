@@ -3,6 +3,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 
 npm install phaser
+npm install @types/socket.io
 
 First, run the development server:
 

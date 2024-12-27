@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
+import { RoomManager } from "./rooms.js";
+import { handleMessage, handleJoinRoom } from "./eventHandlers.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -9,32 +11,15 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-var rooms_dict = {};
+const roomManager = new RoomManager();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
-
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
-    // Listen for messages
-    socket.on("message", (msg) => {
-      console.log("Received message:", msg);
-      // Respond to the message
-      socket.emit("message", `Hello from server`);
-    });
-    // listen for server join message
-    socket.on("join", ({ userId, room }) => {
-      console.log("Joining room:", room);
-
-      if (room in rooms_dict) {
-        rooms_dict[room].push(socket.id);
-        socket.join(room);
-        io.to(room).emit("message", `User joined room: ${room}`);
-      } else {
-        io.to(userId).emit("message", "Room does not exist");
-      }
-    });
+    socket.on("message", handleMessage(socket));
+    socket.on("join_room", handleJoinRoom(socket, roomManager));
   });
 
   httpServer
@@ -46,3 +31,14 @@ app.prepare().then(() => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
 });
+
+// messages:
+// create_room (client_id) -> create a new room with new room id add client id
+
+// join_room (client_id, room_id)-> join a room with room id if exists add client to that room if not exists return error_room_not_found
+// if client is already in a room, leave that room and join the new room
+
+// leave_room (client_id, room_id) -> leave a room with room id, remove client from that room
+
+// error_room_not_found -> error message for room not found, (room_id)
+// error_room_exists -> error message for room already exists, (room_id)

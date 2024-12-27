@@ -1,6 +1,7 @@
 {
   "name": "tower-tech",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "node server.js",
@@ -9,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/socket.io": "^3.0.2",
     "@vercel/postgres": "^0.10.0",
     "next": "^15.1.2",
     "phaser": "^3.87.0",
