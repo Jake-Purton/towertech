@@ -1,6 +1,3 @@
-const { Socket } = require("socket.io");
-const { RoomManager } = require("./rooms");
-
 function handleMessage(socket) {
   return (msg) => {
     console.log("Received message:", msg);
@@ -29,4 +26,4 @@ function handleJoinRoom(socket, roomManager) {
   };
 }
 
-module.exports = { handleMessage, handleJoinRoom };
+export { handleJoinRoom, handleMessage };

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { socket } from "../../socket";
+import { socket } from "../../src/socket";
+import { MessageToServerType } from "../../src/messages";
 
 const JoinPage: React.FC = () => {
     const [number, setNumber] = useState('');
@@ -27,7 +28,7 @@ const JoinPage: React.FC = () => {
             setTransport(socket.io.engine.transport.name);
 
             socket.io.engine.on("upgrade", (transport: { name: string }) => {
-            setTransport(transport.name);
+                setTransport(transport.name);
             });
         }
 
@@ -56,7 +57,7 @@ const JoinPage: React.FC = () => {
 
     const callFunction = (num: string) => {
         console.log(`Number submitted: ${num}`);
-        socket.emit("join", { userId: socket.id, room: num });
+        socket.sendMessage(MessageToServerType.JOIN_ROOM, num);
     };
 
     return (

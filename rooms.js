@@ -65,4 +65,4 @@ class RoomManager {
   }
 }
 
-module.exports = { Room, RoomManager };
+export { RoomManager };
