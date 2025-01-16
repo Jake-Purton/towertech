@@ -1,9 +1,8 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
-import { RoomManager } from "./rooms.js";
-import { handleMessage, handleJoinRoom } from "./src/eventHandlers.js";
-import { MessageToServerType } from "./src/messages.ts";
+import { RoomManager } from "./src/rooms.js";
+import { handleMessage, handleJoinRoom, handleJakeyMessage } from "./src/eventHandlers.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -19,8 +18,9 @@ app.prepare().then(() => {
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
-    socket.on(MessageToServerType.MESSAGE, handleMessage(socket));
-    socket.on(MessageToServerType.JOIN_ROOM, handleJoinRoom(socket, roomManager));
+    socket.on("MESSAGE", handleMessage(socket));
+    socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
+    socket.on("JAKEY_MESSAGE", handleJakeyMessage(socket));
   });
 
   httpServer

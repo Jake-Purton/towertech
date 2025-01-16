@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { socket } from "../../src/socket";
-import { MessageToServerType } from "../../src/messages";
+import { socket } from "../src/socket";
+import { JakeyMessage } from "../../src/message.js";
 
 const JoinPage: React.FC = () => {
     const [number, setNumber] = useState('');
@@ -57,7 +57,7 @@ const JoinPage: React.FC = () => {
 
     const callFunction = (num: string) => {
         console.log(`Number submitted: ${num}`);
-        socket.sendMessage(MessageToServerType.JOIN_ROOM, num);
+        // socket.sendMessageToServer(MessageToServerType.JOIN_ROOM, num);
     };
 
     return (
@@ -82,6 +82,16 @@ const JoinPage: React.FC = () => {
                     Submit
                 </button>
             </form>
+            <button
+                onClick={() => {
+                        const jakey = new JakeyMessage("hello jakey", 4);
+                        socket.emit("JAKEY_MESSAGE", jakey);
+                    }
+                }
+                className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#FF5900] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            >
+                Send Jakey Message
+            </button>
         </div>
     );
 };
