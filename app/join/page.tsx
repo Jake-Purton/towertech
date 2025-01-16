@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
-import { JakeyMessage } from "../../src/message.js";
+import { JakeyMessage } from "../../src/messages.js";
 
 const JoinPage: React.FC = () => {
     const [number, setNumber] = useState('');
