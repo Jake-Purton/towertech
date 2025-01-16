@@ -3,7 +3,7 @@ import next from "next";
 import { Server } from "socket.io";
 import { RoomManager } from "./rooms.js";
 import { handleMessage, handleJoinRoom } from "./src/eventHandlers.js";
-import { MessageToServerType } from "./src/types.js";
+import { MessageToServerType } from "./src/messages.ts";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
