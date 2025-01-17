@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
-import { JakeyMessage } from "../../src/messages.js";
+import { JakeyMessage, JoinRoomMessage } from "../src/messages";
 
 const JoinPage: React.FC = () => {
     const [number, setNumber] = useState('');
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [transport, setTransport] = useState<string>("N/A");
-    const [message, setMessage] = useState<string>("No message");
+    const [message, setMessage] = useState<string>("");
 
     
     
@@ -37,9 +37,14 @@ const JoinPage: React.FC = () => {
             setTransport("N/A");
         }
 
+        function onRoomErr(err: string) {
+            setMessage(err);
+        }
+
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("message", onMessage);
+        socket.on("RoomErr", onRoomErr);
 
 
         return () => {
@@ -47,17 +52,26 @@ const JoinPage: React.FC = () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("message", onMessage);
+            socket.off("RoomErr", onRoomErr);
         };
     }, []);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        if (number === "") {
+            setMessage("Please enter a join code");
+            return;
+        }
         callFunction(number);
     };
 
     const callFunction = (num: string) => {
         console.log(`Number submitted: ${num}`);
-        // socket.sendMessageToServer(MessageToServerType.JOIN_ROOM, num);
+        if (socket.id) {
+            socket.emit("JOIN_ROOM", new JoinRoomMessage(socket.id, num));
+        } else {
+            console.error("Socket ID is undefined");
+        }
     };
 
     return (
@@ -65,33 +79,24 @@ const JoinPage: React.FC = () => {
             <h1 className="text-4xl font-bold text-orange-500">Join Code</h1>
             <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
                 <label className="text-lg font-medium">
-                    <input
-                        type="number"
-                        value={number}
-                        onChange={(e) => setNumber(e.target.value)}
-                        className="mt-2 p-2 border border-gray-300 rounded-full text-black appearance-none"
-                        placeholder="Join Code"
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleSubmit(e);
-                            }
-                        }}
-                    />
+                <p className="text-red-500 text-center">{message}</p>
+                <input
+                    type="number"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                    className="mt-2 p-2 border border-gray-300 rounded-full text-black appearance-none"
+                    placeholder="Join Code"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSubmit(e);
+                        }
+                    }}  
+                />
                 </label>
                 <button type="submit" className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#FF5900] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
                     Submit
                 </button>
             </form>
-            <button
-                onClick={() => {
-                        const jakey = new JakeyMessage("hello jakey", 4);
-                        socket.emit("JAKEY_MESSAGE", jakey);
-                    }
-                }
-                className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#FF5900] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            >
-                Send Jakey Message
-            </button>
         </div>
     );
 };

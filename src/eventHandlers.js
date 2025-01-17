@@ -20,15 +20,18 @@ function handleJoinRoom(socket, roomManager) {
     if (currentRoom) {
       roomManager.removeUserFromRoom(userId, currentRoom);
       socket.leave(currentRoom);
+
       console.log(userId, "was already in room", currentRoom, "leaving room");
     }
 
     if (roomManager.getRoom(roomId)) {
       roomManager.addUserToRoom(userId, roomId);
       socket.join(roomId);
+
       console.log(userId, "joined room", roomId);
+      socket.to(roomId).emit("updateUsers", roomManager.getUsersInRoom(roomId));
     } else {
-      socket.emit("error_room_not_found", roomId);
+      socket.emit("RoomErr", "Room number " + roomId + " does not exist");
     }
   };
 }

@@ -21,6 +21,15 @@ app.prepare().then(() => {
     socket.on("MESSAGE", handleMessage(socket));
     socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
     socket.on("JAKEY_MESSAGE", handleJakeyMessage(socket));
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
+    });
+    socket.on("createRoom", () => {
+      const roomCode = roomManager.createRoomWithRandomName();
+      socket.emit("roomCode", roomCode);
+      socket.join(roomCode);
+    });
+      
   });
 
   httpServer
@@ -32,14 +41,3 @@ app.prepare().then(() => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
 });
-
-// messages:
-// create_room (client_id) -> create a new room with new room id add client id
-
-// join_room (client_id, room_id)-> join a room with room id if exists add client to that room if not exists return error_room_not_found
-// if client is already in a room, leave that room and join the new room
-
-// leave_room (client_id, room_id) -> leave a room with room id, remove client from that room
-
-// error_room_not_found -> error message for room not found, (room_id)
-// error_room_exists -> error message for room already exists, (room_id)

@@ -22,6 +22,19 @@ class RoomManager {
     this.rooms = {};
   }
 
+  generateRandomRoomName() {
+    return (Math.random()*1_000_000.0).toString().substring(0, 6);
+  }
+
+  createRoomWithRandomName() {
+    var name = this.generateRandomRoomName();
+    while (this.rooms[name]) {
+      name = this.generateRandomRoomName();
+    }
+
+    this.createRoom(name);
+    return name;
+  }
   createRoom(name) {
     if (!this.rooms[name]) {
       this.rooms[name] = new Room(name);
