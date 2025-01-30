@@ -2,6 +2,7 @@
   "name": "tower-tech",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
