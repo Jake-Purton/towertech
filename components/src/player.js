@@ -1,15 +1,21 @@
 import * as Phaser from 'phaser';
+import Body from './components/bodies/body.js'
+import DefaultBody from './components/bodies/default_body.js'
+import Leg from './components/legs/leg.js'
+import DefaultLeg from './components/legs/default_leg.js'
+import Weapon from './components/weapons/weapon.js'
+import DefaultWeapon from './components/weapons/default_weapon.js'
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
     constructor(scene, x, y){
 
         // create body parts
-        let body = new Phaser.Physics.Arcade.Sprite(scene, 0, 0, 'body');
-        let left_leg = new Phaser.Physics.Arcade.Sprite(scene, 10, 12, 'leg');
-        let right_leg = new Phaser.Physics.Arcade.Sprite(scene, -10, 12, 'leg');
-        let left_arm = new Phaser.Physics.Arcade.Sprite(scene, -14, -3, 'arm');
-        let right_arm = new Phaser.Physics.Arcade.Sprite(scene, 14, -3, 'arm');
+        let body = new DefaultBody(scene, 0, 0);
+        let left_leg = new DefaultLeg(scene, 10, 12);
+        let right_leg = new DefaultLeg(scene, -10, 12);
+        let left_arm = new DefaultWeapon(scene, -14, -3);
+        let right_arm = new DefaultWeapon(scene, 14, -3);
         left_leg.setScale(-1,1);
         right_arm.setScale(-1,1);
 
