@@ -7,9 +7,9 @@ export default class Game extends Phaser.Scene{
         super('GameScene');
     }
     preload() {
-        this.load.image('default_body','/game_images/player_sprites/bodies/default_body_image.png');
+        this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
         this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
-        this.load.image('default_arm','/game_images/player_sprites/weapons/default_arm.png');
+        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
     }
     create() {
         this.players = new Map([]);

@@ -6,7 +6,7 @@ export default class DefaultBody extends Body{
     constructor(scene, x, y){
 
         // create phaser stuff
-        super(scene, x, y, 'default_weapon');
+        super(scene, x, y, 'default_body');
         
 
       
