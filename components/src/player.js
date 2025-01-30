@@ -37,7 +37,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.move_direction = new Vec(0,0);
 
         // constants
-        this.speed = 0.02;
+        this.speed = 0.04;
         this.drag = 0.9;
 
     }

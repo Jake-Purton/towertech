@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Phaser from 'phaser';
 import Player from './player.js'
 import Enemy from './enemy.js'
@@ -31,16 +30,29 @@ export default class Game extends Phaser.Scene{
 
         this.enemies = [];
         this.enemies.push(new Enemy(this, 50, 50, 'goolime',this.enemy_path));
-
     }
     update(time, delta) {
+        /// handle players
         this.dummy_input();
         for (let [_, player] of this.players) {
             player.game_tick(delta);
         }
+
+        /// handle enemies
+        let remove_list = [];
+        for (let enemy of this.enemies){
+            enemy.game_tick(delta);
+            if (enemy.get_dead()){
+                remove_list.push(enemy);
+            }
+        }
+        // delete all enemies that were added to remove_list
+        this.enemies = this.enemies.filter(item => !remove_list.includes(item));
+        for (let enemy of remove_list){
+            enemy.destroy();
+        }
     }
     take_input(input){
-        console.log(input, input.has(input.get('PlayerID')), input.get('PlayerID'));
         if (this.players.has(input.get('PlayerID'))){
             let player = this.players.get(input.get('PlayerID'));
             player.input_key(input.get('Key'), input.get('Direction'));
