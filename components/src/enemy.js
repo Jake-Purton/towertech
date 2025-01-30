@@ -2,16 +2,15 @@ import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene, x, y, texture, path) {
-        super(scene, x, y, texture);
+    constructor(scene, x, y, type, path) {
+        super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        console.log(texture);
         this.move_speed = 0.5;
         this.path = path;
         this.path_t = 0; // value moves from 0 to 1 when moving along path
-        this.play(texture+'_walk')
+        this.play(type+'_walk')
 
         this.health = 5;
     }

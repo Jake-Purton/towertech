@@ -34,9 +34,9 @@ export default class Game extends Phaser.Scene{
 
 
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-
         this.enemies = [];
-        this.enemies.push(new Enemy(this, 50, 50, 'goolime',this.enemy_path));
+
+        this.wave_data = {"spawn_delay":0.2, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
     }
     update(time, delta) {
         /// handle players
@@ -57,6 +57,26 @@ export default class Game extends Phaser.Scene{
         this.enemies = this.enemies.filter(item => !remove_list.includes(item));
         for (let enemy of remove_list){
             enemy.destroy();
+        }
+
+        // wave management
+        console.log(this.wave_data);
+        this.wave_data.next_spawn-=delta/1000;
+        if (this.wave_data.next_spawn < 0){
+            this.wave_data.next_spawn = this.wave_data.spawn_delay
+            // randomly select enemy type
+            let enemy_names = Object.keys(this.wave_data.enemies);
+            let index = 0;
+            let count = 0;
+            do {
+                index = Phaser.Math.Between(0,enemy_names.length-1);
+                count+=1;
+            } while (this.wave_data.enemies[enemy_names[index]]<=0 && count<20);
+            // create enemy
+            if (count<10) {
+                this.wave_data.enemies[enemy_names[index]] -= 1;
+                this.enemies.push(new Enemy(this, -50, -50, enemy_names[index], this.enemy_path));
+            }
         }
     }
     take_input(input){
