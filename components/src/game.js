@@ -11,11 +11,18 @@ export default class Game extends Phaser.Scene{
         this.load.image('leg','/game_images/leg.png');
         this.load.image('arm','/game_images/arm.png');
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
     }
     create() {
         this.anims.create({
-            key: 'walk_animation',
+            key: 'goolime_walk',
             frames: this.anims.generateFrameNumbers('goolime', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'goober_walk',
+            frames: this.anims.generateFrameNumbers('goober', { start: 0, end: 2 }),
             frameRate: 8,
             repeat: -1
         });
