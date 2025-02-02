@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
-import Player from './player.js'
-import Enemy from './enemy.js'
+import Player from './player.js';
+import Enemy from './enemy.js';
+import {Cannon } from './tower.js';
 
 export default class Game extends Phaser.Scene{
     constructor(){
@@ -10,6 +11,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('body','/game_images/body_image.png');
         this.load.image('leg','/game_images/leg.png');
         this.load.image('arm','/game_images/arm.png');
+        this.load.image('Tower','/game_images/tower.png');
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
     }
@@ -28,15 +30,17 @@ export default class Game extends Phaser.Scene{
         });
 
         this.players = new Map([]);
-        this.players.set('TempPlayerID', new Player(this, 100, 100));
+        this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
 
         this.kprs = this.input.keyboard.createCursorKeys();
 
+        this.towers = [];
 
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
         this.enemies = [];
 
-        this.wave_data = {"spawn_delay":0.2, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
+
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
     }
     update(time, delta) {
         /// handle players
@@ -60,7 +64,6 @@ export default class Game extends Phaser.Scene{
         }
 
         // wave management
-        console.log(this.wave_data);
         this.wave_data.next_spawn-=delta/1000;
         if (this.wave_data.next_spawn < 0){
             this.wave_data.next_spawn = this.wave_data.spawn_delay
@@ -79,10 +82,19 @@ export default class Game extends Phaser.Scene{
             }
         }
     }
+
     take_input(input){
         if (this.players.has(input.get('PlayerID'))){
             let player = this.players.get(input.get('PlayerID'));
-            player.input_key(input.get('Key'), input.get('Direction'));
+            // check if input is placing a tower or movement
+            if (input.get('Key') === 'PLACE_TOWER'){
+                let new_tower = player.create_tower(input.get('Tower'), input.get('Direction'));
+                if (new_tower !== null){
+                    this.towers.push(new_tower);
+                }
+            } else {
+                player.input_key(input.get('Key'), input.get('Direction'));
+            }
         }
     }
 
@@ -128,6 +140,14 @@ export default class Game extends Phaser.Scene{
         if (this.kprs.left.isUp){
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
                 ['Key','LEFT'],['Direction','Up']]))
+        }
+        if (this.kprs.space.isDown) {
+            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','Cannon']]))
+        }
+        if (this.kprs.space.isUp) {
+            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
+                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','Cannon']]))
         }
     }
 }

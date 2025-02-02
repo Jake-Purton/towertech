@@ -1,8 +1,9 @@
 import * as Phaser from 'phaser';
+import {Cannon} from "@/components/src/tower.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
-    constructor(scene, x, y){
+    constructor(scene, x, y, player_id){
 
         // create body parts
         let body = new Phaser.Physics.Arcade.Sprite(scene, 0, 0, 'body');
@@ -35,10 +36,12 @@ export default class Player extends Phaser.GameObjects.Container{
             ['LEFT', 0],
             ['RIGHT', 0]])
         this.move_direction = new Vec(0,0);
+        this.prev_tower_button_direction = 'Up';
 
         // constants
         this.speed = 0.04;
         this.drag = 0.9;
+        this.player_id = player_id;
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
@@ -64,5 +67,21 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     check_collision(players){
 
+    }
+    create_tower(tower_type, direction) {
+        let new_tower;
+        if (direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            switch (tower_type){
+                case 'Cannon':
+                    new_tower = new Cannon(this.scene, this.x, this.y);
+                    break;
+                default:
+                    new_tower = new Cannon(this.scene, this.x, this.y, this.player_id);
+                    break;
+
+            }
+        }
+        this.prev_tower_button_direction = direction;
+        return new_tower;
     }
 }
