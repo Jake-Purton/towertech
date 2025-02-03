@@ -54,7 +54,7 @@ export default class Game extends Phaser.Scene{
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
         // change delta to be a value close to one that accounts for fps change
-        // eg if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
+        // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = 1000/(delta*this.target_fps);
 
         /// handle players
@@ -65,13 +65,13 @@ export default class Game extends Phaser.Scene{
 
         /// handle towers
         for (let tower of this.towers){
-            tower.game_tick(delta, this.enemies);
+            this.projectiles = this.projectiles.concat(tower.game_tick(delta, this.enemies));
         }
 
         /// handle projectiles
         let remove_list = [];
         for (let projectile of this.projectiles) {
-            projectile.game_tick(delta);
+            projectile.game_tick(delta, this.enemies, this.towers);
             if (projectile.get_dead()){
                 remove_list.push(projectile);
             }

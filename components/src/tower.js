@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import {CannonBall } from './projectile.js'
 const Vec = Phaser.Math.Vector2;
 
 class Tower extends Phaser.Physics.Arcade.Sprite {
@@ -25,27 +26,36 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.ready_to_shoot = false;
         this.shoot_cooldown = 0;
     }
+    check_target(enemies) {
+        if (this.target === null || typeof(this.target.scene) === "undefined") {
+            this.locate_target(enemies);
+        } else {
+            if (this.get_relative_pos(this.target).length()>this.range){
+                this.target = null;
+            }
+        }
+    }
     locate_target(enemies) {
         let min_dis = this.range;
         this.target = null;
         for (let enemy of enemies) {
             let dis = this.get_relative_pos(enemy).length();
-            if (dis < min_dis){
+            if (dis < min_dis) {
                 min_dis = dis;
                 this.target = enemy;
             }
         }
     }
     attack_enemies(enemies) {
-        this.locate_target(enemies);
-
+        let new_projectiles = [];
         if (this.ready_to_shoot && this.shoot_cooldown<0) {
-            this.shoot();
+            new_projectiles = new_projectiles.concat(this.shoot());
         }
+        return new_projectiles;
     }
     shoot() {
-        console.log('bang')
         this.shoot_cooldown = this.shoot_cooldown_value;
+        return [new CannonBall(this.scene, this.x, this.y, this.gun.angle, 'Tower')];
     }
 
     rotate_gun() {
@@ -59,12 +69,13 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
             this.ready_to_shoot = true;
         }
     }
-
+    // returns a list of new projectiles
     game_tick(delta_time, enemies) {
         this.shoot_cooldown -= delta_time/60;
 
+        this.check_target(enemies);
         this.rotate_gun();
-        this.attack_enemies(enemies);
+        return this.attack_enemies(enemies);
     }
     // returns the relative position from this to the passed enemy
     get_relative_pos(enemy) {
