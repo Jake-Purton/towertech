@@ -19,8 +19,6 @@ export default class Player extends Phaser.GameObjects.Container{
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // this.setCollideWorldBounds(true);
-
         // assign body parts
         this.body_object = body;
         this.left_leg = left_leg;

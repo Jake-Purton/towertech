@@ -6,6 +6,20 @@ import {Cannon } from './tower.js';
 export default class Game extends Phaser.Scene{
     constructor(){
         super('GameScene');
+
+        // game object containers
+        this.players = new Map([]);
+        this.towers = [];
+        this.projectiles = [];
+        this.particles = [];
+        this.enemies = [];
+
+        // constants
+        this.target_fps = 60;
+
+        // game data
+        this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
     }
     preload() {
         this.load.image('body','/game_images/body_image.png');
@@ -16,6 +30,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('cannon_ball','/game_images/cannon_ball.png');
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
+        this.load.image('goo_blood','/game_images/gooblood.png');
     }
     create() {
         // animations
@@ -32,23 +47,14 @@ export default class Game extends Phaser.Scene{
             repeat: -1
         });
 
-        //// game objects
-        this.players = new Map([]);
+        // game objects
         this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
-
-        this.towers = [];
-        this.projectiles = [];
-        this.enemies = [];
-
-        // game data
-        this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
-
-        // constants
-        this.target_fps = 60;
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
+
+        // random numbers
+        this.RNG = new Phaser.Math.RandomDataGenerator();
 
     }
     // delta is the delta_time value, it is the milliseconds since last frame
@@ -65,7 +71,7 @@ export default class Game extends Phaser.Scene{
 
         /// handle towers
         for (let tower of this.towers){
-            this.projectiles = this.projectiles.concat(tower.game_tick(delta, this.enemies));
+            tower.game_tick(delta, this.enemies);
         }
 
         /// handle projectiles
@@ -79,6 +85,19 @@ export default class Game extends Phaser.Scene{
         this.projectiles = this.projectiles.filter(item => !remove_list.includes(item));
         for (let projectile of remove_list){
             projectile.destroy();
+        }
+
+        /// handle particles
+        remove_list = [];
+        for (let particle of this.particles) {
+            particle.game_tick(delta);
+            if (particle.get_dead()){
+                remove_list.push(particle);
+            }
+        }
+        this.particles = this.particles.filter(item => !remove_list.includes(item));
+        for (let particle of remove_list){
+            particle.destroy();
         }
 
         /// handle enemies

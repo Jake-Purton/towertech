@@ -47,15 +47,13 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         }
     }
     attack_enemies(enemies) {
-        let new_projectiles = [];
         if (this.ready_to_shoot && this.shoot_cooldown<0) {
-            new_projectiles = new_projectiles.concat(this.shoot());
+            this.shoot();
         }
-        return new_projectiles;
     }
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
-        return [new CannonBall(this.scene, this.x, this.y, this.gun.angle, 'Tower')];
+        this.scene.projectiles.push(new CannonBall(this.scene, this.x, this.y, this.gun.angle, 'Tower'));
     }
 
     rotate_gun() {
@@ -75,7 +73,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
         this.check_target(enemies);
         this.rotate_gun();
-        return this.attack_enemies(enemies);
+        this.attack_enemies(enemies);
     }
     // returns the relative position from this to the passed enemy
     get_relative_pos(enemy) {
