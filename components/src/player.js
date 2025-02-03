@@ -39,7 +39,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.prev_tower_button_direction = 'Up';
 
         // constants
-        this.speed = 0.04;
+        this.speed = 0.8;
         this.drag = 0.9;
         this.player_id = player_id;
 
@@ -53,10 +53,11 @@ export default class Player extends Phaser.GameObjects.Container{
         this.move_direction.scale(this.speed * delta_time);
 
         this.velocity.add(this.move_direction);
-        this.velocity.x *= this.drag;
-        this.velocity.y *= this.drag;
+        this.velocity.x *= this.drag**delta_time;
+        this.velocity.y *= this.drag**delta_time;
 
-        this.body.position.add(this.velocity);
+        this.body.x += this.velocity.x*delta_time;
+        this.body.y += this.velocity.y*delta_time;
     }
     input_key(key, direction){
         if (direction === 'Down'){

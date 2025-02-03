@@ -13,10 +13,12 @@ export default class Game extends Phaser.Scene{
         this.load.image('arm','/game_images/arm.png');
         this.load.image('tower','/game_images/tower.png');
         this.load.image('tower_gun','/game_images/cannon_head.png');
+        this.load.image('cannon_ball','/game_images/cannon_ball.png');
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
     }
     create() {
+        // animations
         this.anims.create({
             key: 'goolime_walk',
             frames: this.anims.generateFrameNumbers('goolime', { start: 0, end: 2 }),
@@ -30,21 +32,31 @@ export default class Game extends Phaser.Scene{
             repeat: -1
         });
 
+        //// game objects
         this.players = new Map([]);
         this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
 
-        this.kprs = this.input.keyboard.createCursorKeys();
-
         this.towers = [];
-
-        this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
+        this.projectiles = [];
         this.enemies = [];
 
+        // game data
+        this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
 
-        this.wave_data = {"spawn_delay":100, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
+        // constants
+        this.target_fps = 60;
+
+        // input
+        this.kprs = this.input.keyboard.createCursorKeys();
+
     }
-    // delta is the delta time value, it is the milliseconds since last frame
+    // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
+        // change delta to be a value close to one that accounts for fps change
+        // eg if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
+        delta = 1000/(delta*this.target_fps);
+
         /// handle players
         this.dummy_input();
         for (let [_, player] of this.players) {
@@ -56,8 +68,21 @@ export default class Game extends Phaser.Scene{
             tower.game_tick(delta, this.enemies);
         }
 
-        /// handle enemies
+        /// handle projectiles
         let remove_list = [];
+        for (let projectile of this.projectiles) {
+            projectile.game_tick(delta);
+            if (projectile.get_dead()){
+                remove_list.push(projectile);
+            }
+        }
+        this.projectiles = this.projectiles.filter(item => !remove_list.includes(item));
+        for (let projectile of remove_list){
+            projectile.destroy();
+        }
+
+        /// handle enemies
+        remove_list = [];
         for (let enemy of this.enemies){
             enemy.game_tick(delta);
             if (enemy.get_dead()){
@@ -71,7 +96,7 @@ export default class Game extends Phaser.Scene{
         }
 
         // wave management
-        this.wave_data.next_spawn-=delta/1000;
+        this.wave_data.next_spawn-=delta/this.target_fps;
         if (this.wave_data.next_spawn < 0){
             this.wave_data.next_spawn = this.wave_data.spawn_delay
             // randomly select enemy type

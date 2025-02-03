@@ -61,7 +61,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
 
     game_tick(delta_time, enemies) {
-        this.shoot_cooldown -= delta_time/1000;
+        this.shoot_cooldown -= delta_time/60;
 
         this.rotate_gun();
         this.attack_enemies(enemies);
