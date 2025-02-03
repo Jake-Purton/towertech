@@ -69,7 +69,7 @@ export default class Player extends Phaser.GameObjects.Container{
 
     }
     create_tower(tower_type, direction) {
-        let new_tower;
+        let new_tower = null;
         if (direction === 'Down' && this.prev_tower_button_direction === 'Up') {
             switch (tower_type){
                 case 'Cannon':

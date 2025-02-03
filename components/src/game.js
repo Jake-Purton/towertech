@@ -11,7 +11,8 @@ export default class Game extends Phaser.Scene{
         this.load.image('body','/game_images/body_image.png');
         this.load.image('leg','/game_images/leg.png');
         this.load.image('arm','/game_images/arm.png');
-        this.load.image('Tower','/game_images/tower.png');
+        this.load.image('tower','/game_images/tower.png');
+        this.load.image('tower_gun','/game_images/cannon_head.png');
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
     }
@@ -40,13 +41,19 @@ export default class Game extends Phaser.Scene{
         this.enemies = [];
 
 
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
+        this.wave_data = {"spawn_delay":100, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
     }
+    // delta is the delta time value, it is the milliseconds since last frame
     update(time, delta) {
         /// handle players
         this.dummy_input();
         for (let [_, player] of this.players) {
             player.game_tick(delta);
+        }
+
+        /// handle towers
+        for (let tower of this.towers){
+            tower.game_tick(delta, this.enemies);
         }
 
         /// handle enemies

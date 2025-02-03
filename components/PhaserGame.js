@@ -23,6 +23,7 @@ const PhaserGame = () => {
             }
           },
           scene: [Game],
+          backgroundColor: '#50A011',
         };
 
         const game = new Phaser.Game(config);
