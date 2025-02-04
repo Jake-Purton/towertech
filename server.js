@@ -22,7 +22,12 @@ app.prepare().then(() => {
     socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
     socket.on("JAKEY_MESSAGE", handleJakeyMessage(socket));
     socket.on("disconnect", () => {
-      console.log("User disconnected");
+      console.log("User disconnected", socket.id);
+      roomManager.removeUserFromRoom(socket.id, roomManager.getUserRoom(socket.id));
+      console.log("User removed from room ", roomManager.getUserRoom(socket.id));
+      
+      socket.to(roomId).emit("updateUsers", roomManager.getUsersInRoom(roomId));
+
     });
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();

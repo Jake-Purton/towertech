@@ -23,7 +23,8 @@ class RoomManager {
   }
 
   generateRandomRoomName() {
-    return (Math.random()*1_000_000.0).toString().substring(0, 6);
+    // random integer from 0 to 999_999
+    return (Math.random()*999_999).floor().toString();
   }
 
   createRoomWithRandomName() {

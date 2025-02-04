@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { JakeyMessage, JoinRoomMessage } from "../src/messages";
+import { useRouter } from 'next/navigation';
 
 const JoinPage: React.FC = () => {
+    const router = useRouter()
     const [number, setNumber] = useState('');
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [transport, setTransport] = useState<string>("N/A");
@@ -41,11 +43,15 @@ const JoinPage: React.FC = () => {
             setMessage(err);
         }
 
+        function onSuccess() {
+            router.push('/join/room');
+        }
+
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("message", onMessage);
         socket.on("RoomErr", onRoomErr);
-
+        socket.on("roomJoinSuccess", onSuccess);
 
         return () => {
             // Cleanup function to remove event listeners
@@ -53,6 +59,7 @@ const JoinPage: React.FC = () => {
             socket.off("disconnect", onDisconnect);
             socket.off("message", onMessage);
             socket.off("RoomErr", onRoomErr);
+            socket.off("roomJoinSuccess", onSuccess);
         };
     }, []);
 
