@@ -24,7 +24,7 @@ class RoomManager {
 
   generateRandomRoomName() {
     // random integer from 0 to 999_999
-    return (Math.random()*999_999).floor().toString();
+    return Math.floor(Math.random() * 999_999).toString();
   }
 
   createRoomWithRandomName() {

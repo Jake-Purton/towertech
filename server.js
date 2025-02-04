@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
 import { RoomManager } from "./src/rooms.js";
-import { handleMessage, handleJoinRoom, handleJakeyMessage } from "./src/eventHandlers.js";
+import { handleMessage, handleJoinRoom } from "./src/eventHandlers.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -20,7 +20,6 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     socket.on("MESSAGE", handleMessage(socket));
     socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
-    socket.on("JAKEY_MESSAGE", handleJakeyMessage(socket));
     socket.on("disconnect", () => {
       console.log("User disconnected", socket.id);
       roomManager.removeUserFromRoom(socket.id, roomManager.getUserRoom(socket.id));
@@ -33,6 +32,10 @@ app.prepare().then(() => {
       const roomCode = roomManager.createRoomWithRandomName();
       socket.emit("roomCode", roomCode);
       socket.join(roomCode);
+    });
+    socket.on("getUsers", () => {
+      const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
+      socket.emit("updateUsers", users);
     });
       
   });

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
-import { JakeyMessage, JoinRoomMessage } from "../src/messages";
+import { JoinRoomMessage } from "../src/messages";
 import { useRouter } from 'next/navigation';
 
 const JoinPage: React.FC = () => {

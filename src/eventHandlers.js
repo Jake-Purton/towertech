@@ -5,13 +5,6 @@ function handleMessage(socket) {
   };
 }
 
-function handleJakeyMessage(socket) {
-  return (msg) => {
-    console.log("Received Jakey message:", msg.message);
-    console.log("Received Jakey message:", msg.number);
-  };
-}
-
 function handleJoinRoom(socket, roomManager) {
   return ({ userId, roomId }) => {
     console.log(userId, "attempting to join room", roomId);
@@ -37,4 +30,4 @@ function handleJoinRoom(socket, roomManager) {
   };
 }
 
-export { handleJoinRoom, handleMessage, handleJakeyMessage };
+export { handleJoinRoom, handleMessage };

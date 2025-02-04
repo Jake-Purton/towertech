@@ -18,7 +18,6 @@ const HostPage = () => {
 
     // Listen for updates to the user list
     socket.on('updateUsers', (userList) => {
-      console.log("hola buenos");
       setUsers(userList);
     });
 
