@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {Cannon} from "@/components/src/tower.js";
+import {Cannon} from "./tower.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
