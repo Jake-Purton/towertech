@@ -19,7 +19,7 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}}
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
     }
     preload() {
         this.load.image('body','/game_images/body_image.png');
@@ -61,7 +61,8 @@ export default class Game extends Phaser.Scene{
     update(time, delta) {
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
-        delta = 1000/(delta*this.target_fps);
+        delta = (delta*this.target_fps)/1000;
+
 
         /// handle players
         this.dummy_input();

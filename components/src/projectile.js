@@ -7,8 +7,8 @@ class Projectile extends Entity {
     // team variable can be one of "Enemy", "Player" or "Tower"
     // angle in degrees
     constructor(scene, x, y, texture, speed, angle, team, target=null,
-                drag=0.9, damage=1,
-                speed_min_to_kill=1, time_to_live=5, pierce_count=0) {
+                drag=1, damage=1, auto_aim_range=1000, auto_aim_strength=1,
+                speed_min_to_kill=0, time_to_live=5, pierce_count=0) {
         super(scene, x, y, texture, speed, angle, drag, speed_min_to_kill,
             time_to_live, pierce_count);
 
@@ -17,6 +17,9 @@ class Projectile extends Entity {
 
         // attack info
         this.damage = damage;
+        this.target = target;
+        this.auto_aim_range = auto_aim_range;
+        this.auto_aim_stength = auto_aim_strength;
 
         // kill particle info
         this.pierce_count = pierce_count;  // reduces by 1 each time the projectile hits something
@@ -30,8 +33,23 @@ class Projectile extends Entity {
                 collision = this.check_collision(enemies);
                 break;
         }
+        this.follow_target();
+        this.physics_tick(delta_time);
+    }
+    follow_target() {
+        if (this.target !== null && typeof(this.target.scene) !== "undefined") {
+            let prev_length = this.velocity.length()
+            let relative_position = this.target.body.position.clone();
+            relative_position.x -= this.body.position.x;
+            relative_position.y -= this.body.position.y;
+            if (relative_position.length() < this.auto_aim_range) {
+                relative_position.setLength(this.auto_aim_stength);
+                this.velocity.add(relative_position);
+                this.velocity.setLength(prev_length);
+            }
 
-        this.physics_tick(delta_time)
+        }
+
     }
     check_collision(entities){
         for (let entity of entities) {
@@ -57,7 +75,7 @@ class Projectile extends Entity {
 
 class CannonBall extends Projectile {
     constructor(scene, x, y, angle, team, target=null, speed_multiplier=1) {
-        let base_speed = 20;
+        let base_speed = 10;
         super(scene, x, y, 'cannon_ball', base_speed*speed_multiplier, angle, team, target);
     }
 }

@@ -53,7 +53,8 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
-        this.scene.projectiles.push(new CannonBall(this.scene, this.x, this.y, this.gun.angle, 'Tower'));
+        // console.log(this.gun.angle);
+        this.scene.projectiles.push(new CannonBall(this.scene, this.x, this.y, this.gun.angle, 'Tower', this.target));
     }
 
     rotate_gun() {
@@ -63,7 +64,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
             let target_angle = this.get_relative_pos(this.target).angle();
 
             // rotate gun
-            this.gun.angle = target_angle*180/Math.PI;
+            this.gun.setAngle(target_angle*180/Math.PI);
             this.ready_to_shoot = true;
         }
     }
@@ -83,7 +84,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
 class Cannon extends Tower{
     constructor(scene, x, y, player_id) {
-        super(scene, x, y, 'tower', player_id, 200, 4);
+        super(scene, x, y, 'tower', player_id, 2000, 2);
     }
 }
 

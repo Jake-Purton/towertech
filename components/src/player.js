@@ -54,8 +54,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.velocity.x *= this.drag**delta_time;
         this.velocity.y *= this.drag**delta_time;
 
-        this.body.x += this.velocity.x*delta_time;
-        this.body.y += this.velocity.y*delta_time;
+        this.body.position.x += this.velocity.x*delta_time;
+        this.body.position.y += this.velocity.y*delta_time;
     }
     input_key(key, direction){
         if (direction === 'Down'){
