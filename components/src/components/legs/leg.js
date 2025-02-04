@@ -1,17 +1,17 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
 
-export default class Leg extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene, x, y, texture){
+export default class Leg extends Phaser.GameObjects.Container{
+    constructor(scene, x, y, parts){
 
         // create phaser stuff
-        super(scene, x, y, texture);
+        super(scene, x, y, parts);
         
 
       
 
     }
-    movement_animation(){
+    movement_animation(x){
         
     }
 }

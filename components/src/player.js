@@ -13,14 +13,9 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // create body parts
         let body = new DefaultBody(scene, 0, 0);
-
-        //let left_leg = new DefaultLeg(scene, 1, 8);
-        //let right_leg = new DefaultLeg(scene, -1, 8);
-        let leg = new Wheel(scene, 0, 10);
-
+        let leg = new Wheel(scene);
         let left_arm = new DefaultWeapon(scene, -14, -3);
         let right_arm = new DefaultWeapon(scene, 14, -3);
-        //left_leg.setScale(-1,1);
         right_arm.setScale(-1,1);
 
 
@@ -33,13 +28,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // assign body parts
         this.body_object = body;
-        //this.left_leg = left_leg;
-        //this.right_leg = right_leg;
-        this.leg = leg;
         this.left_arm = left_arm;
         this.right_arm = right_arm;
 
-        //this.left_leg.increase = false;
+        this.leg = leg;
 
         // variables
         this.velocity = new Vec(0,0);
@@ -69,11 +61,7 @@ export default class Player extends Phaser.GameObjects.Container{
 
         this.body.position.add(this.velocity);
 
-        if ((this.move_direction.x != 0) || (this.move_direction.y != 0)){
-            //this.right_leg.movement_animation();
-            //this.left_leg.movement_animation();
-            this.leg.movement_animation();
-        }
+        this.leg.movement_animation(this.velocity.x);
         
     }
     input_key(key, direction){
