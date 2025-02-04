@@ -11,5 +11,7 @@ export default class Leg extends Phaser.Physics.Arcade.Sprite{
       
 
     }
-    
+    movement_animation(){
+        
+    }
 }

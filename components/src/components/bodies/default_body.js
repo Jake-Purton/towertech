@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import Body from './body.js'
+import Body from './body.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class DefaultBody extends Body{
@@ -12,5 +12,7 @@ export default class DefaultBody extends Body{
       
 
     }
-    
+    movement_animation(){
+        
+    }
 }

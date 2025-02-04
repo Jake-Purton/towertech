@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import Weapon from './weapon.js'
+import Weapon from './weapon.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class DefaultWeapon extends Weapon{
@@ -12,5 +12,7 @@ export default class DefaultWeapon extends Weapon{
       
 
     }
-    
+    movement_animation(){
+        
+    }
 }

@@ -11,5 +11,7 @@ export default class Weapon extends Phaser.Physics.Arcade.Sprite{
       
 
     }
-    
+    movement_animation(){
+        
+    }
 }

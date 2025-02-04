@@ -11,5 +11,7 @@ export default class Body extends Phaser.Physics.Arcade.Sprite{
       
 
     }
-    
+    movement_animation(){
+        
+    }
 }
