@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import Game from './src/game.js';
 
 const PhaserGame = () => {
   const gameRef = useRef(null);
@@ -19,50 +20,29 @@ const PhaserGame = () => {
             arcade: {
               fps: 60,
               gravity: { y: 0 },
+              debug: false,
             }
           },
-          scene: {
-            preload: preload,
-            create: create,
-            update: update
-          }
+          scene: [Game],
+          backgroundColor: '#50A011',
         };
 
         const game = new Phaser.Game(config);
 
-        let player;
-        let cursors;
-
-        function preload() {
-          this.load.image('player', 'path/to/player.png'); // Replace with the path to your player image
-        }
-
-        function create() {
-          player = this.physics.add.sprite(400, 300, 'player');
-          cursors = this.input.keyboard.createCursorKeys();
-        }
-
-        function update() {
-          if (cursors.left.isDown) {
-            player.setVelocityX(-160);
-          } else if (cursors.right.isDown) {
-            player.setVelocityX(160);
-          } else {
-            player.setVelocityX(0);
-          }
-
-          if (cursors.up.isDown) {
-            player.setVelocityY(-160);
-          } else if (cursors.down.isDown) {
-            player.setVelocityY(160);
-          } else {
-            player.setVelocityY(0);
-          }
-        }
-
         return () => {
           game.destroy(true);
         };
+
+        function input_data(data){
+          // function that would be used to send inputs to phaser
+          // current assuming data is a json type format
+          // this can be change depending on how input works, this is mostly temporary for testing
+          for (let input of data) {
+            game.scene.getScene('GameScene').take_input(input);
+          }
+        }
+
+
       });
     }
   }, []);
