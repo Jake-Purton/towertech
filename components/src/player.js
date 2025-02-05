@@ -12,15 +12,12 @@ export default class Player extends Phaser.GameObjects.Container{
     constructor(scene, x, y){
 
         // create body parts
-        let body = new DefaultBody(scene, 0, 0);
+        let body = new DefaultBody(scene);
         let leg = new Wheel(scene);
-        let left_arm = new DefaultWeapon(scene, -14, -3);
-        let right_arm = new DefaultWeapon(scene, 14, -3);
-        right_arm.setScale(-1,1);
-
+        let weapon = new DefaultWeapon(scene);
 
         // create phaser stuff
-        super(scene, x, y, [body, leg, left_arm, right_arm]);
+        super(scene, x, y, [body, leg, weapon]);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
@@ -28,8 +25,7 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // assign body parts
         this.body_object = body;
-        this.left_arm = left_arm;
-        this.right_arm = right_arm;
+        this.weapon = weapon;
 
         this.leg = leg;
 
