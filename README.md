@@ -4,6 +4,3 @@
 2. then use `npm install -g pnpm@latest-10`
 3. then `pnpm i`
 4. and finally `pnpm run dev`
-
-pnpm run dev will host the site locally on your machine
-it will ptobably give you `running on localhost:3000` or something along those lines

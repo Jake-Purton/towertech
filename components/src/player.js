@@ -6,10 +6,11 @@ import DefaultLeg from './components/legs/default_leg.js';
 import Wheel from './components/legs/wheel.js';
 import Weapon from './components/weapons/weapon.js';
 import DefaultWeapon from './components/weapons/default_weapon.js';
+import {Cannon} from "./tower.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
-    constructor(scene, x, y){
+    constructor(scene, x, y, player_id){
 
         // create body parts
         let body = new DefaultBody(scene);
@@ -20,8 +21,6 @@ export default class Player extends Phaser.GameObjects.Container{
         super(scene, x, y, [body, leg, weapon]);
         scene.add.existing(this);
         scene.physics.add.existing(this);
-
-        // this.setCollideWorldBounds(true);
 
         // assign body parts
         this.body_object = body;
@@ -36,10 +35,12 @@ export default class Player extends Phaser.GameObjects.Container{
             ['LEFT', 0],
             ['RIGHT', 0]])
         this.move_direction = new Vec(0,0);
+        this.prev_tower_button_direction = 'Up';
 
         // constants
-        this.speed = 0.02;
+        this.speed = 0.8;
         this.drag = 0.9;
+        this.player_id = player_id;
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
@@ -51,13 +52,13 @@ export default class Player extends Phaser.GameObjects.Container{
         this.move_direction.scale(this.speed * delta_time);
 
         this.velocity.add(this.move_direction);
-        this.velocity.x *= this.drag;
-        this.velocity.y *= this.drag;
-
-        this.body.position.add(this.velocity);
+        this.velocity.x *= this.drag**delta_time;
+        this.velocity.y *= this.drag**delta_time;
 
         this.leg.movement_animation(this.velocity);
         
+        this.body.position.x += this.velocity.x*delta_time;
+        this.body.position.y += this.velocity.y*delta_time;
     }
     input_key(key, direction){
         if (direction === 'Down'){
@@ -68,5 +69,21 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     check_collision(players){
 
+    }
+    create_tower(tower_type, direction) {
+        let new_tower = null;
+        if (direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            switch (tower_type){
+                case 'Cannon':
+                    new_tower = new Cannon(this.scene, this.x, this.y);
+                    break;
+                default:
+                    new_tower = new Cannon(this.scene, this.x, this.y, this.player_id);
+                    break;
+
+            }
+        }
+        this.prev_tower_button_direction = direction;
+        return new_tower;
     }
 }

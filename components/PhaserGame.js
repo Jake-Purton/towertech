@@ -20,9 +20,11 @@ const PhaserGame = () => {
             arcade: {
               fps: 60,
               gravity: { y: 0 },
+              debug: false,
             }
           },
           scene: [Game],
+          backgroundColor: '#50A011',
         };
 
         const game = new Phaser.Game(config);

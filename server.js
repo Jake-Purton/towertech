@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
+import { RoomManager } from "./src/rooms.js";
+import { handleMessage, handleJoinRoom } from "./src/eventHandlers.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -9,32 +11,33 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-var rooms_dict = {};
+const roomManager = new RoomManager();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
-
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
-    // Listen for messages
-    socket.on("message", (msg) => {
-      console.log("Received message:", msg);
-      // Respond to the message
-      socket.emit("message", `Hello from server`);
-    });
-    // listen for server join message
-    socket.on("join", ({ userId, room }) => {
-      console.log("Joining room:", room);
+    socket.on("MESSAGE", handleMessage(socket));
+    socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
+    socket.on("disconnect", () => {
+      console.log("User disconnected", socket.id);
+      roomManager.removeUserFromRoom(socket.id, roomManager.getUserRoom(socket.id));
+      console.log("User removed from room ", roomManager.getUserRoom(socket.id));
+      
+      socket.to(roomId).emit("updateUsers", roomManager.getUsersInRoom(roomId));
 
-      if (room in rooms_dict) {
-        rooms_dict[room].push(socket.id);
-        socket.join(room);
-        io.to(room).emit("message", `User joined room: ${room}`);
-      } else {
-        io.to(userId).emit("message", "Room does not exist");
-      }
     });
+    socket.on("createRoom", () => {
+      const roomCode = roomManager.createRoomWithRandomName();
+      socket.emit("roomCode", roomCode);
+      socket.join(roomCode);
+    });
+    socket.on("getUsers", () => {
+      const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
+      socket.emit("updateUsers", users);
+    });
+      
   });
 
   httpServer
