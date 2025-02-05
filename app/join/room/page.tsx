@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { socket } from "../../src/socket";
 
 const JoinRoomPage = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
+  type User = { userID: String, username: String };
   
   useEffect(() => {
     // Listen for updates to the user list
     socket.on('updateUsers', (userList) => {
+      console.log("User list updated: ", userList);
       setUsers(userList);
     });
 
@@ -34,7 +36,7 @@ const JoinRoomPage = () => {
         <tbody className="bg-black divide-y divide-orange-500">
           {users.map((user, index) => (
             <tr key={index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-orange-500">{user}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-orange-500">{user.username}</td>
             </tr>
           ))}
 

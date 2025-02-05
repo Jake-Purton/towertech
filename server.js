@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
 import { RoomManager } from "./src/rooms.js";
-import { handleMessage, handleJoinRoom } from "./src/eventHandlers.js";
+import { handleMessage, handleJoinRoom, handleDisconnect } from "./src/eventHandlers.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -20,20 +20,15 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     socket.on("MESSAGE", handleMessage(socket));
     socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
-    socket.on("disconnect", () => {
-      console.log("User disconnected", socket.id);
-      roomManager.removeUserFromRoom(socket.id, roomManager.getUserRoom(socket.id));
-      console.log("User removed from room ", roomManager.getUserRoom(socket.id));
-      
-      socket.to(roomId).emit("updateUsers", roomManager.getUsersInRoom(roomId));
-
-    });
+    // socket.on("disconnect", handleDisconnect(socket, roomManager));
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();
       socket.emit("roomCode", roomCode);
+      console.log("room created with code: ", roomCode);
       socket.join(roomCode);
     });
     socket.on("getUsers", () => {
+
       const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
       socket.emit("updateUsers", users);
     });

@@ -5,7 +5,8 @@ import { socket } from "../src/socket";
 
 const HostPage = () => {
   const [roomCode, setRoomCode] = useState('');
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
+  type User = { userID: String, username: String };
 
   useEffect(() => {
     // Request a new room code from the server
@@ -39,7 +40,7 @@ const HostPage = () => {
       <h2>Users in Room:</h2>
       <ul>
         {users.map((user, index) => (
-          <li key={index}>{user}</li>
+          <li key={index}>{user.username}</li>
         ))}
       </ul>
     </div>
