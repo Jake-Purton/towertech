@@ -11,7 +11,7 @@ const JoinPage: React.FC = () => {
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [transport, setTransport] = useState<string>("N/A");
     const [message, setMessage] = useState<string>("");
-
+    const [username, setUsername] = useState<string>("");
     
     
     useEffect(() => {
@@ -69,17 +69,31 @@ const JoinPage: React.FC = () => {
             setMessage("Please enter a join code");
             return;
         }
-        callFunction(number);
+        if (username === "") {
+            setMessage("Please enter a username");
+            return;
+        }
+        dataSender(number, username);
     };
 
-    const callFunction = (num: string) => {
-        console.log(`Number submitted: ${num}`);
+    const dataSender = (code: string, username: string) => {
         if (socket.id) {
-            socket.emit("JOIN_ROOM", new JoinRoomMessage(socket.id, num));
+            var join_message = new JoinRoomMessage(socket.id, code, username);
+            socket.emit("JOIN_ROOM", join_message);
         } else {
-            console.error("Socket ID is undefined");
+            setMessage("Socket ID is undefined");
         }
-    };
+
+    }
+
+    // const callFunction = (num: string) => {
+    //     console.log(`Number submitted: ${num}`);
+    //     if (socket.id) {
+    //         socket.emit("JOIN_ROOM", new JoinRoomMessage(socket.id, num));
+    //     } else {
+    //         console.error("Socket ID is undefined");
+    //     }
+    // };
 
     return (
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -87,6 +101,14 @@ const JoinPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
                 <label className="text-lg font-medium">
                 <p className="text-red-500 text-center">{message}</p>
+                <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="mt-2 p-2 border border-gray-300 rounded-full text-black appearance-none"
+                    placeholder="Username"
+                />
+                <br></br>
                 <input
                     type="number"
                     value={number}

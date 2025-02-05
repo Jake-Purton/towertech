@@ -16,17 +16,22 @@ class JakeyMessage {
 
 class JoinRoomMessage {
     userId: string;
+    username: string;
     roomId: string;
 
-    constructor(userId: string, roomId: string) {
+    constructor(userId: string, roomId: string, username: string) {
         this.userId = userId;
         this.roomId = roomId;
+        this.username = username;
     }
     getUserId() {
         return this.userId;
     }
     getRoomId() {
         return this.roomId;
+    }
+    getUsername() {
+        return this.username;
     }
 }
 
