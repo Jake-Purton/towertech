@@ -22,8 +22,8 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        //this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
 
+        // current wave
         this.current_wave = null;
 
     }
@@ -58,7 +58,7 @@ export default class Game extends Phaser.Scene{
 
 
         //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
-        this.current_wave = new Wave(this, 240, 2, ["goober", "goolime"], [5, 20], 40);
+        this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
@@ -126,23 +126,6 @@ export default class Game extends Phaser.Scene{
 
         // wave management
         this.current_wave.game_tick(delta);
-        /*this.wave_data.next_spawn-=delta/Game.target_fps;
-        if (this.wave_data.next_spawn < 0){
-            this.wave_data.next_spawn = this.wave_data.spawn_delay
-            // randomly select enemy type
-            let enemy_names = Object.keys(this.wave_data.enemies);
-            let index = 0;
-            let count = 0;
-            do {
-                index = Phaser.Math.Between(0,enemy_names.length-1);
-                count+=1;
-            } while (this.wave_data.enemies[enemy_names[index]]<=0 && count<20);
-            // create enemy
-            if (count<10) {
-                this.wave_data.enemies[enemy_names[index]] -= 1;
-                this.enemies.push(new Enemy(this, -50, -50, enemy_names[index], this.enemy_path));
-            }
-        }*/
     }
 
     take_input(input){
@@ -166,6 +149,13 @@ export default class Game extends Phaser.Scene{
             path.lineTo(points[i][0],points[i][1]);
         }
         return path
+    }
+
+    next_wave(){
+        // do stuff
+        // for now this just resets the wave.
+        delete this.current_wave;
+        this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
     }
 
     dummy_input(){

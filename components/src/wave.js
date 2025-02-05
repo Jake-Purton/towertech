@@ -73,34 +73,41 @@ export default class Wave
         if (this.remainingTime <= 0)
         {
             // do stuff - likely communicate to start the next wave.
-            // alert("wave is over");
+            this.game.next_wave()
+            //alert("wave is over");
         }
     }
 
     find_enemy_to_spawn()
     {
-        //First, santiy check - make sure there are enemies that can be spawned.
+        // First, santiy check - make sure there are enemies that can be spawned.
         if (this.numEnemies > 0)
         {
             // If there are, then a random number between 0 and the cumulative weight is generated.
             let randomNum = Math.random() * this.cumulativeWeight;
-            //This number is then compared against each weight value.
+            // This number is then compared against each weight value.
             for(let i = 0; i < this.enemyWeights.length; i++)
             {
-                //If it's the last element, or if the generated value is less than the weight,
+                // If it's the last element, or if the generated value is less than the weight,
                 if (randomNum < this.enemyWeights[i] || i+1 == this.enemyWeights.length)
                 {
-                    //spawn the enemy and then return!
+                    // spawn the enemy and then return!
                     this.#spawn_enemy(this.enemiesToSpawn[i]);
+                    this.numEnemies -= 1;
                     return;
                 }
             }
         }
     }
 
+    get_wave_progress()
+    {
+        // Return the fraction of time that's remaining.
+        return (this.remainingTime / this.duration);
+    }
+
     #spawn_enemy(enemyName)
     {
-        // alert(enemyName);
         // spawn the enemy
         this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));
     }
