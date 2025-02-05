@@ -15,8 +15,13 @@ export default class Wheel extends Leg{
       
 
     }
-    movement_animation(x){
-        this.rotate = this.rotate + 0.03 * x;
+    movement_animation(velocity){
+        let speed = velocity.length();
+        if (velocity.x<0){
+            speed*=-1;
+        }
+        
+        this.rotate = this.rotate + 0.03 * speed;
         this.wheel.setRotation(this.rotate)
     }
 }

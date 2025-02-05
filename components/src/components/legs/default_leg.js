@@ -22,8 +22,8 @@ export default class DefaultLeg extends Leg{
 
 
     }
-    movement_animation(x){
-        x = Math.abs(x);
+    movement_animation(velocity){
+        let speed = velocity.length();
         if (this.rotate >= 1){
             this.increase = false;
         }
@@ -31,10 +31,10 @@ export default class DefaultLeg extends Leg{
             this.increase=true;
         }
         if (this.increase){
-            this.rotate = this.rotate + 0.03 * x;
+            this.rotate = this.rotate + 0.03 * speed;
             
         } else {
-            this.rotate = this.rotate - 0.03 * x;
+            this.rotate = this.rotate - 0.03 * speed;
             
         }
 
