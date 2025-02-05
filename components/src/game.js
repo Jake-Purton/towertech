@@ -22,9 +22,10 @@ export default class Game extends Phaser.Scene{
         this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
     }
     preload() {
-        this.load.image('body','/game_images/body_image.png');
-        this.load.image('leg','/game_images/leg.png');
-        this.load.image('arm','/game_images/arm.png');
+        this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
+        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
+        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
         this.load.image('tower','/game_images/tower.png');
         this.load.image('tower_gun','/game_images/cannon_head.png');
         this.load.image('cannon_ball','/game_images/cannon_ball.png');
