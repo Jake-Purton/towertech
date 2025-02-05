@@ -2,8 +2,11 @@ import * as Phaser from 'phaser';
 import Player from './player.js';
 import Enemy from './enemy.js';
 import {Cannon } from './tower.js';
+import Wave from './wave.js'
 
 export default class Game extends Phaser.Scene{
+    static target_fps = 60.0;
+
     constructor(){
         super('GameScene');
 
@@ -14,12 +17,15 @@ export default class Game extends Phaser.Scene{
         this.particles = [];
         this.enemies = [];
 
+
         // constants
-        this.target_fps = 60;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
         this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
+
+        this.test_wave = null;
+
     }
     preload() {
         this.load.image('body','/game_images/body_image.png');
@@ -50,6 +56,10 @@ export default class Game extends Phaser.Scene{
         // game objects
         this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
 
+
+        //length, spawnDelay, enemyArray, enemyWeights, numEnemies
+        this.test_wave = new Wave(240, 2, ["test1", "test2", "test3"], [20, 50, 5], 40);
+
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
 
@@ -61,8 +71,9 @@ export default class Game extends Phaser.Scene{
     update(time, delta) {
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
-        delta = (delta*this.target_fps)/1000;
+        delta = (delta*Game.target_fps)/1000;
 
+        this.test_wave.game_tick(delta);
 
         /// handle players
         this.dummy_input();
@@ -116,7 +127,7 @@ export default class Game extends Phaser.Scene{
         }
 
         // wave management
-        this.wave_data.next_spawn-=delta/this.target_fps;
+        this.wave_data.next_spawn-=delta/Game.target_fps;
         if (this.wave_data.next_spawn < 0){
             this.wave_data.next_spawn = this.wave_data.spawn_delay
             // randomly select enemy type
