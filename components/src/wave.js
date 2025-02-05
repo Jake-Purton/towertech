@@ -1,15 +1,16 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
 import Game from './game.js';
+import Enemy from './enemy.js'
 
 export default class Wave
 {
 
     static currentWave = null;
 
-    constructor(length, spawnDelay, enemyArray, enemyWeights, numEnemies)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies)
     {
-
+        this.game = game;
         Wave.currentWave = this;
 
         //Save these as temporary variables, so that the array sort can access them.
@@ -101,6 +102,7 @@ export default class Wave
     {
         // alert(enemyName);
         // spawn the enemy
+        this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));
     }
 
     #sort_array(a, b)

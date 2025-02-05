@@ -13,6 +13,7 @@ class Particle extends Entity {
     game_tick(delta_time) {
         this.physics_tick(delta_time);
     }
+
 }
 
 class GooBlood extends Particle {

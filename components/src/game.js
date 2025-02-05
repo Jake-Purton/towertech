@@ -22,9 +22,9 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
+        //this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
 
-        this.test_wave = null;
+        this.current_wave = null;
 
     }
     preload() {
@@ -57,8 +57,8 @@ export default class Game extends Phaser.Scene{
         this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
 
 
-        //length, spawnDelay, enemyArray, enemyWeights, numEnemies
-        this.test_wave = new Wave(240, 2, ["test1", "test2", "test3"], [20, 50, 5], 40);
+        //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
+        this.current_wave = new Wave(this, 240, 2, ["goober", "goolime"], [5, 20], 40);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
@@ -72,8 +72,6 @@ export default class Game extends Phaser.Scene{
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*Game.target_fps)/1000;
-
-        this.test_wave.game_tick(delta);
 
         /// handle players
         this.dummy_input();
@@ -127,7 +125,8 @@ export default class Game extends Phaser.Scene{
         }
 
         // wave management
-        this.wave_data.next_spawn-=delta/Game.target_fps;
+        this.current_wave.game_tick(delta);
+        /*this.wave_data.next_spawn-=delta/Game.target_fps;
         if (this.wave_data.next_spawn < 0){
             this.wave_data.next_spawn = this.wave_data.spawn_delay
             // randomly select enemy type
@@ -143,7 +142,7 @@ export default class Game extends Phaser.Scene{
                 this.wave_data.enemies[enemy_names[index]] -= 1;
                 this.enemies.push(new Enemy(this, -50, -50, enemy_names[index], this.enemy_path));
             }
-        }
+        }*/
     }
 
     take_input(input){
