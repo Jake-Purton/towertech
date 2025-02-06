@@ -213,11 +213,11 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','FlamethrowerTower']]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','CannonTower']]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','FlamethrowerTower']]))
+                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','CannonTower']]))
         }
     }
 }

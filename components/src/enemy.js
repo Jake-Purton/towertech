@@ -13,6 +13,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.play(type+'_walk')
 
         this.health = 5;
+        this.game_tick(0); // sets the position to the start of the path
     }
     game_tick(delta_time){
         // Moves enemy round path
