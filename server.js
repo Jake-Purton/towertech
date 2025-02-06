@@ -32,6 +32,13 @@ app.prepare().then(() => {
       const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
       socket.emit("updateUsers", users);
     });
+
+    socket.on("gameStarted", (roomCode) => {
+      // the game has started
+      // send a message to everyone in  that room saying that thge game has started
+      socket.to(roomCode).emit("gameStarted", "the game has started!");
+
+    });
       
   });
 
