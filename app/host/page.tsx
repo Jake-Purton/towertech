@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { socket } from "../src/socket";
+import { useRouter } from "next/navigation";
 
 type User = { userID: string; username: string };
 
 const HostPage = () => {
+  const router = useRouter();
   const [roomCode, setRoomCode] = useState("");
   const [users, setUsers] = useState<User[]>([]);
 
@@ -26,6 +28,12 @@ const HostPage = () => {
     };
   }, []);
 
+  const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    if (users.length > 0) {
+      router.push("/game");
+      socket.emit("gameStarted", roomCode)
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
       <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
@@ -60,8 +68,14 @@ const HostPage = () => {
             )}
           </ul>
         </div>
-        <button className="mt-6 px-4 py-2 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 transition-all">
-          Start the Game 
+        <button
+          className={`mt-6 px-4 py-2 rounded-lg shadow-md transition-all ${
+            users.length === 0 ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
+          } text-white`}
+          disabled={users.length === 0}
+          onClick={startGame}
+        >
+          Start the Game
         </button>
       </div>
     </div>
