@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Enemy from './enemy.js';
-import {Cannon } from './tower.js';
 
 export default class Game extends Phaser.Scene{
     constructor(){
@@ -25,12 +24,31 @@ export default class Game extends Phaser.Scene{
         this.load.image('body','/game_images/body_image.png');
         this.load.image('leg','/game_images/leg.png');
         this.load.image('arm','/game_images/arm.png');
-        this.load.image('tower','/game_images/tower.png');
-        this.load.image('tower_gun','/game_images/cannon_head.png');
-        this.load.image('cannon_ball','/game_images/cannon_ball.png');
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
-        this.load.image('goo_blood','/game_images/gooblood.png');
+        this.load.image('goo_blood','/game_images/particles/gooblood.png');
+
+        //// Load tower images
+        this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
+        this.load.image('CannonTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
+        this.load.image('LaserTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
+        this.load.image('SniperTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
+        this.load.image('FlamethrowerTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
+        this.load.image('BallistaTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
     }
     create() {
         // animations
@@ -195,11 +213,11 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','Cannon']]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','FlamethrowerTower']]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','Cannon']]))
+                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','FlamethrowerTower']]))
         }
     }
 }

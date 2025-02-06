@@ -76,7 +76,7 @@ class Projectile extends Entity {
 class CannonBall extends Projectile {
     constructor(scene, x, y, angle, team, target=null, speed_multiplier=1) {
         let base_speed = 10;
-        super(scene, x, y, 'cannon_ball', base_speed*speed_multiplier, angle, team, target);
+        super(scene, x, y, 'CannonTower_projectile', base_speed*speed_multiplier, angle, team, target);
     }
 }
 

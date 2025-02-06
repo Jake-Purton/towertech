@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {Cannon} from "./tower.js";
+import {create_tower } from './tower.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
@@ -67,20 +67,12 @@ export default class Player extends Phaser.GameObjects.Container{
     check_collision(players){
 
     }
-    create_tower(tower_type, direction) {
+    create_tower(tower_type, key_direction) {
         let new_tower = null;
-        if (direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-            switch (tower_type){
-                case 'Cannon':
-                    new_tower = new Cannon(this.scene, this.x, this.y);
-                    break;
-                default:
-                    new_tower = new Cannon(this.scene, this.x, this.y, this.player_id);
-                    break;
-
-            }
+        if (key_direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            new_tower = create_tower(tower_type, this.scene, this.x, this.y, this.player_id);
         }
-        this.prev_tower_button_direction = direction;
+        this.prev_tower_button_direction = key_direction;
         return new_tower;
     }
 }
