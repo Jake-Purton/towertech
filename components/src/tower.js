@@ -96,7 +96,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                 new_nearby_player = player;
             }
         }
-        if (this.nearby_player == null && new_nearby_player != null) {
+        if (this.nearby_player == null && new_nearby_player != null && !new_nearby_player.has_nearby_tower) {
             this.set_new_nearby_player(new_nearby_player);
         } else if (this.nearby_player != null && new_nearby_player == null) {
             this.remove_nearby_player();
@@ -104,12 +104,14 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
     set_new_nearby_player(new_nearby_player) {
         this.nearby_player = new_nearby_player;
+        this.nearby_player.has_nearby_tower = true;
         this.scene.output_data(new_nearby_player.player_id,'This player is now in range of a tower');
         this.graphics.strokeCircle(this.x,this.y,this.range);
     }
 
     remove_nearby_player() {
         this.scene.output_data(this.nearby_player.player_id,'This player is no longer in range of a tower');
+        this.nearby_player.has_nearby_tower = false;
         this.nearby_player = null;
         this.graphics.clear();
     }

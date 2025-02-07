@@ -36,6 +36,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.move_direction = new Vec(0,0);
         this.prev_tower_button_direction = 'Up';
 
+        this.has_nearby_tower = false;
+
         // constants
         this.speed = 0.8;
         this.drag = 0.9;
