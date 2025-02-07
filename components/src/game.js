@@ -1,10 +1,10 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Enemy from './enemy.js';
-import {Cannon } from './tower.js';
+import {random_choice } from './utiles.js'
 
 export default class Game extends Phaser.Scene{
-    constructor(){
+    constructor(output_data_func){
         super('GameScene');
 
         // game object containers
@@ -16,6 +16,7 @@ export default class Game extends Phaser.Scene{
 
         // constants
         this.target_fps = 60;
+        this.output_data = output_data_func;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
@@ -26,12 +27,32 @@ export default class Game extends Phaser.Scene{
         this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
         this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
         this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
-        this.load.image('tower','/game_images/tower.png');
-        this.load.image('tower_gun','/game_images/cannon_head.png');
-        this.load.image('cannon_ball','/game_images/cannon_ball.png');
+
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
-        this.load.image('goo_blood','/game_images/gooblood.png');
+        this.load.image('goo_blood','/game_images/particles/gooblood.png');
+
+        //// Load tower images
+        this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
+        this.load.image('CannonTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
+        this.load.image('LaserTower_projectile','/game_images/projectiles/LaserTower_projectile.png');
+
+        this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
+        this.load.image('SniperTower_projectile','/game_images/projectiles/SniperTower_projectile.png');
+
+        this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
+        this.load.image('FlamethrowerTower_projectile','/game_images/projectiles/FlamethrowerTower_projectile.png');
+
+        this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
+        this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
+
     }
     create() {
         // animations
@@ -56,7 +77,6 @@ export default class Game extends Phaser.Scene{
 
         // random numbers
         this.RNG = new Phaser.Math.RandomDataGenerator();
-
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -73,7 +93,7 @@ export default class Game extends Phaser.Scene{
 
         /// handle towers
         for (let tower of this.towers){
-            tower.game_tick(delta, this.enemies);
+            tower.game_tick(delta, this.enemies, this.players);
         }
 
         /// handle projectiles
@@ -134,6 +154,7 @@ export default class Game extends Phaser.Scene{
                 this.enemies.push(new Enemy(this, -50, -50, enemy_names[index], this.enemy_path));
             }
         }
+
     }
 
     take_input(input){
@@ -196,11 +217,11 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','Cannon']]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','Cannon']]))
+                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','ThisThingIsPointless']]))
         }
     }
 }
