@@ -20,7 +20,7 @@ const PhaserGame = () => {
             arcade: {
               fps: 60,
               gravity: { y: 0 },
-              debug: false,
+              // debug: true,
             }
           },
           scene: new Game(output_data),

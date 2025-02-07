@@ -10,7 +10,7 @@ class Projectile extends Entity {
                 {target=null, auto_aim_range=1000, auto_aim_strength=1,
                     fire_distance=100, min_speed=0.5, no_drag_distance=0,
                     damage=1, pierce_count=0, time_to_live=10,
-                    rotate_to_direction=false} = {}) {
+                    rotate_to_direction=false, scale=1} = {}) {
 
         // calculate drag based on where the projectile should stop
         // the projectile travels a no_drag_distance before starting to slow down
@@ -18,7 +18,7 @@ class Projectile extends Entity {
         let drag = Math.pow(Math.E,speed/(no_drag_distance-fire_distance));
 
         super(scene, x, y, texture, speed, angle, drag, no_drag_distance,
-            min_speed, time_to_live, rotate_to_direction);
+            min_speed, time_to_live, rotate_to_direction, scale);
 
         //// variables
         this.team = team
@@ -31,6 +31,7 @@ class Projectile extends Entity {
 
         // kill particle info
         this.pierce_count = pierce_count;  // reduces by 1 each time the projectile hits something
+        this.pierced_enemies = []; // tracks what has been hit so it doesnt hit the same enemy multiple times
     }
     game_tick(delta_time, enemies, tower) {
 
@@ -47,9 +48,7 @@ class Projectile extends Entity {
     follow_target() {
         if (this.target !== null && typeof(this.target.scene) !== "undefined") {
             let prev_length = this.velocity.length()
-            let relative_position = this.target.body.position.clone();
-            relative_position.x -= this.body.position.x;
-            relative_position.y -= this.body.position.y;
+            let relative_position = new Vec(this.target.x-this.x, this.target.y-this.y);
             if (relative_position.length() < this.auto_aim_range) {
                 relative_position.setLength(this.auto_aim_stength);
                 this.velocity.add(relative_position);
@@ -61,7 +60,7 @@ class Projectile extends Entity {
     }
     check_collision(entities){
         for (let entity of entities) {
-            if (this.scene.physics.world.overlap(this, entity)) {
+            if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
                 this.deal_damage(entity);
                 return true;
             }
@@ -70,6 +69,7 @@ class Projectile extends Entity {
     }
     deal_damage(entity) {
         entity.health -= this.damage;
+        this.pierced_enemies.push(entity);
         this.pierce_count -= 1;
         for (let i=0;i<3;i++) {
             this.scene.particles.push(new GooBlood(this.scene, entity.x, entity.y,
@@ -92,5 +92,12 @@ class Bullet extends Projectile {
         super(scene, x, y, texture, speed, angle, team, properties);
     }
 }
+class FireProjectile extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties) {
+        properties.rotate_to_direction = true;
+        properties.scale = 0.4
+        super(scene, x, y, texture, speed, angle, team, properties);
+    }
+}
 
-export {CannonBall, Bullet };
+export {CannonBall, Bullet, FireProjectile };

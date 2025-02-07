@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {CannonBall, Bullet } from './projectile.js'
+import {CannonBall, Bullet, FireProjectile } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
 const Vec = Phaser.Math.Vector2;
 
@@ -36,7 +36,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.gun_scale = gun_scale;
         this.gun_center = gun_center;
         this.gun.setOrigin(this.gun_center[0], this.gun_center[1]);
-        this.gun.setScale = this.gun_scale;
+        this.gun.setScale(this.gun_scale);
 
         // basic tower info
         this.tower_type = tower_type;
@@ -175,12 +175,12 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         // create a new projectile object and add it to projectiles list
-        let angle = random_gauss(this.gun.angle, this.fire_spread);
+        let angle = random_gauss(this.gun.angle, this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, this.tower_type.concat('_projectile'), this.fire_velocity, angle, 'Tower',
             {target:this.target, auto_aim_range:this.projectile_auto_aim_range, auto_aim_strength:this.projectile_auto_aim_strength,
-                fire_distance:this.fire_distance, min_speed:this.projectile_min_speed, no_drag_distance:this.projectile_no_drag_distance,
+                fire_distance:fire_distance, min_speed:this.projectile_min_speed, no_drag_distance:this.projectile_no_drag_distance,
                 damage:this.damage, pierce_count:this.pierce_count}));
     }
 
@@ -228,7 +228,9 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, CannonBall,
+            {range:80, fire_distance:100, projectile_no_drag_distance:0,
+                fire_rate:2});
     }
 }
 
@@ -241,19 +243,25 @@ class LaserTower extends Tower{
 class SniperTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, Bullet,
-            {gun_scale:1.2, range:300, fire_distance:300, projectile_no_drag_distance:200});
+            {gun_scale:1.2, range:400, fire_distance:400, projectile_no_drag_distance:300,
+            damage:5, fire_rate:0.5 });
     }
 }
 
 class FlamethrowerTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, FireProjectile,
+            {gun_scale:0.5, range:200, fire_distance:200, projectile_no_drag_distance:50,
+            damage:0.2, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
+            projectile_min_speed:1});
     }
 }
 
 class BallistaTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, CannonBall,
+            {gun_scale:1.5, range:300, fire_distance:300, projectile_no_drag_distance:200,
+            damage:3, fire_rate:3, pierce_count:1, fire_velocity:20,projectile_auto_aim_strength:0});
     }
 }
 

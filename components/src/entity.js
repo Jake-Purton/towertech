@@ -6,10 +6,12 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture,
                 speed, angle, drag, no_drag_distance,
                 speed_min_to_kill, time_to_live,
-                rotate_to_direction=false) {
+                rotate_to_direction=false, scale=1) {
         super(scene, x, y, texture);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setScale(scale);
+        this.body.setCircle(this.body.height / 2);
 
         let velocity = new Vec(Math.cos(angle/180*Math.PI)*speed,Math.sin(angle/180*Math.PI)*speed);
 

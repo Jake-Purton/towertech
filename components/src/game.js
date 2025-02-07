@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Enemy from './enemy.js';
+import {random_choice } from './utiles.js'
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func){
@@ -36,7 +37,7 @@ export default class Game extends Phaser.Scene{
 
         this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
-        this.load.image('LaserTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+        this.load.image('LaserTower_projectile','/game_images/projectiles/LaserTower_projectile.png');
 
         this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
@@ -44,11 +45,11 @@ export default class Game extends Phaser.Scene{
 
         this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
-        this.load.image('FlamethrowerTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+        this.load.image('FlamethrowerTower_projectile','/game_images/projectiles/FlamethrowerTower_projectile.png');
 
         this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
-        this.load.image('BallistaTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+        this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
 
     }
     create() {
@@ -214,7 +215,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','SniperTower']]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','LaserTower']]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
