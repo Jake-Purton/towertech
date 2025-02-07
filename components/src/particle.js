@@ -6,8 +6,8 @@ class Particle extends Entity {
     constructor(scene, x, y, texture, speed, angle,
                 drag = 0.9, damage = 1,
                 speed_min_to_kill = 1, time_to_live = 5) {
-        super(scene, x, y, texture, speed, angle, drag, speed_min_to_kill,
-            time_to_live);
+        super(scene, x, y, texture, speed, angle, drag, 0,
+            speed_min_to_kill, time_to_live);
 
     }
     game_tick(delta_time) {

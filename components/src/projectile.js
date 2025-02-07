@@ -6,11 +6,19 @@ const Vec = Phaser.Math.Vector2;
 class Projectile extends Entity {
     // team variable can be one of "Enemy", "Player" or "Tower"
     // angle in degrees
-    constructor(scene, x, y, texture, speed, angle, team, target=null,
-                drag=1, damage=1, auto_aim_range=1000, auto_aim_strength=1,
-                speed_min_to_kill=0, time_to_live=5, pierce_count=0) {
-        super(scene, x, y, texture, speed, angle, drag, speed_min_to_kill,
-            time_to_live, pierce_count);
+    constructor(scene, x, y, texture, speed, angle, team,
+                {target=null, auto_aim_range=1000, auto_aim_strength=1,
+                    fire_distance=100, min_speed=0.5, no_drag_distance=0,
+                    damage=1, pierce_count=0, time_to_live=10} = {}) {
+
+        // calculate drag based on where the projectile should stop
+        // the projectile travels a no_drag_distance before starting to slow down
+        // the projectile should always stop moving at the fire distance
+        let drag = Math.pow(Math.E,speed/(no_drag_distance-fire_distance));
+        console.log(speed, drag, no_drag_distance);
+
+        super(scene, x, y, texture, speed, angle, drag, no_drag_distance,
+            min_speed, time_to_live);
 
         //// variables
         this.team = team
@@ -74,9 +82,8 @@ class Projectile extends Entity {
 }
 
 class CannonBall extends Projectile {
-    constructor(scene, x, y, angle, team, target=null, speed_multiplier=1) {
-        let base_speed = 10;
-        super(scene, x, y, 'CannonTower_projectile', base_speed*speed_multiplier, angle, team, target);
+    constructor(scene, x, y, texture, speed, angle, team, properties) {
+        super(scene, x, y, texture, speed, angle, team, properties);
     }
 }
 

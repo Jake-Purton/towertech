@@ -8,10 +8,12 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     // fire_rate is shots per seconds
     constructor(scene, x, y, tower_type, player_id, projectile_class,
                 {range=100, fire_rate=3, damage=1, pierce_count=0,
-                    fire_distance=100, projectile_min_speed=0.5, projectile_no_drag_distance=0,
-                    fire_spread=0,
+                    fire_distance=100, projectile_min_speed=0.5, projectile_no_drag_distance=80,
+                    projectile_auto_aim_range=1000, projectile_auto_aim_strength=1,
+                    fire_spread=0, fire_distance_spread=10, fire_velocity=10,
                     gun_scale=1, gun_center=[0.2, 0.5], base_scale=1,
-                    max_turn_speed=360, target_type='Closest', stay_on_same_target=false,
+                    max_turn_speed=10, passive_turn_speed=0.5,
+                    target_type='Closest', stay_on_same_target=false,
                 } = {}) {
         super(scene, x, y, tower_type+'_base');
         scene.add.existing(this);
@@ -28,8 +30,6 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.gun_scale = gun_scale;
         this.gun_center = gun_center;
         this.gun.setOrigin(this.gun_center[0], this.gun_center[1]);
-        // this.gun.displayOriginX = this.gun_center[0];
-        // this.gun.displayOriginY = this.gun_center[1];
         this.gun.setScale = this.gun_scale;
 
         // variables
@@ -45,11 +45,17 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.fire_spread = fire_spread;
 
         this.fire_distance = fire_distance;
+        this.fire_distance_spread = fire_distance_spread;
+        this.fire_velocity = fire_velocity;
         this.projectile_min_speed = projectile_min_speed;
         this.projectile_no_drag_distance = projectile_no_drag_distance;
+        this.projectile_auto_aim_range = projectile_auto_aim_range;
+        this.projectile_auto_aim_strength = projectile_auto_aim_strength;
 
         this.ready_to_shoot = false;
         this.shoot_cooldown = 0;
+        this.time_since_attacking = 0;
+        this.passive_turn_speed = passive_turn_speed;
 
         this.max_turn_speed = max_turn_speed; // measured in degrees
         this.target_type = target_type; // can be one of "Closest", "Furthest", "Front", "Back", "MostHealth", "LeastHealth"
@@ -57,6 +63,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
     game_tick(delta_time, enemies) {
         this.shoot_cooldown -= delta_time/this.scene.target_fps;
+        this.time_since_attacking += delta_time/this.scene.target_fps;
 
         if (get_removed(this.target)) {
             this.check_target(enemies);
@@ -75,24 +82,27 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
     locate_target(enemies) {
         this.target = null;
-        switch (this.target_type){
-            case "Front":
-                this.target = enemies[0];
-                break;
-            case "Back":
-                this.target = enemies[enemies.length-1];
-                break;
-            default:
-                let best_val = null;
-                this.target = null;
-                for (let enemy of enemies) {
-                    let val = this.evaluate_enemy(enemy);
-                    if (val > best_val || best_val === null) {
-                        best_val = val;
-                        this.target = enemy;
+        if (enemies.length>0) {
+            switch (this.target_type){
+                case "Front":
+                    this.target = enemies[0];
+                    break;
+                case "Back":
+                    this.target = enemies[enemies.length-1];
+                    break;
+                default:
+                    let best_val = null;
+                    this.target = null;
+                    for (let enemy of enemies) {
+                        let val = this.evaluate_enemy(enemy);
+                        if (val > best_val || best_val === null) {
+                            best_val = val;
+                            this.target = enemy;
+                        }
                     }
-                }
+            }
         }
+
     }
     // function used to work out what enemy to target
     evaluate_enemy(enemy) {
@@ -103,9 +113,9 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
             case "Furthest":
                 return this.get_relative_pos(enemy).length()
             case "MostHealth":
-                return enemy.health;
+                return enemy.health*100000-this.get_relative_pos(enemy).length();
             case "LeastHealth":
-                return -enemy.health
+                return -enemy.health*10000-this.get_relative_pos(enemy).length()
         }
 
     }
@@ -114,19 +124,24 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         if (this.ready_to_shoot && this.shoot_cooldown<0) {
             this.shoot();
             this.check_target(enemies);
+            this.time_since_attacking = 0;
         }
     }
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
-        // console.log(this.gun.angle);
+        // create a new projectile object and add it to projectiles list
+        let angle = random_gauss(this.gun.angle, this.fire_spread);
+        let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y,
-            random_gauss(this.gun.angle, this.fire_spread), 'Tower', this.target));
+            this.scene, this.x, this.y, this.tower_type.concat('_projectile'), this.fire_velocity, angle, 'Tower',
+            {target:this.target, auto_aim_range:this.projectile_auto_aim_range, auto_aim_strength:this.projectile_auto_aim_strength,
+                fire_distance:this.fire_distance, min_speed:this.projectile_min_speed, no_drag_distance:this.projectile_no_drag_distance,
+                damage:this.damage, pierce_count:this.pierce_count}));
     }
 
     rotate_gun(delta_time) {
         this.ready_to_shoot = false;
-        if (this.target!==null) {
+        if (!get_removed(this.target)) {
             // get angle towards target
             let target_angle = this.get_relative_pos(this.target).angle()*180/Math.PI;
             let current_angle = this.gun.angle;
@@ -140,6 +155,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
             }
             if (dis < this.max_turn_speed*delta_time) {
                 this.gun.setAngle(target_angle);
+                this.ready_to_shoot = true;
             } else {
                 let flip;
                 if (diff < 0) {
@@ -153,7 +169,9 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     this.gun.setAngle(current_angle - this.max_turn_speed * delta_time * flip)
                 }
             }
-            this.ready_to_shoot = true;
+        // Rotates gun slowly when not attacking
+        } else if (this.time_since_attacking > 1.5) {
+            this.gun.setAngle(this.gun.angle + this.passive_turn_speed);
         }
     }
 
@@ -165,8 +183,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall,
-            {range: 2000, fire_rate: 2});
+        super(scene, x, y, tower_type, player_id, CannonBall, {range:1000, fire_distance:200});
     }
 }
 
