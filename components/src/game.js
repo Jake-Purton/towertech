@@ -215,7 +215,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','LaserTower']]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],

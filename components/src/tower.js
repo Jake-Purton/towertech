@@ -236,7 +236,10 @@ class CannonTower extends Tower{
 
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, CannonBall,
+            {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
+            damage:0.1, fire_rate:20,pierce_count:100, projectile_auto_aim_strength:0,
+            projectile_min_speed:1, fire_velocity:20});
     }
 }
 
@@ -264,6 +267,7 @@ class BallistaTower extends Tower{
             damage:3, fire_rate:3, pierce_count:1, fire_velocity:20,projectile_auto_aim_strength:0});
     }
 }
+// tesla tower/inferno style tower?
 
 class WeakeningTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
