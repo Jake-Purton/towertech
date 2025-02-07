@@ -1,13 +1,13 @@
 function handleMessage(socket) {
   return (msg) => {
-    console.log("Received message:", msg);
+    // console.log("Received message:", msg);
     socket.emit("message", `Hello from server`);
   };
 }
 
 function handleJoinRoom(socket, roomManager) {
-  return ({ userId, roomId }) => {
-    console.log(userId, "attempting to join room", roomId);
+  return ({ userId, roomId, username }) => {
+    console.log(userId, "attempting to join room", roomId, "with username", username);
 
     const currentRoom = roomManager.getUserRoom(userId);
     if (currentRoom) {
@@ -18,11 +18,13 @@ function handleJoinRoom(socket, roomManager) {
     }
 
     if (roomManager.getRoom(roomId)) {
-      roomManager.addUserToRoom(userId, roomId);
+      roomManager.addUserToRoom(userId, roomId, username);
       socket.join(roomId);
 
       console.log(userId, "joined room", roomId);
-      socket.to(roomId).emit("updateUsers", roomManager.getUsersInRoom(roomId));
+      var users = roomManager.getUsersInRoom(roomId);
+      socket.to(roomId).emit("updateUsers", users);
+
       socket.emit("roomJoinSuccess", "Successfully joined room " + roomId);
     } else {
       socket.emit("RoomErr", "Room number " + roomId + " does not exist");
@@ -30,4 +32,17 @@ function handleJoinRoom(socket, roomManager) {
   };
 }
 
-export { handleJoinRoom, handleMessage };
+function handleDisconnect(socket, roomManager) {
+  return () => {
+    const userId = socket.id;
+    const currentRoom = roomManager.getUserRoom(userId);
+    if (currentRoom) {
+      roomManager.removeUserFromRoom(userId, currentRoom);
+      socket.leave(currentRoom);
+      // console.log(userId, "disconnected and removed from room", currentRoom);
+      socket.to(currentRoom).emit("updateUsers", roomManager.getUsersInRoom(currentRoom));
+    }
+  };
+}
+
+export { handleJoinRoom, handleMessage, handleDisconnect };

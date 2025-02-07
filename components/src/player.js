@@ -1,30 +1,32 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
+import Body from './components/bodies/body.js';
+import DefaultBody from './components/bodies/default_body.js';
+import Leg from './components/legs/leg.js';
+import DefaultLeg from './components/legs/default_leg.js';
+import Wheel from './components/legs/wheel.js';
+import Weapon from './components/weapons/weapon.js';
+import DefaultWeapon from './components/weapons/default_weapon.js';
+
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
     constructor(scene, x, y, player_id){
 
         // create body parts
-        let body = new Phaser.Physics.Arcade.Sprite(scene, 0, 0, 'body');
-        let left_leg = new Phaser.Physics.Arcade.Sprite(scene, 10, 12, 'leg');
-        let right_leg = new Phaser.Physics.Arcade.Sprite(scene, -10, 12, 'leg');
-        let left_arm = new Phaser.Physics.Arcade.Sprite(scene, -14, -3, 'arm');
-        let right_arm = new Phaser.Physics.Arcade.Sprite(scene, 14, -3, 'arm');
-        left_leg.setScale(-1,1);
-        right_arm.setScale(-1,1);
+        let body = new DefaultBody(scene);
+        let leg = new DefaultLeg(scene);
+        let weapon = new DefaultWeapon(scene);
 
         // create phaser stuff
-        super(scene, x, y, [body, left_leg, right_leg, left_arm, right_arm]);
+        super(scene, x, y, [body, leg, weapon]);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
         // assign body parts
         this.body_object = body;
-        this.left_leg = left_leg;
-        this.right_leg = right_leg;
-        this.left_arm = left_leg;
-        this.right_arm = right_leg;
+        this.weapon = weapon;
+        this.leg = leg;
 
         // variables
         this.velocity = new Vec(0,0);
@@ -56,6 +58,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.velocity.x *= this.drag**delta_time;
         this.velocity.y *= this.drag**delta_time;
 
+        this.leg.movement_animation(this.velocity);
+        
         this.body.position.x += this.velocity.x*delta_time;
         this.body.position.y += this.velocity.y*delta_time;
     }
