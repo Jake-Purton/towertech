@@ -9,7 +9,8 @@ class Projectile extends Entity {
     constructor(scene, x, y, texture, speed, angle, team,
                 {target=null, auto_aim_range=1000, auto_aim_strength=1,
                     fire_distance=100, min_speed=0.5, no_drag_distance=0,
-                    damage=1, pierce_count=0, time_to_live=10} = {}) {
+                    damage=1, pierce_count=0, time_to_live=10,
+                    rotate_to_direction=false} = {}) {
 
         // calculate drag based on where the projectile should stop
         // the projectile travels a no_drag_distance before starting to slow down
@@ -17,7 +18,7 @@ class Projectile extends Entity {
         let drag = Math.pow(Math.E,speed/(no_drag_distance-fire_distance));
 
         super(scene, x, y, texture, speed, angle, drag, no_drag_distance,
-            min_speed, time_to_live);
+            min_speed, time_to_live, rotate_to_direction);
 
         //// variables
         this.team = team
@@ -85,5 +86,11 @@ class CannonBall extends Projectile {
         super(scene, x, y, texture, speed, angle, team, properties);
     }
 }
+class Bullet extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties) {
+        properties.rotate_to_direction = true;
+        super(scene, x, y, texture, speed, angle, team, properties);
+    }
+}
 
-export {CannonBall };
+export {CannonBall, Bullet };

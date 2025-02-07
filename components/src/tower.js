@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {CannonBall } from './projectile.js'
+import {CannonBall, Bullet } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
 const Vec = Phaser.Math.Vector2;
 
@@ -116,7 +116,6 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.graphics.clear();
     }
 
-
     check_target(enemies) {
         if (!this.stay_on_same_target || get_removed(this.target)) {
             this.locate_target(enemies);
@@ -229,55 +228,56 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {range:100, fire_distance:100});
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class SniperTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, Bullet,
+            {gun_scale:1.2, range:300, fire_distance:300, projectile_no_drag_distance:200});
     }
 }
 
 class FlamethrowerTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 20);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class BallistaTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class WeakeningTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class SlowingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 
 class BuffingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, 2000, 2);
+        super(scene, x, y, tower_type, player_id, CannonBall, {});
     }
 }
 

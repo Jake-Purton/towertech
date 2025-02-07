@@ -5,7 +5,8 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
     // angle in degrees
     constructor(scene, x, y, texture,
                 speed, angle, drag, no_drag_distance,
-                speed_min_to_kill, time_to_live) {
+                speed_min_to_kill, time_to_live,
+                rotate_to_direction=false) {
         super(scene, x, y, texture);
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -22,6 +23,9 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         // kill particle info
         this.speed_min_to_kill = speed_min_to_kill;
         this.time_to_live = time_to_live;
+
+        // visual info
+        this.rotate_to_direction = rotate_to_direction;
     }
     physics_tick(delta_time) {
         this.time_to_live -= delta_time/this.scene.target_fps;
@@ -38,6 +42,8 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
 
         let delta_pos = prev_position.subtract(this.body.position);
         this.distance_tracker += delta_pos.length();
+
+        this.setAngle(this.velocity.angle()*180/Math.PI);
     }
     get_dead() {
         return (this.time_to_live<0 || this.velocity.length()<this.speed_min_to_kill);

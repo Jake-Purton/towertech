@@ -40,7 +40,7 @@ export default class Game extends Phaser.Scene{
 
         this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
-        this.load.image('SniperTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+        this.load.image('SniperTower_projectile','/game_images/projectiles/SniperTower_projectile.png');
 
         this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
@@ -214,11 +214,11 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','CannonTower']]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','SniperTower']]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','CannonTower']]))
+                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','ThisThingIsPointless']]))
         }
     }
 }
