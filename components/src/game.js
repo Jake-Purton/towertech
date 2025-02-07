@@ -3,7 +3,7 @@ import Player from './player.js';
 import Enemy from './enemy.js';
 
 export default class Game extends Phaser.Scene{
-    constructor(){
+    constructor(output_data_func){
         super('GameScene');
 
         // game object containers
@@ -15,10 +15,11 @@ export default class Game extends Phaser.Scene{
 
         // constants
         this.target_fps = 60;
+        this.output_data = output_data_func;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':0,'goober':5}};
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
     }
     preload() {
         this.load.image('body','/game_images/body_image.png');
@@ -73,7 +74,6 @@ export default class Game extends Phaser.Scene{
 
         // random numbers
         this.RNG = new Phaser.Math.RandomDataGenerator();
-
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -90,7 +90,7 @@ export default class Game extends Phaser.Scene{
 
         /// handle towers
         for (let tower of this.towers){
-            tower.game_tick(delta, this.enemies);
+            tower.game_tick(delta, this.enemies, this.players);
         }
 
         /// handle projectiles
@@ -151,6 +151,7 @@ export default class Game extends Phaser.Scene{
                 this.enemies.push(new Enemy(this, -50, -50, enemy_names[index], this.enemy_path));
             }
         }
+
     }
 
     take_input(input){

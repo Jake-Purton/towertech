@@ -15,7 +15,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     max_turn_speed=10, passive_turn_speed=0.5,
                     target_type='Closest', stay_on_same_target=false,
                 } = {}) {
-        super(scene, x, y, tower_type+'_base');
+        super(scene, x, y, tower_type + '_base');
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
@@ -23,27 +23,34 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.setScale(this.base_scale);
 
         // create gun
-        this.gun = new Phaser.Physics.Arcade.Sprite(scene, x, y, tower_type+'_gun');
+        this.gun = new Phaser.Physics.Arcade.Sprite(scene, x, y, tower_type + '_gun');
         scene.add.existing(this.gun);
         scene.physics.add.existing(this.gun);
 
+        // create range highlighter
+        this.graphics = scene.add.graphics();
+        this.graphics.lineStyle(2, 0xff0000);
+
+        ////// variables //////
+        // gun rendering
         this.gun_scale = gun_scale;
         this.gun_center = gun_center;
         this.gun.setOrigin(this.gun_center[0], this.gun_center[1]);
         this.gun.setScale = this.gun_scale;
 
-        // variables
+        // basic tower info
         this.tower_type = tower_type;
         this.projectile_class = projectile_class;
         this.playerid = player_id;
-        this.target = null;
 
+        // shooting info
         this.range = range;
-        this.shoot_cooldown_value = 1/fire_rate;
+        this.shoot_cooldown_value = 1 / fire_rate;
         this.damage = damage;
         this.pierce_count = pierce_count;
         this.fire_spread = fire_spread;
 
+        // projectile info
         this.fire_distance = fire_distance;
         this.fire_distance_spread = fire_distance_spread;
         this.fire_velocity = fire_velocity;
@@ -52,16 +59,24 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.projectile_auto_aim_range = projectile_auto_aim_range;
         this.projectile_auto_aim_strength = projectile_auto_aim_strength;
 
+        // shoot managing
         this.ready_to_shoot = false;
         this.shoot_cooldown = 0;
         this.time_since_attacking = 0;
         this.passive_turn_speed = passive_turn_speed;
 
+        // gun targeting
+        this.target = null;
         this.max_turn_speed = max_turn_speed; // measured in degrees
         this.target_type = target_type; // can be one of "Closest", "Furthest", "Front", "Back", "MostHealth", "LeastHealth"
         this.stay_on_same_target = stay_on_same_target; // if true will keep attacking same target even if new target appears, e.g. a new closest target
+
+        // nearby player info
+        this.nearby_radius = 35;
+        this.nearby_player = null;
+
     }
-    game_tick(delta_time, enemies) {
+    game_tick(delta_time, enemies, players) {
         this.shoot_cooldown -= delta_time/this.scene.target_fps;
         this.time_since_attacking += delta_time/this.scene.target_fps;
 
@@ -70,7 +85,36 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         }
         this.rotate_gun(delta_time);
         this.attack_enemies(enemies);
+
+        this.check_nearby_player(players);
+
     }
+    check_nearby_player(players) {
+        let new_nearby_player = null;
+        for (let [_, player] of players) {
+            if (this.get_relative_pos(player).length()<this.nearby_radius) {
+                new_nearby_player = player;
+            }
+        }
+        if (this.nearby_player == null && new_nearby_player != null) {
+            this.set_new_nearby_player(new_nearby_player);
+        } else if (this.nearby_player != null && new_nearby_player == null) {
+            this.remove_nearby_player();
+        }
+    }
+    set_new_nearby_player(new_nearby_player) {
+        this.nearby_player = new_nearby_player;
+        this.scene.output_data(new_nearby_player.player_id,'This player is now in range of a tower');
+        this.graphics.strokeCircle(this.x,this.y,this.range);
+    }
+
+    remove_nearby_player() {
+        this.scene.output_data(this.nearby_player.player_id,'This player is no longer in range of a tower');
+        this.nearby_player = null;
+        this.graphics.clear();
+    }
+
+
     check_target(enemies) {
         if (!this.stay_on_same_target || get_removed(this.target)) {
             this.locate_target(enemies);
@@ -95,7 +139,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     this.target = null;
                     for (let enemy of enemies) {
                         let val = this.evaluate_enemy(enemy);
-                        if (val > best_val || best_val === null) {
+                        if ((val > best_val || best_val === null) && this.get_relative_pos(enemy).length()<this.range) {
                             best_val = val;
                             this.target = enemy;
                         }
@@ -177,13 +221,13 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
     // returns the relative position from this to the passed enemy
     get_relative_pos(enemy) {
-        return new Vec(enemy.body.x-this.body.x, enemy.body.y-this.body.y);
+        return new Vec(enemy.x-this.x, enemy.y-this.y);
     }
 }
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {range:1000, fire_distance:200});
+        super(scene, x, y, tower_type, player_id, CannonBall, {range:100, fire_distance:100});
     }
 }
 

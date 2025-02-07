@@ -15,7 +15,6 @@ class Projectile extends Entity {
         // the projectile travels a no_drag_distance before starting to slow down
         // the projectile should always stop moving at the fire distance
         let drag = Math.pow(Math.E,speed/(no_drag_distance-fire_distance));
-        console.log(speed, drag, no_drag_distance);
 
         super(scene, x, y, texture, speed, angle, drag, no_drag_distance,
             min_speed, time_to_live);

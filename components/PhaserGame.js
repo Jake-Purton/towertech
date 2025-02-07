@@ -23,7 +23,7 @@ const PhaserGame = () => {
               debug: false,
             }
           },
-          scene: [Game],
+          scene: new Game(output_data),
           backgroundColor: '#50A011',
         };
 
@@ -33,13 +33,17 @@ const PhaserGame = () => {
           game.destroy(true);
         };
 
-        function input_data(data){
+        function input_data(data) {
           // function that would be used to send inputs to phaser
           // current assuming data is a json type format
           // this can be change depending on how input works, this is mostly temporary for testing
           for (let input of data) {
             game.scene.getScene('GameScene').take_input(input);
           }
+        }
+        function output_data(player_id, data) {
+          // the function to send data to a specific client
+          console.log('Data sent to '+player_id+':',data);
         }
 
 

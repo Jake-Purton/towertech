@@ -64,9 +64,6 @@ export default class Player extends Phaser.GameObjects.Container{
             this.key_inputs.set(key, 0);
         }
     }
-    check_collision(players){
-
-    }
     create_tower(tower_type, key_direction) {
         let new_tower = null;
         if (key_direction === 'Down' && this.prev_tower_button_direction === 'Up') {
