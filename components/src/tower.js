@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {CannonBall, Bullet, FireProjectile } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
+import Effects from './effects.js';
 const Vec = Phaser.Math.Vector2;
 
 class Tower extends Phaser.Physics.Arcade.Sprite {
@@ -74,6 +75,9 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         // nearby player info
         this.nearby_radius = 35;
         this.nearby_player = null;
+
+        // effects info
+        this.effects = new Effects(scene);
 
     }
     game_tick(delta_time, enemies, players) {
@@ -177,11 +181,15 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         // create a new projectile object and add it to projectiles list
         let angle = random_gauss(this.gun.angle, this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
+        let damage = this.damage * this.effects.get_damage_multiplier();
+        let speed = this.fire_velocity * this.effects.get_speed_multiplier();
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, this.tower_type.concat('_projectile'), this.fire_velocity, angle, 'Tower',
-            {target:this.target, auto_aim_range:this.projectile_auto_aim_range, auto_aim_strength:this.projectile_auto_aim_strength,
-                fire_distance:fire_distance, min_speed:this.projectile_min_speed, no_drag_distance:this.projectile_no_drag_distance,
-                damage:this.damage, pierce_count:this.pierce_count}));
+            this.scene, this.x, this.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
+            {target:this.target, auto_aim_range:this.projectile_auto_aim_range,
+                auto_aim_strength:this.projectile_auto_aim_strength,
+                fire_distance:fire_distance, min_speed:this.projectile_min_speed,
+                no_drag_distance:this.projectile_no_drag_distance,
+                damage:damage, pierce_count:this.pierce_count}));
     }
 
     rotate_gun(delta_time) {
