@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {CannonBall, Bullet, FireProjectile } from './projectile.js'
+import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
 import Effects from './effects.js';
 const Vec = Phaser.Math.Vector2;
@@ -284,7 +284,8 @@ class BallistaTower extends Tower{
 
 class WeakeningTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, CannonBall,
+            {});
     }
 }
 
@@ -296,7 +297,15 @@ class SlowingTower extends Tower{
 
 class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {});
+    }
+    shoot() {
+        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, this.x, this.y, 'Tower', {name:"Healing", amplifier:10, duration:0.2}, this.range));
+    }
+    rotate_gun(delta_time) {
+        this.ready_to_shoot = true;
     }
 }
 

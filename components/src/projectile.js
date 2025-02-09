@@ -79,7 +79,7 @@ class Projectile extends Entity {
         }
     }
     get_dead() {
-        return (this.time_to_live<0 || this.velocity.length()<this.speed_min_to_kill || this.pierce_count<0);
+        return (this.time_to_live<0 || this.velocity.length()<this.speed_min_to_kill || this.pierce_count<0  || this.alpha < this.alpha_min_to_kill || this.scale < this.scale_min_to_kill);
     }
 }
 
@@ -96,7 +96,7 @@ class Bullet extends Projectile {
 }
 class FireProjectile extends Projectile {
     constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
-        properties.inflict_effect = {name:"Burning",amplifier:2,duration:1.5}
+        properties.inflict_effect = {name:"Burning",amplifier:20,duration:1.5}
         super(scene, x, y, texture, speed, angle, team, properties,
             Object.assign(entity_properties, {rotate_to_direction:true, initial_scale:0.4, alpha_change:-1.5}));
 
@@ -110,5 +110,18 @@ class FireProjectile extends Projectile {
         }
     }
 }
+class EffectAOE extends Projectile {
+    constructor(scene, x, y, team, effect, radius) {
+        super(scene, x, y, '', 0, 0, team,
+            {inflict_effect:effect, pierce_count:1000, damage:0},
+            {initial_alpha:0, time_to_live:1, drag:0});
+        this.body.setCircle(radius);
+        this.body.position.x = this.x - radius;
+        this.body.position.y = this.y - radius;
+    }
+    get_dead() {
+        return (this.time_to_live<0);
+    }
+}
 
-export {CannonBall, Bullet, FireProjectile };
+export {CannonBall, Bullet, FireProjectile, EffectAOE };

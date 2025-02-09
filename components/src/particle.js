@@ -33,6 +33,13 @@ class FireParticle extends Particle {
             alpha_min_to_kill:0.2,scale_min_to_kill:0.2});
     }
 }
+class HeartParticle extends Particle {
+    constructor(scene, x, y) {
+        super(scene, x, y-10, 'heart_particle', 1, -90,
+            {angle_spread:90, acceleration:new Vec(0,-0.05),alpha_change:-1,
+            initial_scale:1.5, speed_min_to_kill:-1, x_offset_spread:10, y_offset_spread:4});
+    }
+}
 
 
-export {GooBlood, FireParticle };
+export {GooBlood, FireParticle, HeartParticle };
