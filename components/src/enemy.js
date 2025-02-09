@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
 import Effects from './effects.js';
+import {GooBlood} from "./particle.js";
+import {random_range } from './utiles.js'
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y, type, path) {
@@ -22,7 +24,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     }
     game_tick(delta_time){
         // handle effects
-        this.health += this.effects.get_health_change(delta_time);
+        this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
+        this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
         this.effects.game_tick(delta_time, this);
 
         // Moves enemy round path
@@ -32,6 +35,23 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         let position = this.path.getPoint(this.path_t);
         this.setPosition(position.x, position.y);
         return this.path_t >= 1;
+    }
+    take_damage(damage, speed=3, angle=null) {
+        this.health -= damage;
+        this.make_hit_particles(damage, speed, angle);
+    }
+    make_hit_particles(num_particles, speed=1, angle=null) {
+        while (num_particles > 0) {
+            if (Math.random() < num_particles) {
+                let particle_angle = angle;
+                if (particle_angle == null) {
+                    particle_angle = random_range(-Math.PI,Math.PI);
+                }
+                this.scene.particles.push(new GooBlood(this.scene, this.x, this.y,
+                    speed * 0.4, particle_angle * 180 / Math.PI));
+            }
+            num_particles -= 1;
+        }
     }
     get_dead(){
         return (this.path_t >= 1 || this.health<=0)

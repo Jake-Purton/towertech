@@ -246,7 +246,7 @@ class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, Bullet,
             {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
-            damage:0.1, fire_rate:20,pierce_count:100, projectile_auto_aim_strength:0,
+            damage:0.5, fire_rate:20,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
     }
 }
@@ -263,7 +263,7 @@ class FlamethrowerTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, FireProjectile,
             {gun_scale:0.5, range:200, fire_distance:200, projectile_no_drag_distance:50,
-            damage:0.2, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
+            damage:0.5, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
             projectile_min_speed:1});
     }
 }

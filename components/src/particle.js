@@ -19,10 +19,11 @@ class Particle extends Entity {
 class GooBlood extends Particle {
     constructor(scene, x, y, speed, angle) {
         super(scene, x, y, 'goo_blood', speed, angle,
-            {angle_spread:20, speed_spread:1});
+            {angle_spread:20, speed_spread:1, x_offset_spread:10, y_offset_spread:10,
+            drag:0.92,scale_change:-1,speed_min_to_kill:-1});
     }
 }
-class Fire extends Particle {
+class FireParticle extends Particle {
     constructor(scene, x, y, radius) {
         super(scene, x, y, 'fire_particle', 1, -90,
             {angle_spread:90, speed_spread:0.5, max_speed_spread:1,
@@ -33,4 +34,4 @@ class Fire extends Particle {
 }
 
 
-export {GooBlood, Fire };
+export {GooBlood, FireParticle };

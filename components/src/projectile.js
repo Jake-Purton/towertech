@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import Entity from './entity.js';
-import {GooBlood} from './particle.js';
+import {GooBlood, FireParticle} from './particle.js';
 const Vec = Phaser.Math.Vector2;
 
 class Projectile extends Entity {
@@ -37,7 +37,9 @@ class Projectile extends Entity {
         }
         this.follow_target();
         this.physics_tick(delta_time);
+        this.make_trail_particles(delta_time);
     }
+    make_trail_particles(_) {}
     follow_target() {
         if (this.target !== null && typeof(this.target.scene) !== "undefined") {
             let prev_length = this.velocity.length()
@@ -59,13 +61,19 @@ class Projectile extends Entity {
         return false;
     }
     deal_damage(entity) {
-        entity.health -= this.damage;
         this.pierced_enemies.push(entity);
         this.pierce_count -= 1;
-        for (let i=0;i<3;i++) {
+        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle());
+        // this.make_hit_particles(entity);
+        this.apply_inflict_effect(entity);
+    }
+    make_hit_particles(entity) {
+        for (let i = 0; i < 3; i++) {
             this.scene.particles.push(new GooBlood(this.scene, entity.x, entity.y,
-                this.velocity.length()*0.4,this.velocity.angle()*180/Math.PI));
+                this.velocity.length() * 0.4, this.velocity.angle() * 180 / Math.PI));
         }
+    }
+    apply_inflict_effect(entity) {
         if (this.inflict_effect != null) {
             entity.effects.add_effect(this.inflict_effect.name, this.inflict_effect.amplifier, this.inflict_effect.duration,);
         }
@@ -88,10 +96,18 @@ class Bullet extends Projectile {
 }
 class FireProjectile extends Projectile {
     constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
-        entity_properties.rotate_to_direction = true;
-        entity_properties.initial_scale = 0.4;
         properties.inflict_effect = {name:"Burning",amplifier:2,duration:1.5}
-        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+        super(scene, x, y, texture, speed, angle, team, properties,
+            Object.assign(entity_properties, {rotate_to_direction:true, initial_scale:0.4, alpha_change:-1.5}));
+
+        this.particle_cooldown = 0;
+    }
+    make_trail_particles(delta_time) {
+        this.particle_cooldown -= delta_time/this.scene.target_fps;
+        if (this.particle_cooldown < 0) {
+            this.particle_cooldown = 0.2-this.alpha/10;
+            this.scene.particles.push(new FireParticle(this.scene, this.x, this.y, 8));
+        }
     }
 }
 

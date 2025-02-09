@@ -1,4 +1,4 @@
-import {GooBlood, Fire } from './particle.js';
+import {GooBlood, FireParticle } from './particle.js';
 
 export default class Effects{
     constructor(scene) {
@@ -81,7 +81,7 @@ export default class Effects{
         if (this.effects.Burning.length > 0) {
             if (this.particle_cooldowns['Burning'].timer<0){
                 this.particle_cooldowns['Burning'].timer = this.particle_cooldowns['Burning'].cooldown;
-                this.scene.particles.push(new Fire(this.scene, parent_object.x, parent_object.y, parent_object.width / 2));
+                this.scene.particles.push(new FireParticle(this.scene, parent_object.x, parent_object.y, parent_object.width / 2));
             }
 
         }

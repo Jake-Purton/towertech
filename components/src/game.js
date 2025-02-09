@@ -20,7 +20,7 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':0,'goober':1}};
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -178,7 +178,7 @@ export default class Game extends Phaser.Scene{
         for (let i=1;i<points.length;i++) {
             path.lineTo(points[i][0],points[i][1]);
         }
-        return path
+        return path;
     }
 
     dummy_input(){
