@@ -1,4 +1,4 @@
-import {GooBlood, FireParticle, HeartParticle } from './particle.js';
+import {GooBlood, FireParticle, HeartParticle, SpeedParticle } from './particle.js';
 
 export default class Effects{
     constructor(scene) {
@@ -11,8 +11,9 @@ export default class Effects{
             'Burning':[]};
         this.scene = scene;
         this.particle_cooldowns = {
-            'Burning':{timer:0, cooldown:0.05},
-            'Healing':{timer:0, cooldown:0.15}};
+            'Burning':{timer:0, cooldown:0.05, func:this.create_fire_particle},
+            'Healing':{timer:0, cooldown:0.15, func:this.create_heart_particle},
+            'Fast':{timer:0, cooldown:0.05, func:this.create_speed_particle}};
     }
     //// Effect manager functions
 
@@ -79,18 +80,22 @@ export default class Effects{
     //// Effect particle effect functions
 
     create_effect_particles(delta_time, parent_object) {
-        // console.log(this.effects.Healing);
-        if (this.effects.Burning.length > 0) {
-            if (this.particle_cooldowns['Burning'].timer<0){
-                this.particle_cooldowns['Burning'].timer = this.particle_cooldowns['Burning'].cooldown;
-                this.scene.particles.push(new FireParticle(this.scene, parent_object.x, parent_object.y, parent_object.width / 2));
+        for (let effect in this.particle_cooldowns) {
+            if (this.effects[effect].length > 0) {
+                if (this.particle_cooldowns[effect].timer<0) {
+                    this.particle_cooldowns[effect].timer = this.particle_cooldowns[effect].cooldown;
+                    this.particle_cooldowns[effect].func(this.scene, parent_object)
+                }
             }
         }
-        if (this.effects.Healing.length > 0) {
-            if (this.particle_cooldowns['Healing'].timer<0){
-                this.particle_cooldowns['Healing'].timer = this.particle_cooldowns['Healing'].cooldown;
-                this.scene.particles.push(new HeartParticle(this.scene, parent_object.x, parent_object.y));
-            }
-        }
+    }
+    create_fire_particle(scene, parent_object) {
+        scene.particles.push(new FireParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
+    }
+    create_heart_particle(scene, parent_object) {
+        scene.particles.push(new HeartParticle(scene, parent_object.x, parent_object.y));
+    }
+    create_speed_particle(scene, parent_object) {
+        scene.particles.push(new SpeedParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
     }
 }

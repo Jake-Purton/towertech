@@ -297,7 +297,7 @@ class SlowingTower extends Tower{
 
 class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, EffectAOE, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10});
     }
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
@@ -311,7 +311,15 @@ class HealingTower extends Tower{
 
 class BuffingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10});
+    }
+    shoot() {
+        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, this.x, this.y, 'Tower', {name:"Fast", amplifier:3, duration:0.2}, this.range));
+    }
+    rotate_gun(delta_time) {
+        this.ready_to_shoot = true;
     }
 }
 

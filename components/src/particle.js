@@ -40,6 +40,14 @@ class HeartParticle extends Particle {
             initial_scale:1.5, speed_min_to_kill:-1, x_offset_spread:10, y_offset_spread:4});
     }
 }
+class SpeedParticle extends Particle {
+    constructor(scene, x, y, radius) {
+        super(scene, x, y, 'speed_particle', 3, 180*random_int(0,1),
+            {alpha_change:-1, initial_scale:1, speed_min_to_kill:-1,
+                x_offset_spread:radius/2, y_offset_spread:radius/2,
+                time_to_live:0.25});
+    }
+}
 
 
-export {GooBlood, FireParticle, HeartParticle };
+export {GooBlood, FireParticle, HeartParticle, SpeedParticle };

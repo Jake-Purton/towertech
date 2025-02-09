@@ -33,6 +33,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
         this.load.image('fire_particle','/game_images/particles/Fire.png');
         this.load.image('heart_particle','/game_images/particles/Heart.png');
+        this.load.image('speed_particle','/game_images/particles/Speed.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
@@ -223,7 +224,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',"HealingTower"]]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',"BuffingTower"]]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
