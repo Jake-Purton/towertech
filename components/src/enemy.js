@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
+import Effects from './effects.js';
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y, type, path) {
@@ -13,12 +14,20 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.play(type+'_walk')
 
         this.health = 100;
+
+        // effects info
+        this.effects = new Effects(scene);
+
         this.game_tick(0); // sets the position to the start of the path
     }
     game_tick(delta_time){
+        // handle effects
+        this.health += this.effects.get_health_change(delta_time);
+        this.effects.game_tick(delta_time, this);
+
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path
-        this.path_t += (delta_time * this.move_speed)/this.path.getLength();
+        this.path_t += (delta_time * this.move_speed * this.effects.get_speed_multiplier())/this.path.getLength();
         this.path_t = Phaser.Math.Clamp(this.path_t,0,1);
         let position = this.path.getPoint(this.path_t);
         this.setPosition(position.x, position.y);

@@ -7,6 +7,7 @@ import DefaultLeg from './components/legs/default_leg.js';
 import Wheel from './components/legs/wheel.js';
 import Weapon from './components/weapons/weapon.js';
 import DefaultWeapon from './components/weapons/default_weapon.js';
+import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
 
@@ -44,6 +45,9 @@ export default class Player extends Phaser.GameObjects.Container{
         this.speed = 0.8;
         this.drag = 0.9;
         this.player_id = player_id;
+
+        // effects info
+        this.effects = new Effects(scene);
 
     }
     game_tick(delta_time){ //function run by game.js every game tick

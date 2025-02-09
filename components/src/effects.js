@@ -1,3 +1,4 @@
+import {GooBlood, Fire } from './particle.js';
 
 export default class Effects{
     constructor(scene) {
@@ -6,12 +7,28 @@ export default class Effects{
             'Weak':[],
             'Slow':[],
             'Fast':[],
-            'Healing':[]};
+            'Healing':[],
+            'Burning':[]};
         this.scene = scene;
+        this.particle_cooldowns = {
+            'Burning':{timer:0, cooldown:0.05}};
     }
+    //// Effect manager functions
+
     add_effect(name, amplifier, duration) {
-        if (this.effects.contains(name)) {
-            this.effects.get(name).push({'amplifier':amplifier, 'timer':duration})
+        if (name in this.effects) {
+            let effect_applied = false;
+            for (let effect of this.effects[name]) {
+                if (effect.amplifier === amplifier) {
+                    if (effect.timer < duration) {
+                        effect.timer = duration;
+                    }
+                    effect_applied = true;
+                }
+            }
+            if (!effect_applied) {
+                this.effects[name].push({'amplifier':amplifier, 'timer':duration})
+            }
         } else {
             console.log('effect "'+name+'" does not exist');
         }
@@ -34,13 +51,39 @@ export default class Effects{
     get_speed_multiplier() {
         return this.get_effect('Fast')*this.get_effect('Slow');
     }
+    get_health_change(delta_time) {
+        return (this.get_effect('Healing',0)+this.get_effect('Burning',0))*delta_time/this.scene.target_fps
+    }
 
-    game_tick(delta_time) {
-        for (let effect_list of this.effects) {
+    game_tick(delta_time, parent_object) {
+        // manage effect timers
+        for (let effect_list of Object.values(this.effects)) {
             for (let effect of effect_list) {
                 effect.timer-=delta_time/this.scene.target_fps;
             }
-            effect_list.filter(item => item.timer>0);
+        }
+        // remove expired effects
+        for (let effect in this.effects) {
+            this.effects[effect] = this.effects[effect].filter(item => item.timer>0);
+        }
+        // manage particle effect timers
+        for (let effect of Object.values(this.particle_cooldowns)) {
+            effect.timer -= delta_time/this.scene.target_fps;
+        }
+
+        // particle effects
+        this.create_effect_particles(delta_time, parent_object);
+    }
+
+    //// Effect particle effect functions
+
+    create_effect_particles(delta_time, parent_object) {
+        if (this.effects.Burning.length > 0) {
+            if (this.particle_cooldowns['Burning'].timer<0){
+                this.particle_cooldowns['Burning'].timer = this.particle_cooldowns['Burning'].cooldown;
+                this.scene.particles.push(new Fire(this.scene, parent_object.x, parent_object.y, parent_object.width / 2));
+            }
+
         }
     }
 }

@@ -7,18 +7,10 @@ class Projectile extends Entity {
     // team variable can be one of "Enemy", "Player" or "Tower"
     // angle in degrees
     constructor(scene, x, y, texture, speed, angle, team,
-                {target=null, auto_aim_range=1000, auto_aim_strength=1,
-                    fire_distance=100, min_speed=0.5, no_drag_distance=0,
-                    damage=1, pierce_count=0, time_to_live=10,
-                    rotate_to_direction=false, scale=1} = {}) {
-
-        // calculate drag based on where the projectile should stop
-        // the projectile travels a no_drag_distance before starting to slow down
-        // the projectile should always stop moving at the fire distance
-        let drag = Math.pow(Math.E,speed/(no_drag_distance-fire_distance));
-
-        super(scene, x, y, texture, speed, angle, drag, no_drag_distance,
-            min_speed, time_to_live, rotate_to_direction, scale);
+                {target=null, auto_aim_strength=1, auto_aim_range=100,
+                    pierce_count=0, damage=1, inflict_effect=null,
+                } = {}, entity_properties={}) {
+        super(scene, x, y, texture, speed, angle, entity_properties);
 
         //// variables
         this.team = team
@@ -26,6 +18,7 @@ class Projectile extends Entity {
         // attack info
         this.damage = damage;
         this.target = target;
+        this.inflict_effect = inflict_effect; // in the form {name:"Burning",amplifier:2,duration:3}
         this.auto_aim_range = auto_aim_range;
         this.auto_aim_stength = auto_aim_strength;
 
@@ -54,9 +47,7 @@ class Projectile extends Entity {
                 this.velocity.add(relative_position);
                 this.velocity.setLength(prev_length);
             }
-
         }
-
     }
     check_collision(entities){
         for (let entity of entities) {
@@ -73,7 +64,10 @@ class Projectile extends Entity {
         this.pierce_count -= 1;
         for (let i=0;i<3;i++) {
             this.scene.particles.push(new GooBlood(this.scene, entity.x, entity.y,
-                this.velocity.length()/3,this.velocity.angle()*180/Math.PI));
+                this.velocity.length()*0.4,this.velocity.angle()*180/Math.PI));
+        }
+        if (this.inflict_effect != null) {
+            entity.effects.add_effect(this.inflict_effect.name, this.inflict_effect.amplifier, this.inflict_effect.duration,);
         }
     }
     get_dead() {
@@ -82,21 +76,22 @@ class Projectile extends Entity {
 }
 
 class CannonBall extends Projectile {
-    constructor(scene, x, y, texture, speed, angle, team, properties) {
-        super(scene, x, y, texture, speed, angle, team, properties);
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
     }
 }
 class Bullet extends Projectile {
-    constructor(scene, x, y, texture, speed, angle, team, properties) {
-        properties.rotate_to_direction = true;
-        super(scene, x, y, texture, speed, angle, team, properties);
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
     }
 }
 class FireProjectile extends Projectile {
-    constructor(scene, x, y, texture, speed, angle, team, properties) {
-        properties.rotate_to_direction = true;
-        properties.scale = 0.4
-        super(scene, x, y, texture, speed, angle, team, properties);
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        entity_properties.initial_scale = 0.4;
+        properties.inflict_effect = {name:"Burning",amplifier:2,duration:1.5}
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
     }
 }
 

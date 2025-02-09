@@ -92,6 +92,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
         this.check_nearby_player(players);
 
+        this.effects.game_tick(delta_time, this);
     }
     check_nearby_player(players) {
         let new_nearby_player = null;
@@ -185,11 +186,10 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         let speed = this.fire_velocity * this.effects.get_speed_multiplier();
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
-            {target:this.target, auto_aim_range:this.projectile_auto_aim_range,
-                auto_aim_strength:this.projectile_auto_aim_strength,
-                fire_distance:fire_distance, min_speed:this.projectile_min_speed,
-                no_drag_distance:this.projectile_no_drag_distance,
-                damage:damage, pierce_count:this.pierce_count}));
+            {damage:damage, target:this.target, auto_aim_range:this.projectile_auto_aim_range,
+                auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
+            {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
+                no_drag_distance:this.projectile_no_drag_distance}));
     }
 
     rotate_gun(delta_time) {
@@ -244,7 +244,7 @@ class CannonTower extends Tower{
 
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall,
+        super(scene, x, y, tower_type, player_id, Bullet,
             {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
             damage:0.1, fire_rate:20,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
@@ -270,7 +270,7 @@ class FlamethrowerTower extends Tower{
 
 class BallistaTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall,
+        super(scene, x, y, tower_type, player_id, Bullet,
             {gun_scale:1.5, range:300, fire_distance:300, projectile_no_drag_distance:200,
             damage:3, fire_rate:3, pierce_count:1, fire_velocity:20,projectile_auto_aim_strength:0});
     }

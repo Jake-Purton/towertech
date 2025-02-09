@@ -20,7 +20,7 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':0,'goober':1}};
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -31,6 +31,7 @@ export default class Game extends Phaser.Scene{
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
+        this.load.image('fire_particle','/game_images/particles/Fire.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
@@ -217,7 +218,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','FlamethrowerTower']]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
