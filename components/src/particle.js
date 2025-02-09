@@ -29,7 +29,8 @@ class FireParticle extends Particle {
             {angle_spread:90, speed_spread:0.5, max_speed_spread:1,
             acceleration:new Vec(0,-0.1), alpha_change:-0.5, x_offset_spread:radius/6, y_offset_spread:radius/6,
             initial_scale:radius/5,scale_change:-3, initial_alpha: 0.6, speed_min_to_kill:-1,
-            colour:[255,random_int(130,200),30],colour_change:[-50,-200,-50]});
+            colour:[255,random_int(130,200),30],colour_change:[-50,-200,-50],
+            alpha_min_to_kill:0.2,scale_min_to_kill:0.2});
     }
 }
 

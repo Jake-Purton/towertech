@@ -15,6 +15,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     gun_scale=1, gun_center=[0.2, 0.5], base_scale=1,
                     max_turn_speed=10, passive_turn_speed=0.5,
                     target_type='Closest', stay_on_same_target=false,
+                    projectile_spawn_location=0.8,
                 } = {}) {
         super(scene, x, y, tower_type + '_base');
         scene.add.existing(this);
@@ -64,6 +65,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.ready_to_shoot = false;
         this.shoot_cooldown = 0;
         this.time_since_attacking = 0;
+        this.projectile_spawn_location = projectile_spawn_location; // the position on the gun where a projectile is created from, float 0 to 1
         this.passive_turn_speed = passive_turn_speed;
 
         // gun targeting
@@ -184,8 +186,11 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
         let damage = this.damage * this.effects.get_damage_multiplier();
         let speed = this.fire_velocity * this.effects.get_speed_multiplier();
+        let x = this.x + this.width*this.projectile_spawn_location*Math.cos(this.gun.angle/180*Math.PI);
+        let y = this.y + this.width*this.projectile_spawn_location*Math.sin(this.gun.angle/180*Math.PI);
+
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
+            this.scene, x, y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
             {damage:damage, target:this.target, auto_aim_range:this.projectile_auto_aim_range,
                 auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
             {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
@@ -238,7 +243,7 @@ class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, CannonBall,
             {range:80, fire_distance:100, projectile_no_drag_distance:0,
-                fire_rate:2});
+                fire_rate:2, projectile_spawn_location:0.5});
     }
 }
 
@@ -264,7 +269,7 @@ class FlamethrowerTower extends Tower{
         super(scene, x, y, tower_type, player_id, FireProjectile,
             {gun_scale:0.5, range:200, fire_distance:200, projectile_no_drag_distance:50,
             damage:0.5, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
-            projectile_min_speed:1});
+            projectile_min_speed:1, projectile_spawn_location:1.2});
     }
 }
 

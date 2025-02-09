@@ -84,7 +84,7 @@ export default class Game extends Phaser.Scene{
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
-
+        // console.log(this.particles.length);
 
         /// handle players
         this.dummy_input();
@@ -218,7 +218,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower','FlamethrowerTower']]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],

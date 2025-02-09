@@ -11,7 +11,7 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
                     initial_alpha=1, alpha_change=0, alpha_offset_spread=0,
                     x_offset_spread=0, max_x_offset_spread=null, position_offset_is_gauss=false,
                     y_offset_spread=0, max_y_offset_spread=null,
-                    speed_min_to_kill=1, time_to_live=5, alpha_min_to_kill=0,
+                    speed_min_to_kill=1, time_to_live=5, alpha_min_to_kill=0, scale_min_to_kill=0,
                     drag=null, no_drag_distance=0, target_distance=100,
                     rotate_to_direction=false,
                     acceleration=null,
@@ -62,6 +62,7 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         this.speed_min_to_kill = speed_min_to_kill;
         this.time_to_live = time_to_live;
         this.alpha_min_to_kill = alpha_min_to_kill;
+        this.scale_min_to_kill = scale_min_to_kill;
 
         // visual info
         this.rotate_to_direction = rotate_to_direction;
@@ -112,6 +113,6 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         }
     }
     get_dead() {
-        return (this.time_to_live<0 || this.velocity.length()<this.speed_min_to_kill || this.alpha < this.alpha_min_to_kill);
+        return (this.time_to_live<0 || this.velocity.length()<this.speed_min_to_kill || this.alpha < this.alpha_min_to_kill || this.scale < this.scale_min_to_kill);
     }
 }
