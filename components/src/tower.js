@@ -155,7 +155,6 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     }
             }
         }
-
     }
     // function used to work out what enemy to target
     evaluate_enemy(enemy) {
@@ -260,12 +259,35 @@ class LaserTower extends Tower{
             {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
             damage:0.5, fire_rate:10,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
+        this.recent_laser = null;
+        this.animation_position_tracker = 0;
+        this.animation_speed = 6;
+    }
+    game_tick(delta_time, enemies, players) {
+        super.game_tick(delta_time, enemies, players);
+        if (!get_removed(this.recent_laser)) {
+            this.animation_position_tracker = this.recent_laser.animation_position;
+        }
     }
     shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value;
-        let damage = this.damage * this.effects.get_damage_multiplier();
-        this.scene.projectiles.push(new LineAttack(this.scene, this, this.target,
-            this.tower_type.concat('_projectile'), damage, 0.11));
+        if (this.check_shooting_blocked()) {
+            this.shoot_cooldown = this.shoot_cooldown_value;
+            let damage = this.damage * this.effects.get_damage_multiplier();
+            let laser = new LineAttack(this.scene, this, this.target,
+                this.tower_type.concat('_projectile'), damage, 0.11, this.animation_speed, this.animation_position_tracker)
+            this.recent_laser = laser
+            this.scene.projectiles.push(laser);
+        }
+    }
+    check_shooting_blocked() {
+        let prev_target = this.target;
+        this.check_target(this.scene.enemies);
+        if (prev_target !== this.target) {
+            this.shoot_cooldown = 0.1;
+            this.target = prev_target;
+            return false;
+        }
+        return true;
     }
 }
 

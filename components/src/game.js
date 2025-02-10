@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Enemy from './enemy.js';
-import {random_choice } from './utiles.js'
+import {random_choice } from './utiles.js';
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func){
@@ -30,11 +30,13 @@ export default class Game extends Phaser.Scene{
 
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
+
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
         this.load.image('fire_particle','/game_images/particles/Fire.png');
         this.load.image('heart_particle','/game_images/particles/Heart.png');
         this.load.image('speed_particle','/game_images/particles/Speed.png');
         this.load.image('slow_particle','/game_images/particles/Slow.png');
+        this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');

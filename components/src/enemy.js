@@ -15,7 +15,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
 
-        this.health = 20;
+        this.health = 200;
 
         // effects info
         this.effects = new Effects(scene);

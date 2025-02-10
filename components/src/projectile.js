@@ -4,7 +4,6 @@ import {GooBlood, FireParticle} from './particle.js';
 const Vec = Phaser.Math.Vector2;
 
 class Projectile extends Entity {
-    static projectile_type = 'Projectile';
     // team variable can be one of "Enemy", "Player" or "Tower"
     // angle in degrees
     constructor(scene, x, y, texture, speed, angle, team,

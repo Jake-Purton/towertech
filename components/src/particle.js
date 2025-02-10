@@ -56,4 +56,14 @@ class SlowParticle extends Particle {
     }
 }
 
-export {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle };
+class LaserDust extends Particle {
+    constructor(scene, x, y, angle) {
+        super(scene, x, y, 'laser_particle', 2, angle,
+            {alpha_change:-1, initial_scale:0.7, scale_change:-0.5,
+                speed_min_to_kill:-1,alpha_min_to_kill:0.3,
+                angle_spread:15,speed_spread:0.2,
+                x_offset_spread:5,y_offset_spread:5});
+    }
+}
+
+export {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle, LaserDust };
