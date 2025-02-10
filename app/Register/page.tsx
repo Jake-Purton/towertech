@@ -52,7 +52,7 @@ export default function RegisterPage() {
       if (res.ok) {
         toast.success(data.message);
         setTimeout(() => {
-          router.push("/main"); // Redirect to login after registration
+          router.push("/login"); // Redirect to login after registration
         }, 1500);
       } else {
         toast.error(data.error);

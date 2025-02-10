@@ -23,9 +23,10 @@ export default function LoginPage() {
       
       if (res.ok) {
         setMessage("Welcome back! Login successful!");
+        localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         setTimeout(() => {
-          router.push("/main");
+          router.push("/");
         }, 1500);
       } else if (res.status === 404) {
         setMessage("Email not found. Please register first.");

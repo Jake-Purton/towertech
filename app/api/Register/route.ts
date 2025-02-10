@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("❌ JWT secret is not set (check readme for adding secrets)");
+}
 
 interface User {
   name: string;
@@ -21,6 +27,12 @@ export async function POST(req: Request) {
     // Check for duplicate email
     if (users.some(user => user.email === email)) {
       return NextResponse.json({ error: "Email already exists" }, { status: 400 });
+    }
+    if (!validate_email(email)) {    
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
+    if (!validate_password(password)) {
+      return NextResponse.json({ error: "Invalid password" }, { status: 400 });
     }
 
     // Hash password and add new user
@@ -72,14 +84,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-
-    if (!validate_email(email)) {
-      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-    }
-    if (!validate_password(password)) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 400 });
-    }
-
     //check if database exists
 
     const users: User[] = sql_fetch();
@@ -95,8 +99,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
+    const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1d" });
+
     return NextResponse.json({ 
       message: "Login successful",
+      token,
       user: { name: user.name, email: user.email }
     });
   } catch (error) {
