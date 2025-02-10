@@ -186,15 +186,18 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
         let damage = this.damage * this.effects.get_damage_multiplier();
         let speed = this.fire_velocity * this.effects.get_speed_multiplier();
-        let x = this.x + this.width*this.projectile_spawn_location*Math.cos(this.gun.angle/180*Math.PI);
-        let y = this.y + this.width*this.projectile_spawn_location*Math.sin(this.gun.angle/180*Math.PI);
+        let shoot_pos = this.get_projectile_source_position();
 
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, x, y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
+            this.scene, shoot_pos.x, shoot_pos.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
             {damage:damage, target:this.target, auto_aim_range:this.projectile_auto_aim_range,
                 auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
             {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
                 no_drag_distance:this.projectile_no_drag_distance}));
+    }
+    get_projectile_source_position() {
+        return new Vec(this.x + this.width*this.projectile_spawn_location*Math.cos(this.gun.angle/180*Math.PI),
+            this.y + this.width*this.projectile_spawn_location*Math.sin(this.gun.angle/180*Math.PI))
     }
 
     rotate_gun(delta_time) {
