@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast, Toaster } from "sonner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string>("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -22,31 +22,32 @@ export default function LoginPage() {
       const data = await res.json();
       
       if (res.ok) {
-        toast.success("Welcome back! Login successful!");
+        setMessage("Welcome back! Login successful!");
         localStorage.setItem("user", JSON.stringify(data.user));
         setTimeout(() => {
           router.push("/main");
         }, 1500);
       } else if (res.status === 404) {
-        toast.error("Email not found. Please register first.");
+        setMessage("Email not found. Please register first.");
       } else if (res.status === 401) {
-        toast.error("Invalid password. Please try again.");
+        setMessage("Invalid password. Please try again.");
       } else {
-        toast.error(data.error || "Login failed");
+        setMessage(data.error || "Login failed");
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <Toaster richColors />
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-orange-600">Login</h1>
         
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <p className="text-red-500 text-center">{message}</p>
           <input
             type="email"
             placeholder="Email"
