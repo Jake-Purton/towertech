@@ -22,9 +22,6 @@ export default class Wave
         this.enemiesToSpawn = enemyArray.sort(this.#sort_array);
         this.enemyWeights = enemyWeights.sort(this.#sort_integers);
 
-        // alert(this.enemyWeights);
-        // alert(this.enemiesToSpawn);
-
         // This loop modifies the weights array, ensuring that weights factor in the previous value.
         // If they didn't, then two elements with a weight of 50 would not work as expected.
         // only one would actually be used; the other would get ignored without this.
@@ -49,10 +46,6 @@ export default class Wave
         this.nextSpawn = spawnDelay * Game.target_fps;
         this.numEnemies = numEnemies;
 
-
-        // alert(this.enemyWeights);
-        // alert(this.enemiesToSpawn);
-
     }
 
     game_tick(deltaTime)
@@ -73,8 +66,7 @@ export default class Wave
         if (this.remainingTime <= 0)
         {
             // do stuff - likely communicate to start the next wave.
-            this.game.next_wave()
-            //alert("wave is over");
+            this.game.next_wave();
         }
     }
 
