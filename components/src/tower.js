@@ -98,7 +98,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
     check_nearby_player(players) {
         let new_nearby_player = null;
-        for (let [_, player] of players) {
+        for (let player of Object.values(players)) {
             if (this.get_relative_pos(player).length()<this.nearby_radius) {
                 new_nearby_player = player;
             }
@@ -180,7 +180,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         }
     }
     shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.shoot_cooldown = this.shoot_cooldown_value/this.effects.get_speed_multiplier();
         // create a new projectile object and add it to projectiles list
         let angle = random_gauss(this.gun.angle, this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
@@ -237,6 +237,9 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     get_relative_pos(enemy) {
         return new Vec(enemy.x-this.x, enemy.y-this.y);
     }
+    take_damage(damage, speed, angle) {
+        this.health -= damage;
+    }
 }
 
 class CannonTower extends Tower{
@@ -291,18 +294,26 @@ class WeakeningTower extends Tower{
 
 class SlowingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10, gun_center:[0.5,0.5]});
+    }
+    shoot() {
+        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, this.x, this.y, 'Tower', {name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
+    }
+    rotate_gun(delta_time) {
+        this.ready_to_shoot = true;
     }
 }
 
 class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10, gun_center:[0.5,0.5]});
     }
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Tower', {name:"Healing", amplifier:10, duration:0.2}, this.range));
+            this.scene, this.x, this.y, 'Enemy', {name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;
@@ -311,12 +322,12 @@ class HealingTower extends Tower{
 
 class BuffingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10, gun_center:[0.5,0.5]});
     }
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Tower', {name:"Fast", amplifier:3, duration:0.2}, this.range));
+            this.scene, this.x, this.y, 'Enemy', {name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;

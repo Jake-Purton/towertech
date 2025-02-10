@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import Entity from "./entity.js";
 const Vec = Phaser.Math.Vector2;
-import {random_int} from "./utiles.js";
+import {random_int, random_range} from "./utiles.js";
 
 class Particle extends Entity {
     // angle in degrees
@@ -48,6 +48,12 @@ class SpeedParticle extends Particle {
                 time_to_live:0.25});
     }
 }
+class SlowParticle extends Particle {
+    constructor(scene, x, y) {
+        super(scene, x, y+10, 'slow_particle', 0.3, 180*random_range(-1,1),
+            {drag:1, alpha_change:-1, initial_scale:1.8, scale_change:-0.5,
+            speed_min_to_kill:-1,alpha_min_to_kill:0.3});
+    }
+}
 
-
-export {GooBlood, FireParticle, HeartParticle, SpeedParticle };
+export {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle };

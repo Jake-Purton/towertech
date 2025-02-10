@@ -8,7 +8,7 @@ export default class Game extends Phaser.Scene{
         super('GameScene');
 
         // game object containers
-        this.players = new Map([]);
+        this.players = {};
         this.towers = [];
         this.projectiles = [];
         this.particles = [];
@@ -34,6 +34,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('fire_particle','/game_images/particles/Fire.png');
         this.load.image('heart_particle','/game_images/particles/Heart.png');
         this.load.image('speed_particle','/game_images/particles/Speed.png');
+        this.load.image('slow_particle','/game_images/particles/Slow.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
@@ -57,8 +58,16 @@ export default class Game extends Phaser.Scene{
         this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
 
         this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
-        this.load.image('HealingTower_gun','/game_images/towers/BallistaTower_gun.png');
+        this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
         this.load.image('HealingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BuffingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('BuffingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SlowingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('SlowingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
     }
     create() {
@@ -77,7 +86,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
+        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
@@ -94,7 +103,7 @@ export default class Game extends Phaser.Scene{
 
         /// handle players
         this.dummy_input();
-        for (let [_, player] of this.players) {
+        for (let player of Object.values(this.players)) {
             player.game_tick(delta);
         }
 
@@ -106,7 +115,7 @@ export default class Game extends Phaser.Scene{
         /// handle projectiles
         let remove_list = [];
         for (let projectile of this.projectiles) {
-            projectile.game_tick(delta, this.enemies, this.towers);
+            projectile.game_tick(delta, this.enemies, this.towers, this.players);
             if (projectile.get_dead()){
                 remove_list.push(projectile);
             }
@@ -165,8 +174,8 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        if (this.players.has(input.get('PlayerID'))){
-            let player = this.players.get(input.get('PlayerID'));
+        if (input.get('PlayerID') in this.players){
+            let player = this.players[input.get('PlayerID')];
             // check if input is placing a tower or movement
             if (input.get('Key') === 'PLACE_TOWER'){
                 let new_tower = player.create_tower(input.get('Tower'), input.get('Direction'));
@@ -224,7 +233,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',"BuffingTower"]]));//random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['BallistaTower','BuffingTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],

@@ -26,13 +26,16 @@ class Projectile extends Entity {
         this.pierce_count = pierce_count;  // reduces by 1 each time the projectile hits something
         this.pierced_enemies = []; // tracks what has been hit so it doesnt hit the same enemy multiple times
     }
-    game_tick(delta_time, enemies, tower) {
+    game_tick(delta_time, enemies, tower, player) {
 
         // collision detection
-        let collision = false;
         switch (this.team) {
             case "Tower":
-                collision = this.check_collision(enemies);
+                this.check_collision(enemies);
+                break;
+            case "Enemy":
+                this.check_collision(tower);
+                this.check_collision(player);
                 break;
         }
         this.follow_target();
@@ -52,7 +55,11 @@ class Projectile extends Entity {
         }
     }
     check_collision(entities){
-        for (let entity of entities) {
+        let iterable = entities;
+        if (!Array.isArray(iterable)) {
+            iterable = Object.values(iterable);
+        }
+        for (let entity of iterable) {
             if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
                 this.deal_damage(entity);
                 return true;
@@ -111,13 +118,12 @@ class FireProjectile extends Projectile {
     }
 }
 class EffectAOE extends Projectile {
-    constructor(scene, x, y, team, effect, radius) {
+    constructor(scene, x, y, team, effect, radius, base_half_width) {
         super(scene, x, y, '', 0, 0, team,
             {inflict_effect:effect, pierce_count:1000, damage:0},
             {initial_alpha:0, time_to_live:1, drag:0});
         this.body.setCircle(radius);
-        this.body.position.x = this.x - radius;
-        this.body.position.y = this.y - radius;
+        this.body.reset(this.x-radius+base_half_width,this.y-radius+base_half_width);
     }
     get_dead() {
         return (this.time_to_live<0);

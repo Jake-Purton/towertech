@@ -1,4 +1,4 @@
-import {GooBlood, FireParticle, HeartParticle, SpeedParticle } from './particle.js';
+import {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle } from './particle.js';
 
 export default class Effects{
     constructor(scene) {
@@ -13,7 +13,8 @@ export default class Effects{
         this.particle_cooldowns = {
             'Burning':{timer:0, cooldown:0.05, func:this.create_fire_particle},
             'Healing':{timer:0, cooldown:0.15, func:this.create_heart_particle},
-            'Fast':{timer:0, cooldown:0.05, func:this.create_speed_particle}};
+            'Fast':{timer:0, cooldown:0.05, func:this.create_speed_particle},
+            'Slow':{timer:0, cooldown:0.5, func:this.create_slow_particle}};
     }
     //// Effect manager functions
 
@@ -37,21 +38,23 @@ export default class Effects{
     }
     // default_amplifier is the value to be returned if there are no effects,
     // e.g. a damage multiplier should return 1 as to not change damage
-    get_effect(name, default_amplifier=1) {
+    get_effect(name, default_amplifier=1, priority_highest_value=true) {
         let effect_list = this.effects[name];
         let amplifier = default_amplifier;
         for (let effect of effect_list) {
-            if (effect.amplifier > amplifier) {
+            if (effect.amplifier > amplifier && priority_highest_value) {
+                amplifier = effect.amplifier;
+            } else if (effect.amplifier < amplifier && !priority_highest_value) {
                 amplifier = effect.amplifier;
             }
         }
         return amplifier;
     }
     get_damage_multiplier() {
-        return this.get_effect('Strong')*this.get_effect('Weak');
+        return this.get_effect('Strong')*this.get_effect('Weak',1,false);
     }
     get_speed_multiplier() {
-        return this.get_effect('Fast')*this.get_effect('Slow');
+        return this.get_effect('Fast')*this.get_effect('Slow',1,false);
     }
     get_health_change(delta_time) {
         return (this.get_effect('Healing',0)+this.get_effect('Burning',0))*delta_time/this.scene.target_fps
@@ -97,5 +100,9 @@ export default class Effects{
     }
     create_speed_particle(scene, parent_object) {
         scene.particles.push(new SpeedParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
+    }
+    create_slow_particle(scene, parent_object) {
+        parent_object.effects.particle_cooldowns['Slow'].timer+=Math.random()/8
+        scene.particles.push(new SlowParticle(scene, parent_object.x, parent_object.y));
     }
 }
