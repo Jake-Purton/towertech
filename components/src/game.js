@@ -122,7 +122,9 @@ export default class Game extends Phaser.Scene{
         }
         this.projectiles = this.projectiles.filter(item => !remove_list.includes(item));
         for (let projectile of remove_list){
+            // if (projectile.projectile_type === "Projectile") {
             projectile.destroy();
+            // }
         }
 
         /// handle particles
@@ -233,7 +235,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['FlamethrowerTower','BallistaTower', 'BuffingTower','SlowingTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],

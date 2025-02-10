@@ -1,25 +1,67 @@
 import * as Phaser from 'phaser';
+import {RGBtoHEX, get_removed, modulo } from './utiles.js'
 
-class LineAttack extends Phaser.Physics.Arcade.Sprite {
-    static unique_id = 0
-    constructor(scene, source, target, texture) {
-        LineAttack.unique_id+=1
-
-        this.render_texture = new Phaser.GameObjects.RenderTexture(scene,0,0,100,10);
-
-        this.render_texture.saveTexture('LineAttackImage_'+toString(LineAttack.unique_id);)
-
-
-        super(scene, x, y, texture);
+export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
+    static unique_id_tracker = 0;
+    static projectile_type = 'LineAttack';
+    constructor(scene, source, target, texture, damage, time_to_live, animation_speed=1) {
+        super(scene, 0, 0, texture);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        LineAttack.unique_id_tracker+=1
 
-        this.base_texture = new Phaser.GameObjects.Image(scene, 0, 0, texture);
+        this.base_texture = texture;
+        this.texture_width = this.width;
+        this.texture_height = this.height;
+
+        this.id_number = LineAttack.unique_id_tracker;
+        this.damage = damage;
+        this.damage_dealt = 0;
+        this.time_to_live = time_to_live;
+        this.total_time_to_live = time_to_live;
+
+        this.source = source;
+        this.target = target;
+
+        this.animation_speed = animation_speed;
+        this.animation_position = 0
+
+        // this.base_texture = new Phaser.GameObjects.Image(scene, 0, 0, texture);
     }
-    get_position() {
+    game_tick(delta_time) {
+        this.time_to_live -= delta_time/this.scene.target_fps;
+        this.animation_position = modulo(this.animation_position+this.animation_speed*delta_time, this.texture_width);
+
+        this.position_graphic();
+
+        if (!get_removed(this.target)) {
+            let dmg = this.damage * delta_time/this.scene.target_fps/this.total_time_to_live;
+            this.damage_dealt += dmg;
+            this.target.take_damage(dmg);
+        }
+    }
+    get_dead() {
+        return (this.time_to_live < 0 || get_removed(this.target) || this.damage_dealt >= this.damage);
 
     }
-    get_texture() {
+    position_graphic() {
+        let source_pos = this.source.get_projectile_source_position();
+        let relative_position = source_pos.clone();
+        relative_position.x -= this.target.x;
+        relative_position.y -= this.target.y;
 
+        this.create_texture(relative_position.length());
+
+        this.setPosition(source_pos.x - relative_position.x/2, source_pos.y - relative_position.y/2);
+        this.setAngle(relative_position.angle()*180/Math.PI);
+    }
+    create_texture(length) {
+        let renderer = new Phaser.GameObjects.RenderTexture(this.scene, 0, 0, length, this.texture_height);
+        for (let i=-1;i<length/this.texture_width+1;i++) {
+            renderer.draw(this.base_texture, i*this.texture_width + this.animation_position, 0);
+        }
+        let name = 'LineAttackImage_'+this.id_number.toString();
+        renderer.saveTexture(name);
+        this.setTexture(name);
     }
 }

@@ -15,7 +15,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
 
-        this.health = 100;
+        this.health = 20;
 
         // effects info
         this.effects = new Effects(scene);
@@ -36,11 +36,11 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.setPosition(position.x, position.y);
         return this.path_t >= 1;
     }
-    take_damage(damage, speed=3, angle=null) {
+    take_damage = (damage, speed=3, angle=null) => {
         this.health -= damage;
         this.make_hit_particles(damage, speed, angle);
     }
-    make_hit_particles(num_particles, speed=1, angle=null) {
+    make_hit_particles = (num_particles, speed=1, angle=null) => {
         while (num_particles > 0) {
             if (Math.random() < num_particles) {
                 let particle_angle = angle;
