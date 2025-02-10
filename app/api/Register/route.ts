@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
+import bcrypt from "bcrypt";
+
 
 interface User {
   name: string;
   email: string;
+  // the password is stored as a hash
   password: string;
 }
 
@@ -39,11 +41,12 @@ export async function POST(req: Request) {
 }
 
 function hash_password(password: string): string {
-  return "blah" + password; // Replace with actual hashing function
+  return bcrypt.hashSync(password, 10);
 }
 
 function sql_fetch(): User[] {
-  return [{ name: "jake", email: "jake@gmail.com", password: "blahpassword" }]; // Replace with actual SQL query
+  const pw = hash_password("password");
+  return [{ name: "jake", email: "jake@gmail.com", password: pw }]; // Replace with actual SQL query
 }
 
 function put_users_in_db(users: User[]) {
@@ -56,10 +59,6 @@ function validate_email(email: string): boolean {
 
 function validate_password(password: string): boolean {
   return true; // Replace with actual password validation
-}
-
-function check_password(password: string, hashedPassword: string): boolean {
-  return hashedPassword === hash_password(password); // replace this with actual password check
 }
 
 // Add login handler in the same file
@@ -90,7 +89,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const isPasswordValid = check_password(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
