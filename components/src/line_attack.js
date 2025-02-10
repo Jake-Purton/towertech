@@ -72,6 +72,9 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
             }
             renderer.saveTexture(name);
             this.setTexture(name);
+            this.visible = true;
+        } else {
+            this.visible = false;
         }
     }
     make_particles() {
