@@ -1,14 +1,14 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Enemy from './enemy.js';
-import {random_choice } from './utiles.js'
+import {random_choice } from './utiles.js';
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func){
         super('GameScene');
 
         // game object containers
-        this.players = new Map([]);
+        this.players = {};
         this.towers = [];
         this.projectiles = [];
         this.particles = [];
@@ -30,7 +30,13 @@ export default class Game extends Phaser.Scene{
 
         this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
+
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
+        this.load.image('fire_particle','/game_images/particles/Fire.png');
+        this.load.image('heart_particle','/game_images/particles/Heart.png');
+        this.load.image('speed_particle','/game_images/particles/Speed.png');
+        this.load.image('slow_particle','/game_images/particles/Slow.png');
+        this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
@@ -53,6 +59,18 @@ export default class Game extends Phaser.Scene{
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
         this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
 
+        this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('HealingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BuffingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('BuffingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SlowingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('SlowingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
     }
     create() {
         // animations
@@ -70,7 +88,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players.set('TempPlayerID', new Player(this, 100, 100, 'TempPlayerID'));
+        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
@@ -83,11 +101,11 @@ export default class Game extends Phaser.Scene{
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
-
+        // console.log(this.particles.length);
 
         /// handle players
         this.dummy_input();
-        for (let [_, player] of this.players) {
+        for (let player of Object.values(this.players)) {
             player.game_tick(delta);
         }
 
@@ -99,14 +117,16 @@ export default class Game extends Phaser.Scene{
         /// handle projectiles
         let remove_list = [];
         for (let projectile of this.projectiles) {
-            projectile.game_tick(delta, this.enemies, this.towers);
+            projectile.game_tick(delta, this.enemies, this.towers, this.players);
             if (projectile.get_dead()){
                 remove_list.push(projectile);
             }
         }
         this.projectiles = this.projectiles.filter(item => !remove_list.includes(item));
         for (let projectile of remove_list){
+            // if (projectile.projectile_type === "Projectile") {
             projectile.destroy();
+            // }
         }
 
         /// handle particles
@@ -158,8 +178,8 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        if (this.players.has(input.get('PlayerID'))){
-            let player = this.players.get(input.get('PlayerID'));
+        if (input.get('PlayerID') in this.players){
+            let player = this.players[input.get('PlayerID')];
             // check if input is placing a tower or movement
             if (input.get('Key') === 'PLACE_TOWER'){
                 let new_tower = player.create_tower(input.get('Tower'), input.get('Direction'));
@@ -177,7 +197,7 @@ export default class Game extends Phaser.Scene{
         for (let i=1;i<points.length;i++) {
             path.lineTo(points[i][0],points[i][1]);
         }
-        return path
+        return path;
     }
 
     dummy_input(){
@@ -217,7 +237,7 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['CannonTower','SniperTower','FlamethrowerTower','BallistaTower','LaserTower'])]]))
+                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['LaserTower'])]]))
         }
         if (this.kprs.space.isUp) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],

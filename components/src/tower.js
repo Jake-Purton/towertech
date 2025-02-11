@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser';
-import {CannonBall, Bullet, FireProjectile } from './projectile.js'
+import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
+import Effects from './effects.js';
+import LineAttack from './line_attack.js';
 const Vec = Phaser.Math.Vector2;
 
 class Tower extends Phaser.Physics.Arcade.Sprite {
@@ -14,6 +16,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     gun_scale=1, gun_center=[0.2, 0.5], base_scale=1,
                     max_turn_speed=10, passive_turn_speed=0.5,
                     target_type='Closest', stay_on_same_target=false,
+                    projectile_spawn_location=0.8,
                 } = {}) {
         super(scene, x, y, tower_type + '_base');
         scene.add.existing(this);
@@ -63,6 +66,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         this.ready_to_shoot = false;
         this.shoot_cooldown = 0;
         this.time_since_attacking = 0;
+        this.projectile_spawn_location = projectile_spawn_location; // the position on the gun where a projectile is created from, float 0 to 1
         this.passive_turn_speed = passive_turn_speed;
 
         // gun targeting
@@ -74,6 +78,9 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         // nearby player info
         this.nearby_radius = 35;
         this.nearby_player = null;
+
+        // effects info
+        this.effects = new Effects(scene);
 
     }
     game_tick(delta_time, enemies, players) {
@@ -88,10 +95,11 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
         this.check_nearby_player(players);
 
+        this.effects.game_tick(delta_time, this);
     }
     check_nearby_player(players) {
         let new_nearby_player = null;
-        for (let [_, player] of players) {
+        for (let player of Object.values(players)) {
             if (this.get_relative_pos(player).length()<this.nearby_radius) {
                 new_nearby_player = player;
             }
@@ -147,7 +155,6 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
                     }
             }
         }
-
     }
     // function used to work out what enemy to target
     evaluate_enemy(enemy) {
@@ -173,15 +180,24 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         }
     }
     shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.shoot_cooldown = this.shoot_cooldown_value/this.effects.get_speed_multiplier();
         // create a new projectile object and add it to projectiles list
         let angle = random_gauss(this.gun.angle, this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
+        let damage = this.damage * this.effects.get_damage_multiplier();
+        let speed = this.fire_velocity * this.effects.get_speed_multiplier();
+        let shoot_pos = this.get_projectile_source_position();
+
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, this.tower_type.concat('_projectile'), this.fire_velocity, angle, 'Tower',
-            {target:this.target, auto_aim_range:this.projectile_auto_aim_range, auto_aim_strength:this.projectile_auto_aim_strength,
-                fire_distance:fire_distance, min_speed:this.projectile_min_speed, no_drag_distance:this.projectile_no_drag_distance,
-                damage:this.damage, pierce_count:this.pierce_count}));
+            this.scene, shoot_pos.x, shoot_pos.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
+            {damage:damage, target:this.target, auto_aim_range:this.projectile_auto_aim_range,
+                auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
+            {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
+                no_drag_distance:this.projectile_no_drag_distance}));
+    }
+    get_projectile_source_position() {
+        return new Vec(this.x + this.width*this.projectile_spawn_location*Math.cos(this.gun.angle/180*Math.PI),
+            this.y + this.width*this.projectile_spawn_location*Math.sin(this.gun.angle/180*Math.PI))
     }
 
     rotate_gun(delta_time) {
@@ -224,22 +240,54 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     get_relative_pos(enemy) {
         return new Vec(enemy.x-this.x, enemy.y-this.y);
     }
+    take_damage(damage, speed, angle) {
+        this.health -= damage;
+    }
 }
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, CannonBall,
             {range:80, fire_distance:100, projectile_no_drag_distance:0,
-                fire_rate:2});
+                fire_rate:2, projectile_spawn_location:0.5});
     }
 }
 
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall,
-            {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
-            damage:0.1, fire_rate:20,pierce_count:100, projectile_auto_aim_strength:0,
+        super(scene, x, y, tower_type, player_id, Bullet,
+            {gun_scale:1, range:400, fire_distance:150, projectile_no_drag_distance:120,
+            damage:0.5, fire_rate:10,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
+        this.recent_laser = null;
+        this.animation_position_tracker = 0;
+        this.animation_speed = 6;
+    }
+    game_tick(delta_time, enemies, players) {
+        super.game_tick(delta_time, enemies, players);
+        if (!get_removed(this.recent_laser)) {
+            this.animation_position_tracker = this.recent_laser.animation_position;
+        }
+    }
+    shoot() {
+        if (this.check_shooting_blocked()) {
+            this.shoot_cooldown = this.shoot_cooldown_value;
+            let damage = this.damage * this.effects.get_damage_multiplier();
+            let laser = new LineAttack(this.scene, this, this.target,
+                this.tower_type.concat('_projectile'), damage, 0.11, this.animation_speed, this.animation_position_tracker)
+            this.recent_laser = laser
+            this.scene.projectiles.push(laser);
+        }
+    }
+    check_shooting_blocked() {
+        let prev_target = this.target;
+        this.check_target(this.scene.enemies);
+        if (prev_target !== this.target) {
+            this.shoot_cooldown = 0.1;
+            this.target = prev_target;
+            return false;
+        }
+        return true;
     }
 }
 
@@ -255,14 +303,14 @@ class FlamethrowerTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, FireProjectile,
             {gun_scale:0.5, range:200, fire_distance:200, projectile_no_drag_distance:50,
-            damage:0.2, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
-            projectile_min_speed:1});
+            damage:0.5, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
+            projectile_min_speed:1, projectile_spawn_location:1.2});
     }
 }
 
 class BallistaTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall,
+        super(scene, x, y, tower_type, player_id, Bullet,
             {gun_scale:1.5, range:300, fire_distance:300, projectile_no_drag_distance:200,
             damage:3, fire_rate:3, pierce_count:1, fire_velocity:20,projectile_auto_aim_strength:0});
     }
@@ -271,25 +319,50 @@ class BallistaTower extends Tower{
 
 class WeakeningTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, CannonBall,
+            {});
     }
 }
 
 class SlowingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10, gun_center:[0.5,0.5]});
+    }
+    shoot() {
+        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, this.x, this.y, 'Tower', {name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
+    }
+    rotate_gun(delta_time) {
+        this.ready_to_shoot = true;
     }
 }
 
 class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10, gun_center:[0.5,0.5]});
+    }
+    shoot() {
+        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, this.x, this.y, 'Enemy', {name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
+    }
+    rotate_gun(delta_time) {
+        this.ready_to_shoot = true;
     }
 }
 
 class BuffingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
-        super(scene, x, y, tower_type, player_id, CannonBall, {});
+        super(scene, x, y, tower_type, player_id, EffectAOE, {fire_rate:10, gun_center:[0.5,0.5]});
+    }
+    shoot() {
+        this.shoot_cooldown = this.shoot_cooldown_value;
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, this.x, this.y, 'Enemy', {name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
+    }
+    rotate_gun(delta_time) {
+        this.ready_to_shoot = true;
     }
 }
 

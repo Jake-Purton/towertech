@@ -16,9 +16,14 @@ function random_choice(arr){
 function random_int(min,max) {
     // picks a random int in the range, inclusive
     let ran = Math.random();
-    let value = Math.floor(ran*(max-min+1)+min);
-    return value
+    return Math.floor(ran*(max-min+1)+min);
 }
+function random_range(min,max) {
+    // picks a random float in the range, inclusive
+    let ran = Math.random();
+    return ran*(max-min+1)+min;
+}
+
 
 function clamp(value, min, max) {
     // returns the value, limited to within the given min and max
@@ -35,4 +40,13 @@ function get_removed(object) {
     return (object === null || typeof(object.scene) === "undefined")
 }
 
-export {random_gauss, random_choice, random_int, modulo, get_removed, clamp };
+function RGBtoHEX(rgb) {
+    // takes rgb in the form [255,255,255] and converts it to a hex value in the form 0xffffff
+    let output = 0;
+    output += rgb[2];
+    output += rgb[1] << 8;
+    output += rgb[0] << 16;
+    return output
+}
+
+export {random_gauss, random_choice, random_int, random_range, modulo, get_removed, clamp, RGBtoHEX };

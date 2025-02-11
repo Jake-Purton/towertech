@@ -7,6 +7,7 @@ import DefaultLeg from './components/legs/default_leg.js';
 import Wheel from './components/legs/wheel.js';
 import Weapon from './components/weapons/weapon.js';
 import DefaultWeapon from './components/weapons/default_weapon.js';
+import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
 
@@ -45,8 +46,15 @@ export default class Player extends Phaser.GameObjects.Container{
         this.drag = 0.9;
         this.player_id = player_id;
 
+        // effects info
+        this.effects = new Effects(scene);
+
     }
     game_tick(delta_time){ //function run by game.js every game tick
+        // handle effects
+        this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
+        this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
+        this.effects.game_tick(delta_time, this);
 
         this.move_direction = new Vec(this.key_inputs.get('RIGHT')-this.key_inputs.get('LEFT'),
                                       this.key_inputs.get('DOWN')-this.key_inputs.get('UP'))
@@ -59,9 +67,14 @@ export default class Player extends Phaser.GameObjects.Container{
         this.velocity.y *= this.drag**delta_time;
 
         this.leg.movement_animation(this.velocity);
-        
-        this.body.position.x += this.velocity.x*delta_time;
-        this.body.position.y += this.velocity.y*delta_time;
+
+        let speed_multiplier =  this.effects.get_speed_multiplier();
+
+        this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
+        this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+    }
+    take_damage(damage, speed, angle) {
+        this.health -= damage;
     }
     input_key(key, direction){
         if (direction === 'Down'){
