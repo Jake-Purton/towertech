@@ -6,29 +6,35 @@ import Wave from './wave.js'
 
 export default class WaveManager
 {
-    static #game = null;
+    static game = null;
+    current_wave = null;
+    waveData = {};
+    waveTemplateData = {};
+    wave_index = -1;
+    waveSeed = -1;
+
     constructor(game)
     {
-        this.#currentWave = null;
+        this.current_wave = null;
         // Each entry in waveData would contain:
         // The wave type, length, spawn delay, enemy string array, enemy weights, and number of enemies in the wave.
-        this.#waveData = [];
+        this.waveData = {};
         // waveTemplateData is a prototype of a wave.
         // It contains the same data as waveData (excluding the type), except with a "number of unique enemies" value too.
-        this.#waveTemplateData = [];
-        this.#waveIndex = -1;
-        //this.#waveSeed = -1;
+        this.waveTemplateData = {};
+        this.wave_index = -1;
+        //this.waveSeed = -1;
 
 
-        #game = game;
+        this.game = game;
     }
 
     load_waves(jsonString)
     {
 
-        if (this.#waveData != [])
+        if (this.waveData != {})
         {
-            reset_waves();
+            this.reset_waves();
         }
 
         let parsedJson = JSON.parse(jsonString);
@@ -39,21 +45,21 @@ export default class WaveManager
         // if there already are wave things, then clear the memory. or maybe throw an exception.
 
 
-        this.#waveData = parsedJson.waves;
-        this.#waveTemplateData = parsedJson.waveTemplate;
+        this.waveData = parsedJson.waves;
+        this.waveTemplateData = parsedJson.waveTemplate;
 
-        this.#waveIndex = 0;
+        this.next_wave();
     }
 
     generate_wave()
     {
         // number of enemies increases by 3 with each wave.
-        let numEnemies = this.#waveTemplateData[4] + 3 * (this.#waveIndex - this.#waveData.length);
+        let numEnemies = this.waveTemplateData.length + 3 * (this.wave_index - this.waveData.length);
 
 
         // Copy pointers to the allEnemies and allWeights arrays
-        let allEnemies = this.#waveTemplateData[2];
-        let allWeights = this.#waveTemplateData[3];
+        let allEnemies = this.waveTemplateData.allEnemies;
+        let allWeights = this.waveTemplateData.allWeights;
 
         // Initialise the enemy & weight lists
         let enemyList = [];
@@ -75,7 +81,7 @@ export default class WaveManager
                 enemyWeights.push(allWeights[i]);
 
                 // If the array is now full,
-                if (enemyList.length >= this.#waveTemplateData[5])
+                if (enemyList.length >= this.waveTemplateData.maxCount)
                 {
                     // break from it.
                     break;
@@ -83,7 +89,7 @@ export default class WaveManager
             }
         }
 
-        return new Wave(#game, this.#waveTemplateData[0], this.#waveTemplateData[1], enemyList, enemyWeights, numEnemies);
+        return new Wave(this.game, this.waveTemplateData.length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies);
 
 
 
@@ -91,21 +97,24 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-        currentWave.game_tick(deltaTime);
+        this.current_wave.game_tick(deltaTime);
     }
 
     next_wave()
     {
+        // increment the wave index.
+        this.wave_index ++;
+
         let newWave = null;
-        if (waveIndex < this.#waveData.length)
+        if (this.wave_index < this.waveData.length)
         {
             // go to the next wave.
             // do stuff :D
-            let wave = this.#waveData[waveIndex];
+            let wave = this.waveData[this.wave_index];
             switch(waveData[0])
             {
                 case "wave":
-                    newWave = new Wave(#game, wave[1], wave[2], wave[3], wave[4], wave[5]);
+                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
                     break;
                 case "boss":
                     // boss waves not implemented yet.
@@ -117,15 +126,13 @@ export default class WaveManager
         }
         else
         {
-            // if there is none (waveIndex > the number of waves),
+            // if there is none (wave_index > the number of waves),
             // then generate a new wave - using the wave index as the difficulty.
             newWave = generate_wave()
         }
         // set the new wave.
-        this.#currentWave = newWave;
+        this.current_wave = newWave;
 
-        // increment the wave index.
-        this.#waveIndex ++;
     }
 
     reset_waves()
@@ -133,11 +140,11 @@ export default class WaveManager
         // this will clear all of the wave manager's wave-data memory.
         // also sets the current wave to null, and stuff.
 
-        this.#currentWave = null;
-        this.#waveData = [];
-        this.#waveTemplateData = [];
-        this.#waveIndex = -1;
-        this.#waveSeed = -1;
+        this.current_wave = null;
+        this.waveData = [];
+        this.waveTemplateData = [];
+        this.wave_index = -1;
+        this.waveSeed = -1;
 
     }
 

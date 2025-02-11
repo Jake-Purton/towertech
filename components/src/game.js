@@ -3,6 +3,7 @@ import Player from './player.js';
 import Enemy from './enemy.js';
 import {Cannon } from './tower.js';
 import Wave from './wave.js'
+import WaveManager from "./wave_manager.js"
 
 export default class Game extends Phaser.Scene{
     static target_fps = 60.0;
@@ -58,13 +59,20 @@ export default class Game extends Phaser.Scene{
 
 
         //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
-        this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
+        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
 
         // random numbers
         this.RNG = new Phaser.Math.RandomDataGenerator();
+
+        this.wave_manager = new WaveManager(this);
+
+
+        let test = '{"waves":[ {"length":15, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5}}'
+
+        this.wave_manager.load_waves(test)
 
     }
     // delta is the delta_time value, it is the milliseconds since last frame
@@ -125,7 +133,7 @@ export default class Game extends Phaser.Scene{
         }
 
         // wave management
-        this.current_wave.game_tick(delta);
+        this.wave_manager.game_tick(delta);
     }
 
     take_input(input){
@@ -154,8 +162,8 @@ export default class Game extends Phaser.Scene{
     next_wave(){
         // do stuff
         // for now this just resets the wave.
-        delete this.current_wave;
-        this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
+        //deslete this.current_wave;
+        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
     }
 
     dummy_input(){

@@ -66,7 +66,7 @@ export default class Wave
         if (this.remainingTime <= 0)
         {
             // do stuff - likely communicate to start the next wave.
-            this.game.next_wave();
+            this.game.wave_manager.next_wave();
         }
     }
 
