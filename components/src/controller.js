@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 
 export default class Controller extends Phaser.Scene{
     constructor(output_data_func){
-        super('GameControllerScene');
+        super('GameController');
 
         // constants
         this.output_data = output_data_func;
@@ -60,6 +60,10 @@ export default class Controller extends Phaser.Scene{
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
+
+    }
+
+    take_input(input) {
 
     }
 

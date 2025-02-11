@@ -12,4 +12,4 @@ const GameControllerPage: React.FC = () => {
     );
 };
 
-export default GameContollerPage;
+export default GameControllerPage;
