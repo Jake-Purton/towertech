@@ -79,7 +79,7 @@ export default function LoginPage() {
         <div className="mt-4 text-center">
           <p>
             Don't have an account?{" "}
-            <a href="/Register" className="text-orange-400 underline">
+            <a href="/register" className="text-orange-400 underline">
               Register
             </a>
           </p>
