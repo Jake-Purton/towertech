@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import {create_tower } from './tower.js';
 import Body from './components/bodies/body.js';
 import DefaultBody from './components/bodies/default_body.js';
 import Leg from './components/legs/leg.js';
@@ -6,7 +7,7 @@ import DefaultLeg from './components/legs/default_leg.js';
 import Wheel from './components/legs/wheel.js';
 import Weapon from './components/weapons/weapon.js';
 import DefaultWeapon from './components/weapons/default_weapon.js';
-import {Cannon} from "./tower.js";
+
 const Vec = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.GameObjects.Container{
@@ -36,6 +37,8 @@ export default class Player extends Phaser.GameObjects.Container{
             ['RIGHT', 0]])
         this.move_direction = new Vec(0,0);
         this.prev_tower_button_direction = 'Up';
+
+        this.has_nearby_tower = false;
 
         // constants
         this.speed = 0.8;
@@ -67,23 +70,12 @@ export default class Player extends Phaser.GameObjects.Container{
             this.key_inputs.set(key, 0);
         }
     }
-    check_collision(players){
-
-    }
-    create_tower(tower_type, direction) {
+    create_tower(tower_type, key_direction) {
         let new_tower = null;
-        if (direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-            switch (tower_type){
-                case 'Cannon':
-                    new_tower = new Cannon(this.scene, this.x, this.y);
-                    break;
-                default:
-                    new_tower = new Cannon(this.scene, this.x, this.y, this.player_id);
-                    break;
-
-            }
+        if (key_direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            new_tower = create_tower(tower_type, this.scene, this.x, this.y, this.player_id);
         }
-        this.prev_tower_button_direction = direction;
+        this.prev_tower_button_direction = key_direction;
         return new_tower;
     }
 }
