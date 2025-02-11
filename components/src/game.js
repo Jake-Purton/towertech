@@ -19,7 +19,8 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5,'goober':5,'goosplitter':5,'gooshifter':5,'goosplits':5,'gooslinger':5,'goosniper':5}};
+        //this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5,'goober':5,'goosplitter':5,'gooshifter':5,'goosplits':5,'gooslinger':5,'goosniper':5}};
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5}};
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -29,6 +30,8 @@ export default class Game extends Phaser.Scene{
         this.load.image('tower','/game_images/tower.png');
         this.load.image('tower_gun','/game_images/cannon_head.png');
         this.load.image('cannon_ball','/game_images/cannon_ball.png');
+        this.load.image('goosniper_projectile','/game_images/projectiles/goosniper_projectile.png');
+        this.load.image('gooslinger_projectile','/game_images/projectiles/gooslinger_projectile.png');
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:30, frameHeight:13});
