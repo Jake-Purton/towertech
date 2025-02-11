@@ -6,10 +6,15 @@ import Image from 'next/image';
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState({ name: "", email: "" });
 
   useEffect(() => {
     const checkToken = async () => {
       const token = localStorage.getItem("token");
+      const user = localStorage.getItem("user");
+      if (user) {
+        setUser(JSON.parse(user));
+      }
       if (token && await verifyToken(token)) {
         setIsLoggedIn(true);
       }
@@ -30,27 +35,28 @@ export default function Home() {
       {!isLoading && (
         <div className="absolute top-4 left-4 flex gap-4">
           {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-full"
-            >
-              Logout
-            </button>
-          ) : (
             <>
-              <a
-                href="/login"
-                className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-full"
+              <p>Signed in as {user.name}.</p>
+              <button
+                onClick={handleLogout}
+                className="text-orange-600 hover:text-orange-700 underline"
               >
-                Login
-              </a>
-              <a
-                href="/register"
-                className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-full"
-              >
-                Register
-              </a>
+                Sign out?
+              </button>
             </>
+          ) : (
+            <ul>
+              <li>
+                <a href="/login" className="text-orange-600 hover:text-orange-700 underline">
+                Login
+                </a>
+              </li> 
+              <li>
+                <a href="/register" className="text-orange-600 hover:text-orange-700 underline">
+                Register
+                </a>
+              </li>
+            </ul>
           )}
         </div>
       )}
