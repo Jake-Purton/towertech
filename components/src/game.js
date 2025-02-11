@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
-import {spawn_enemy} from './enemies/enemy/enemy.js';
+import { spawn_enemy } from './enemies/enemy/enemy.js';
 import {Cannon } from './tower.js';
 
 export default class Game extends Phaser.Scene{
@@ -19,7 +19,7 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5,'goober':5,'goosplitter':5,'gooshifter':5,'goosplits':5}};
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5,'goober':5,'goosplitter':5,'gooshifter':5,'goosplits':5,'gooslinger':5}};
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -121,7 +121,7 @@ export default class Game extends Phaser.Scene{
         /// handle projectiles
         let remove_list = [];
         for (let projectile of this.projectiles) {
-            projectile.game_tick(delta, this.enemies, this.towers);
+            projectile.game_tick(delta, this.enemies, this.players, this.towers);
             if (projectile.get_dead()){
                 remove_list.push(projectile);
             }
@@ -147,7 +147,7 @@ export default class Game extends Phaser.Scene{
         /// handle enemies
         remove_list = [];
         for (let enemy of this.enemies){
-            enemy.game_tick(delta, this.players);
+            enemy.game_tick(delta, this.players, this.towers);
             if (enemy.get_dead()){
                 remove_list.push(enemy);
             }

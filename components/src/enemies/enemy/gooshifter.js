@@ -15,7 +15,7 @@ export default class Gooshifter extends Enemy{
     get_dead(){
         return (this.path_t >= 1 || this.health<=0)
     }
-    game_tick(delta_time, players){
+    game_tick(delta_time, players, towers){
         if (this.changed){           
             let nearest_player = this.find_near_player(players);
             let direction = this.relative_position(nearest_player);
@@ -29,7 +29,7 @@ export default class Gooshifter extends Enemy{
                 this.setTexture('gooshifter');
                 this.play('gooshifter_walk')
             } else {
-                return super.game_tick(delta_time, players);
+                return super.game_tick(delta_time, players, towers);
             }
         }
     }

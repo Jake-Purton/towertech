@@ -3,7 +3,7 @@ import Entity from './entity.js';
 import {GooBlood} from './particle.js';
 const Vec = Phaser.Math.Vector2;
 
-class Projectile extends Entity {
+export default class Projectile extends Entity {
     // team variable can be one of "Enemy", "Player" or "Tower"
     // angle in degrees
     constructor(scene, x, y, texture, speed, angle, team, target=null,
@@ -24,7 +24,7 @@ class Projectile extends Entity {
         // kill particle info
         this.pierce_count = pierce_count;  // reduces by 1 each time the projectile hits something
     }
-    game_tick(delta_time, enemies, tower) {
+    game_tick(delta_time, enemies, players, towers) {
 
         // collision detection
         let collision = false;
@@ -32,6 +32,8 @@ class Projectile extends Entity {
             case "Tower":
                 collision = this.check_collision(enemies);
                 break;
+            case "Enemy":
+                collision = (this.check_collision(towers) || this.check_collision(players))
         }
         this.follow_target();
         this.physics_tick(delta_time);
