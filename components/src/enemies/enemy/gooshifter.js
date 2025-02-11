@@ -6,10 +6,10 @@ export default class Gooshifter extends Enemy{
     constructor(scene, x, y, path) {
         super(scene, x, y, 'goober', path);
 
-        this.move_speed = 0.5;
+        this.move_speed = 0.8;
         this.health = 8;
 
-        this.leave_path = Math.random() * 2/3;
+        this.leave_path = Math.random() * 1/2 + 0.1;
         this.changed = false;
     }
     get_dead(){
@@ -25,7 +25,6 @@ export default class Gooshifter extends Enemy{
         } else {
             if (this.path_t >= this.leave_path){
                 this.changed = true;
-                this.move_speed = 1
                 this.setTexture('gooshifter');
                 this.play('gooshifter_walk')
             } else {

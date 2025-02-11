@@ -20,7 +20,7 @@ export default class Goolime extends Enemy{
             let nearest_player = this.find_near_player(players);
             let direction = this.relative_position(nearest_player);
             let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
-            this.move_speed = 1.5;
+            this.move_speed = 2;
             return this.setPosition(this.x + change.x,this.y + change.y);
         }
     }
