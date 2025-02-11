@@ -6,15 +6,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
-
-        this.move_speed = 1;
+        
         this.path = path;
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
-
-        this.health = 5;
     }
-    game_tick(delta_time){
+    game_tick(delta_time, players){
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path
         this.path_t += (delta_time * this.move_speed)/this.path.getLength();
@@ -25,5 +22,19 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     }
     get_dead(){
         return (this.path_t >= 1 || this.health<=0)
+    }
+    find_near_player(players){
+        let nearest_player = null;
+        let distance = Infinity;
+        for (let [_, player] of players){
+            let new_distance = this.relative_position(player).length();
+            if (new_distance < distance){
+                nearest_player = player;
+            }
+        }
+        return nearest_player;
+    }
+    relative_position(object){
+        return new Vec(object.x - this.x, object.y - this.y);
     }
 }

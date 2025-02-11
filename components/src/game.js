@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
-import Enemy from './enemy.js';
+import {spawn_enemy} from './enemies/enemy/enemy.js';
 import {Cannon } from './tower.js';
 
 export default class Game extends Phaser.Scene{
@@ -19,7 +19,7 @@ export default class Game extends Phaser.Scene{
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':25,'goober':5}};
+        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5,'goober':5,'goosplitter':5,'gooshifter':5,'goosplits':5}};
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -29,8 +29,14 @@ export default class Game extends Phaser.Scene{
         this.load.image('tower','/game_images/tower.png');
         this.load.image('tower_gun','/game_images/cannon_head.png');
         this.load.image('cannon_ball','/game_images/cannon_ball.png');
-        this.load.spritesheet('goolime','/game_images/goolime.png', {frameWidth:30, frameHeight:13});
-        this.load.spritesheet('goober','/game_images/goober.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goober','/game_images/enemy_sprites/enemy/goober.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('gooshifter','/game_images/enemy_sprites/enemy/gooshifter.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goobomber','/game_images/enemy_sprites/enemy/goobomber.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
         this.load.image('goo_blood','/game_images/gooblood.png');
     }
     create() {
@@ -42,8 +48,44 @@ export default class Game extends Phaser.Scene{
             repeat: -1
         });
         this.anims.create({
+            key: 'goosniper_walk',
+            frames: this.anims.generateFrameNumbers('goosniper', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'goosplits_walk',
+            frames: this.anims.generateFrameNumbers('goosplits', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
             key: 'goober_walk',
             frames: this.anims.generateFrameNumbers('goober', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'gooshifter_walk',
+            frames: this.anims.generateFrameNumbers('gooshifter', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'gooslinger_walk',
+            frames: this.anims.generateFrameNumbers('gooslinger', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'goobomber_walk',
+            frames: this.anims.generateFrameNumbers('goobomber', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'goosplitter_walk',
+            frames: this.anims.generateFrameNumbers('goosplitter', { start: 0, end: 2 }),
             frameRate: 8,
             repeat: -1
         });
@@ -105,7 +147,7 @@ export default class Game extends Phaser.Scene{
         /// handle enemies
         remove_list = [];
         for (let enemy of this.enemies){
-            enemy.game_tick(delta);
+            enemy.game_tick(delta, this.players);
             if (enemy.get_dead()){
                 remove_list.push(enemy);
             }
@@ -124,6 +166,7 @@ export default class Game extends Phaser.Scene{
             let enemy_names = Object.keys(this.wave_data.enemies);
             let index = 0;
             let count = 0;
+            let new_enemy = null;
             do {
                 index = Phaser.Math.Between(0,enemy_names.length-1);
                 count+=1;
@@ -131,7 +174,8 @@ export default class Game extends Phaser.Scene{
             // create enemy
             if (count<10) {
                 this.wave_data.enemies[enemy_names[index]] -= 1;
-                this.enemies.push(new Enemy(this, -50, -50, enemy_names[index], this.enemy_path));
+                new_enemy = spawn_enemy(this, -50, -50, enemy_names[index],this.enemy_path)
+                this.enemies.push(new_enemy);
             }
         }
     }
