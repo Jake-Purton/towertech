@@ -24,11 +24,11 @@ class Projectile extends Entity {
 
         // kill particle info
         this.pierce_count = pierce_count;  // reduces by 1 each time the projectile hits something
+        this.pierced_enemies = [];
     }
     game_tick(delta_time, enemies, towers, players) {
 
         // collision detection
-        let collision = false;
         switch (this.team) {
             case "Tower":
                 this.check_collision(enemies);
@@ -42,6 +42,7 @@ class Projectile extends Entity {
         this.physics_tick(delta_time);
         this.make_trail_particles(delta_time);
     }
+    make_trail_particles(_) {}
     follow_target() {
         if (this.target !== null && typeof(this.target.scene) !== "undefined") {
             let prev_length = this.velocity.length()
@@ -129,4 +130,20 @@ class EffectAOE extends Projectile {
     }
 }
 
-export {CannonBall, Bullet, FireProjectile, EffectAOE };
+class GoosniperProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, speed_multiplier=1) {
+        let base_speed = 20;
+        super(scene, x, y, 'goosniper_projectile', base_speed*speed_multiplier, angle, 'Enemy',
+            {target:target, auto_aim_strength:0});
+    }
+}
+class GooslingerProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, speed_multiplier=1) {
+        let base_speed = 10;
+        super(scene, x, y, 'gooslinger_projectile', base_speed*speed_multiplier, angle, 'Enemy',
+            {target:target, auto_aim_strength:0});
+    }
+}
+
+
+export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile };

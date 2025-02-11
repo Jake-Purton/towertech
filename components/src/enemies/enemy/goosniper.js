@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import GoosniperProjectile from '../projectiles/goosniper_projectile.js';
+import {GoosniperProjectile } from '../../projectile.js';
+import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goosniper extends Enemy{
@@ -13,7 +14,7 @@ export default class Goosniper extends Enemy{
         this.max_cooldown = 100;
         this.target = null;
         this.shoot_angle = 0;
-        this.leave_path = Math.random() * 1/3 + 0.2;
+        this.leave_path = random_range(0.2,0.53);
         this.changed = false;
     }
     get_dead(){

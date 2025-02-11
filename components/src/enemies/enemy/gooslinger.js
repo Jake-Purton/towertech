@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import GooslingerProjectile from '../projectiles/gooslinger_projectile.js';
+import {GooslingerProjectile } from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Gooslinger extends Enemy{
