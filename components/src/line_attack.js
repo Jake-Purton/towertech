@@ -29,7 +29,9 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
         this.particle_cooldown_timer = 0
         this.particle_cooldown = 0.15
 
-        // this.base_texture = new Phaser.GameObjects.Image(scene, 0, 0, texture);
+        this.max_length = 450
+        this.create_texture(this.max_length);
+        this.base_texture = new Phaser.GameObjects.Image(scene, 0, 0, texture);
     }
     game_tick(delta_time) {
         this.time_to_live -= delta_time/this.scene.target_fps;
@@ -55,27 +57,25 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
         relative_position.x -= this.target.x;
         relative_position.y -= this.target.y;
 
-        this.create_texture(relative_position.length());
+        this.setCrop(0,0,relative_position.length(),this.texture_height);
 
-        this.setPosition(source_pos.x - relative_position.x/2, source_pos.y - relative_position.y/2);
-        this.setAngle(relative_position.angle()*180/Math.PI+180);
+        let length = relative_position.length();
+        let angle = relative_position.angle();
+        let offset_dis = (this.max_length-length)/2;
+
+        this.setPosition(
+            source_pos.x - relative_position.x/2 - Math.cos(angle) * offset_dis,
+            source_pos.y - relative_position.y/2 - Math.sin(angle) * offset_dis);
+        this.setAngle(angle*180/Math.PI+180);
     }
     create_texture(length) {
-        if (length > 1) {
-            let renderer = new Phaser.GameObjects.RenderTexture(this.scene, 0, 0, length, this.texture_height);
-            for (let i=-1;i<length/this.texture_width+1;i++) {
-                renderer.draw(this.base_texture, i*this.texture_width + this.animation_position, 0);
-            }
-            let name = 'LineAttackImage_'+this.id_number.toString();
-            if (this.scene.textures.exists(name)) {
-                this.scene.textures.remove(name);
-            }
-            renderer.saveTexture(name);
-            this.setTexture(name);
-            this.visible = true;
-        } else {
-            this.visible = false;
+        let renderer = new Phaser.GameObjects.RenderTexture(this.scene, 0, 0, length,this.texture_height);
+        for (let i=-1;i<length/this.texture_width+1;i++) {
+            renderer.draw(this.base_texture, i*this.texture_width + this.animation_position, 0);
         }
+        let name = 'LineAttackImage_'+this.id_number.toString();
+        renderer.saveTexture(name);
+        this.setTexture(name);
     }
     make_particles() {
         if (this.particle_cooldown_timer < 0) {

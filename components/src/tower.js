@@ -256,7 +256,7 @@ class CannonTower extends Tower{
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, Bullet,
-            {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
+            {gun_scale:1, range:400, fire_distance:150, projectile_no_drag_distance:120,
             damage:0.5, fire_rate:10,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
         this.recent_laser = null;
