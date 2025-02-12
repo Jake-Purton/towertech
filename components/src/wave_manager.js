@@ -54,12 +54,13 @@ export default class WaveManager
     generate_wave()
     {
         // number of enemies increases by 3 with each wave.
-        let numEnemies = this.waveTemplateData.length + 3 * (this.wave_index - this.waveData.length);
+        let numEnemies = this.waveTemplateData.enemyCount + 2 * (this.wave_index - this.waveData.length);
+        let length = this.waveTemplateData.length + 2 * (this.wave_index - this.waveData.length) * this.waveTemplateData.spawnDelay
 
 
         // Copy pointers to the allEnemies and allWeights arrays
-        let allEnemies = this.waveTemplateData.allEnemies;
-        let allWeights = this.waveTemplateData.allWeights;
+        let allEnemies = this.waveTemplateData.enemyList;
+        let allWeights = this.waveTemplateData.enemyWeights;
 
         // Initialise the enemy & weight lists
         let enemyList = [];
@@ -89,7 +90,7 @@ export default class WaveManager
             }
         }
 
-        return new Wave(this.game, this.waveTemplateData.length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies);
+        return new Wave(this.game, length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies);
 
 
 
@@ -111,7 +112,7 @@ export default class WaveManager
             // go to the next wave.
             // do stuff :D
             let wave = this.waveData[this.wave_index];
-            switch(waveData[0])
+            switch(wave.type)
             {
                 case "wave":
                     newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
@@ -120,7 +121,7 @@ export default class WaveManager
                     // boss waves not implemented yet.
                     // break;
                 default:
-                    alert("Invalid wave type"+waveData[0]+".");
+                    alert("Invalid wave type"+wave.type+".");
                     break;
             }
         }
@@ -128,7 +129,7 @@ export default class WaveManager
         {
             // if there is none (wave_index > the number of waves),
             // then generate a new wave - using the wave index as the difficulty.
-            newWave = generate_wave()
+            newWave = this.generate_wave()
         }
         // set the new wave.
         this.current_wave = newWave;

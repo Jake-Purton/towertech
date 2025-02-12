@@ -70,7 +70,7 @@ export default class Game extends Phaser.Scene{
         this.wave_manager = new WaveManager(this);
 
 
-        let test = '{"waves":[ {"length":15, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5}}'
+        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
 
         this.wave_manager.load_waves(test)
 
