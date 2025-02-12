@@ -1,50 +1,86 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { socket } from "../src/socket";
+import { useRouter } from "next/navigation";
+
+type User = { userID: string; username: string };
 
 const HostPage = () => {
-  const [roomCode, setRoomCode] = useState('');
+  const router = useRouter();
+  const [roomCode, setRoomCode] = useState("");
   const [users, setUsers] = useState<User[]>([]);
-  type User = { userID: String, username: String };
 
   useEffect(() => {
-    // Request a new room code from the server
-    socket.emit('createRoom');
+    if (!socket.connected) socket.connect(); // Ensure socket is connected before emitting
 
-    // Listen for the room code from the server
-    socket.on('roomCode', (code) => {
-      setRoomCode(code);
-    });
+    socket.emit("createRoom");
 
-    // Listen for updates to the user list
-    socket.on('updateUsers', (userList) => {
-      setUsers(userList);
-    });
+    const handleRoomCode = (code: string) => setRoomCode(code);
+    const handleUpdateUsers = (userList: User[]) => setUsers(userList);
 
-    // Clean up the socket connection on component unmount
+    socket.on("roomCode", handleRoomCode);
+    socket.on("updateUsers", handleUpdateUsers);
+
     return () => {
-      socket.off('roomCode');
-      socket.off('updateUsers');
+      socket.off("roomCode", handleRoomCode);
+      socket.off("updateUsers", handleUpdateUsers);
     };
   }, []);
 
+  const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    if (users.length > 0) {
+      router.push("/game");
+      socket.emit("gameStarted", roomCode)
+    }
+  };
   return (
-    <div>
-      <h1>Host Page</h1>
-      {roomCode ? (
-        <p>Room Code: {roomCode}</p>
-      ) : (
-        <p>Creating room...</p>
-      )}
-      <h2>Users in Room:</h2>
-      <ul>
-        {users.map((user, index) => (
-          <li key={index}>{user.username}</li>
-        ))}
-      </ul>
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
+      <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
+
+      <div className="flex flex-col items-center gap-10 w-full max-w-lg mt-10 bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-700">
+        {roomCode ? (
+          <div className="w-full text-center">
+            <div className="mt-2 p-5 border border-gray-600 rounded-xl bg-gray-900 text-3xl font-semibold tracking-widest text-orange-500 shadow-sm">
+              {roomCode}
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-400 text-lg font-medium">Creating room...</p>
+        )}
+
+        <div className="w-full">
+          <h2 className="text-2xl font-semibold text-orange-500 mb-4 text-center border-b pb-2 border-gray-600">
+            Connected Users
+          </h2>
+          <ul className="space-y-3">
+            {users.length > 0 ? (
+              users.map((user, index) => (
+                <li
+                  key={user.userID || index} // Prefer userID if available
+                  className="p-4 bg-gray-900 rounded-lg border border-gray-600 transition-all hover:bg-gray-700 shadow-sm text-center text-lg font-medium"
+                >
+                  <span className="text-orange-500">{user.username}</span>
+                </li>
+              ))
+            ) : (
+              <p className="text-gray-400 text-lg text-center">Waiting for users to join...</p>
+            )}
+          </ul>
+        </div>
+        <button
+          className={`mt-6 px-4 py-2 rounded-lg shadow-md transition-all ${
+            users.length === 0 ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
+          } text-white`}
+          disabled={users.length === 0}
+          onClick={startGame}
+        >
+          Start the Game
+        </button>
+      </div>
     </div>
   );
 };
 
 export default HostPage;
+

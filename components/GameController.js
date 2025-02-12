@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import Game from './src/game.js';
+import Controller from './src/controller.js';
 
-const PhaserGame = () => {
+const GameController = () => {
   const gameRef = useRef(null);
 
   useEffect(() => {
@@ -20,11 +20,10 @@ const PhaserGame = () => {
             arcade: {
               fps: 60,
               gravity: { y: 0 },
-              // debug: true,
             }
           },
-          scene: new Game(output_data),
-          backgroundColor: '#50A011',
+          scene: new Controller(output_data),
+          backgroundColor: '#c267e3',
         };
 
         const game = new Phaser.Game(config);
@@ -34,16 +33,13 @@ const PhaserGame = () => {
         };
 
         function input_data(data) {
-          // function that would be used to send inputs to phaser
-          // current assuming data is a json type format
-          // this can be change depending on how input works, this is mostly temporary for testing
           for (let input of data) {
-            game.scene.getScene('GameScene').take_input(input);
+            game.scene.getScene('GameController').take_input(input);
           }
         }
-        function output_data(player_id, data) {
+        function output_data(data) {
           // the function to send data to a specific client
-          console.log('Data sent to '+player_id+':',data);
+          console.log('Data sent to Game:',data);
         }
 
 
@@ -54,4 +50,4 @@ const PhaserGame = () => {
   return <div ref={gameRef} />;
 };
 
-export default PhaserGame;
+export default GameController;
