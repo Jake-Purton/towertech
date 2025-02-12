@@ -46,6 +46,7 @@ const GameController = () => {
         function output_data(data) {
           // the function to send data to a specific client
           console.log('Data sent to Game:',data);
+          data['PlayerID'] = socket.id;
           socket.emit("input_from_client_to_game", data);
         }
 

@@ -40,12 +40,11 @@ const PhaserGame = () => {
         };
 
         function input_data(data) {
+          console.log('data received from client', data)
           // function that would be used to send inputs to phaser
           // current assuming data is a json type format
           // this can be change depending on how input works, this is mostly temporary for testing
-          for (let input of data) {
-            game.scene.getScene('GameScene').take_input(input);
-          }
+          game.scene.getScene('GameScene').take_input(data);
         }
         function output_data(player_id, data) {
           // the function to send data to a specific client

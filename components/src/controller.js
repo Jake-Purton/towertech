@@ -41,9 +41,11 @@ export default class Controller extends Phaser.Scene{
 
     button_pressed(button) {
         console.log('button pressed',button)
+        this.output_data({Key: button, Direction: 'Down'});
     }
     button_released(button) {
         console.log('button released',button)
+        this.output_data({Key: button, Direction: 'Up'});
     }
 
 }
