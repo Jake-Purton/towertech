@@ -77,19 +77,22 @@ export default class Player extends Phaser.GameObjects.Container{
     take_damage(damage, speed, angle) {
         this.health -= damage;
     }
-    input_key(key, direction){
-        if (direction === 'Down'){
-            this.key_inputs[key] = 1;
+    key_input(data) {
+        if (data.Direction === 'Down') {
+            this.key_inputs[data.Key] = 1;
         } else {
-            this.key_inputs[key] = 0;
+            this.key_inputs[data.Key] = 0;
         }
     }
-    create_tower(tower_type, key_direction) {
+
+    new_tower_input(data) {
         let new_tower = null;
-        if (key_direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-            new_tower = create_tower(tower_type, this.scene, this.x, this.y, this.player_id);
+        if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id);
         }
-        this.prev_tower_button_direction = key_direction;
-        return new_tower;
+        this.prev_tower_button_direction = data.Direction;
+        if (new_tower != null) {
+            this.scene.towers.push(new_tower);
+        }
     }
 }

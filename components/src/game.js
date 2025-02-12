@@ -221,20 +221,16 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        if (input.PlayerID in this.players){
-
-            let player = this.players[input.PlayerID];
-            // check if input is placing a tower or movement
-            if (input.Key === 'PLACE_TOWER') {
-                let new_tower = player.create_tower(input.Tower, input.Direction);
-                if (new_tower !== null){
-                    this.towers.push(new_tower);
-                }
-            } else {
-                player.input_key(input.Key, input.Direction);
-            }
-        } else {
-            this.players[input.PlayerID] = new Player(this, 100, 100, input.PlayerID);
+        switch (input.type) {
+            case 'Constructor':
+                this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+                break;
+            case 'Key_Input':
+                this.players[input.PlayerID].key_input(input);
+                break;
+            case 'Create_Tower':
+                this.players[input.PlayerID].new_tower_input(input);
+                break;
         }
     }
 
