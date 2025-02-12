@@ -132,7 +132,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerID');
+        // this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();

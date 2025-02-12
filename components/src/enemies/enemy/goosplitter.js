@@ -15,8 +15,12 @@ export default class Goosplitter extends Enemy{
             this.spawn_splits()
             return true;
         }
+        return false;
     }
     spawn_splits(){
+
+
+
         let split_path_t_1 = this.path_t - (20)/this.path.getLength();
         let split_path_t_2 = this.path_t + (20)/this.path.getLength();
         split_path_t_1 = Phaser.Math.Clamp(split_path_t_1, 0, 1);
