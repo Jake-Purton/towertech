@@ -6,8 +6,6 @@ import Wave from './wave.js'
 import WaveManager from "./wave_manager.js"
 
 export default class Game extends Phaser.Scene{
-    static target_fps = 60.0;
-
     constructor(output_data_func){
         super('GameScene');
 
@@ -19,6 +17,7 @@ export default class Game extends Phaser.Scene{
         this.enemies = [];
 
         // constants
+        this.target_fps = 60;
         this.output_data = output_data_func;
 
         // game data
@@ -153,7 +152,7 @@ export default class Game extends Phaser.Scene{
         this.wave_manager = new WaveManager(this);
 
 
-        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
+        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter"], "enemyWeights":[10, 5,5,5,5,5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
 
         this.wave_manager.load_waves(test)
 
@@ -163,7 +162,6 @@ export default class Game extends Phaser.Scene{
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
-
 
         /// handle players
         this.dummy_input();
@@ -221,8 +219,8 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        if (this.players.has(input.get('PlayerID'))){
-            let player = this.players.get(input.get('PlayerID'));
+        if (input.get('PlayerID') in this.players){
+            let player = this.players[input.get('PlayerID')];
             // check if input is placing a tower or movement
             if (input.get('Key') === 'PLACE_TOWER'){
                 let new_tower = player.create_tower(input.get('Tower'), input.get('Direction'));

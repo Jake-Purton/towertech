@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
 import Game from './game.js';
-import Enemy from './enemy.js'
+import { spawn_enemy } from './enemies/enemy/enemy.js';
 
 export default class Wave
 {
@@ -39,11 +39,11 @@ export default class Wave
         delete this.unsortedEnemies;
 
         // Initialise time, duration, and spawning timer variables.
-        this.duration = length * Game.target_fps;
-        this.remainingTime = length * Game.target_fps;
+        this.duration = length * this.game.target_fps;
+        this.remainingTime = length * this.game.target_fps;
 
-        this.spawnDelay = spawnDelay * Game.target_fps;
-        this.nextSpawn = spawnDelay * Game.target_fps;
+        this.spawnDelay = spawnDelay * this.game.target_fps;
+        this.nextSpawn = spawnDelay * this.game.target_fps;
         this.numEnemies = numEnemies;
 
     }
@@ -101,7 +101,8 @@ export default class Wave
     #spawn_enemy(enemyName)
     {
         // spawn the enemy
-        this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));
+        this.game.enemies.push(spawn_enemy(this.game, -50, -50, enemyName, this.game.enemy_path));
+        // this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));
     }
 
     #sort_array(a, b)
