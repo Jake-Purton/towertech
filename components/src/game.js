@@ -2,8 +2,12 @@ import * as Phaser from 'phaser';
 import Player from './player.js';
 import { spawn_enemy } from './enemies/enemy/enemy.js';
 import {random_choice } from './utiles.js';
+import Wave from './wave.js'
+import WaveManager from "./wave_manager.js"
 
 export default class Game extends Phaser.Scene{
+    static target_fps = 60.0;
+
     constructor(output_data_func){
         super('GameScene');
 
@@ -15,12 +19,14 @@ export default class Game extends Phaser.Scene{
         this.enemies = [];
 
         // constants
-        this.target_fps = 60;
         this.output_data = output_data_func;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-        this.wave_data = {"spawn_delay":1, "next_spawn":1, "enemies":{'goolime':5,'goober':5,'goosplitter':5,'gooshifter':5,'goosplits':5,'gooslinger':5,'goosniper':5}};
+
+        // current wave
+        this.current_wave = null;
+
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -134,11 +140,22 @@ export default class Game extends Phaser.Scene{
         // game objects
         this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
+
+        //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
+        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
+
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
 
         // random numbers
         this.RNG = new Phaser.Math.RandomDataGenerator();
+
+        this.wave_manager = new WaveManager(this);
+
+
+        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
+
+        this.wave_manager.load_waves(test)
 
     }
     // delta is the delta_time value, it is the milliseconds since last frame
@@ -146,6 +163,7 @@ export default class Game extends Phaser.Scene{
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
+
 
         /// handle players
         this.dummy_input();
@@ -199,30 +217,12 @@ export default class Game extends Phaser.Scene{
         }
 
         // wave management
-        this.wave_data.next_spawn-=delta/this.target_fps;
-        if (this.wave_data.next_spawn < 0){
-            this.wave_data.next_spawn = this.wave_data.spawn_delay
-            // randomly select enemy type
-            let enemy_names = Object.keys(this.wave_data.enemies);
-            let index = 0;
-            let count = 0;
-            let new_enemy = null;
-            do {
-                index = Phaser.Math.Between(0,enemy_names.length-1);
-                count+=1;
-            } while (this.wave_data.enemies[enemy_names[index]]<=0 && count<20);
-            // create enemy
-            if (count<10) {
-                this.wave_data.enemies[enemy_names[index]] -= 1;
-                new_enemy = spawn_enemy(this, -50, -50, enemy_names[index],this.enemy_path)
-                this.enemies.push(new_enemy);
-            }
-        }
+        this.wave_manager.game_tick(delta);
     }
 
     take_input(input){
-        if (input.get('PlayerID') in this.players){
-            let player = this.players[input.get('PlayerID')];
+        if (this.players.has(input.get('PlayerID'))){
+            let player = this.players.get(input.get('PlayerID'));
             // check if input is placing a tower or movement
             if (input.get('Key') === 'PLACE_TOWER'){
                 let new_tower = player.create_tower(input.get('Tower'), input.get('Direction'));
@@ -240,7 +240,14 @@ export default class Game extends Phaser.Scene{
         for (let i=1;i<points.length;i++) {
             path.lineTo(points[i][0],points[i][1]);
         }
-        return path;
+        return path
+    }
+
+    next_wave(){
+        // do stuff
+        // for now this just resets the wave.
+        //deslete this.current_wave;
+        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
     }
 
     dummy_input(){
