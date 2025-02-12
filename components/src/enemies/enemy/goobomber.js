@@ -9,7 +9,4 @@ export default class Goobomber extends Enemy{
         this.move_speed = 0.4;
         this.health = 8;
     }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
-    }
 }
