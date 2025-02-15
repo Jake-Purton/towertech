@@ -108,15 +108,18 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     }
     find_near_player_tower(players, towers){
         let player = this.find_near_player(players);
-        let tower = this.find_near_tower(towers);
-        if (tower === null){
-            return player;
+        if (player !== null){
+            let tower = this.find_near_tower(towers);
+            if (tower === null){
+                return player;
+            }
+            if (this.relative_position(player).length() < this.relative_position(tower).length()){
+                return player;
+            } else {
+                return tower;
+            }
         }
-        if (this.relative_position(player).length() < this.relative_position(tower).length()){
-            return player;
-        } else {
-            return tower;
-        }
+
     }
     find_far_player_tower(players, towers){
         let player = this.find_near_player(players);

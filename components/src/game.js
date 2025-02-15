@@ -137,7 +137,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
+        // this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerID');
 
 
         //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
@@ -219,17 +219,16 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        if (input.get('PlayerID') in this.players){
-            let player = this.players[input.get('PlayerID')];
-            // check if input is placing a tower or movement
-            if (input.get('Key') === 'PLACE_TOWER'){
-                let new_tower = player.create_tower(input.get('Tower'), input.get('Direction'));
-                if (new_tower !== null){
-                    this.towers.push(new_tower);
-                }
-            } else {
-                player.input_key(input.get('Key'), input.get('Direction'));
-            }
+        switch (input.type) {
+            case 'Constructor':
+                this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+                break;
+            case 'Key_Input':
+                this.players[input.PlayerID].key_input(input);
+                break;
+            case 'Create_Tower':
+                this.players[input.PlayerID].new_tower_input(input);
+                break;
         }
     }
 
@@ -249,39 +248,31 @@ export default class Game extends Phaser.Scene{
     }
 
     dummy_input(){
+        return
         // dummy method that attempts to recreate how inputs would be taken
         if (this.kprs.up.isDown){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','UP'],['Direction','Down']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Up', Direction:'Down'});
         }
         if (this.kprs.down.isDown){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','DOWN'],['Direction','Down']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Down', Direction:'Down'});
         }
         if (this.kprs.right.isDown){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','RIGHT'],['Direction','Down']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Right', Direction:'Down'});
         }
         if (this.kprs.left.isDown){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','LEFT'],['Direction','Down']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Left', Direction:'Down'});
         }
-
         if (this.kprs.up.isUp){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','UP'],['Direction','Up']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Up', Direction:'Up'});
         }
         if (this.kprs.down.isUp){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','DOWN'],['Direction','Up']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Down', Direction:'Up'});
         }
         if (this.kprs.right.isUp){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','RIGHT'],['Direction','Up']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Right', Direction:'Up'});
         }
         if (this.kprs.left.isUp){
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','LEFT'],['Direction','Up']]))
+            this.take_input({PlayerID: 'TempPlayerId', Key: 'Left', Direction:'Up'});
         }
         if (this.kprs.space.isDown) {
             this.take_input(new Map([['PlayerID', 'TempPlayerID'],

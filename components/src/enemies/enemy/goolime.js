@@ -8,20 +8,20 @@ export default class Goolime extends Enemy{
 
         this.move_speed = 1;
         this.health = 3;
-        this.leave_path = 0.2
-    }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
+        this.leave_path = 0.2;
+        this.target = null;
     }
     game_tick(delta_time, players, towers){
         if (this.path_t < this.leave_path){
             return super.game_tick(delta_time, players, towers);
-        } else {                
-            let nearest_player = this.find_near_player(players);
-            let direction = this.relative_position(nearest_player);
+        } else if (this.target == null) {
+            this.target = this.find_near_player(players);
+        } else {
+            let direction = this.relative_position(this.target);
             let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
             this.move_speed = 2;
             return this.setPosition(this.x + change.x,this.y + change.y);
         }
     }
+
 }

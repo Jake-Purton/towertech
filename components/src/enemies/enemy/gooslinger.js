@@ -26,11 +26,17 @@ export default class Gooslinger extends Enemy{
         super.game_tick(delta_time, players, towers);
     }
     shoot_projectile(players, towers){
-        this.find_target(players, towers);
-        this.scene.projectiles.push(new GooslingerProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target));
+        if (this.find_target(players, towers)) {
+            this.scene.projectiles.push(new GooslingerProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target));
+        }
+
     }
     find_target(players, towers){
         this.target = this.find_near_player_tower(players, towers);
+        if (this.target == null) {
+            return false;
+        }
         this.shoot_angle = this.relative_position(this.target).angle() * 180/Math.PI;
+        return true;
     }
 }

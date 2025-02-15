@@ -9,9 +9,6 @@ export default class Goosplits extends Enemy{
         this.move_speed = 3;
         this.health = 1;
     }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
-    }
     set_path_t(path_t){
         this.path_t = path_t;
     }

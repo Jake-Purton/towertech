@@ -31,11 +31,12 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // variables
         this.velocity = new Vec(0,0);
-        this.key_inputs = new Map([
-            ['UP', 0],
-            ['DOWN', 0],
-            ['LEFT', 0],
-            ['RIGHT', 0]])
+        this.key_inputs = {
+            Up: 0,
+            Down: 0,
+            Left: 0,
+            Right: 0
+        }
         this.move_direction = new Vec(0,0);
         this.prev_tower_button_direction = 'Up';
 
@@ -56,8 +57,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
         this.effects.game_tick(delta_time, this);
 
-        this.move_direction = new Vec(this.key_inputs.get('RIGHT')-this.key_inputs.get('LEFT'),
-                                      this.key_inputs.get('DOWN')-this.key_inputs.get('UP'))
+        this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
+                                      this.key_inputs.Down-this.key_inputs.Up)
 
         this.move_direction.normalize();
         this.move_direction.scale(this.speed * delta_time);
@@ -76,19 +77,22 @@ export default class Player extends Phaser.GameObjects.Container{
     take_damage(damage, speed, angle) {
         this.health -= damage;
     }
-    input_key(key, direction){
-        if (direction === 'Down'){
-            this.key_inputs.set(key, 1);
+    key_input(data) {
+        if (data.Direction === 'Down') {
+            this.key_inputs[data.Key] = 1;
         } else {
-            this.key_inputs.set(key, 0);
+            this.key_inputs[data.Key] = 0;
         }
     }
-    create_tower(tower_type, key_direction) {
+
+    new_tower_input(data) {
         let new_tower = null;
-        if (key_direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-            new_tower = create_tower(tower_type, this.scene, this.x, this.y, this.player_id);
+        if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id);
         }
-        this.prev_tower_button_direction = key_direction;
-        return new_tower;
+        this.prev_tower_button_direction = data.Direction;
+        if (new_tower != null) {
+            this.scene.towers.push(new_tower);
+        }
     }
 }
