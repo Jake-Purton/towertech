@@ -14,6 +14,10 @@ export default class Controller extends Phaser.Scene{
 
     }
     preload() {
+        this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
+        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
+        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
 
     }
     create() {
