@@ -1,11 +1,14 @@
 import * as Phaser from 'phaser';
+import {AliveGameObject } from './alive_game_object.js';
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 const Vec = Phaser.Math.Vector2;
 
-class Tower extends Phaser.Physics.Arcade.Sprite {
+// Uses a mixin to inherit from 2 objects: AliveGameObject and Arcade Sprite
+// True Tower class is defined immediately after TowerBase
+class TowerBase extends Phaser.Physics.Arcade.Sprite {
     // range is in pixels
     // fire_rate is shots per seconds
     constructor(scene, x, y, tower_type, player_id, projectile_class,
@@ -190,7 +193,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, shoot_pos.x, shoot_pos.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
-            {damage:damage, target:this.target, auto_aim_range:this.projectile_auto_aim_range,
+            {damage:damage, target:this.target, source:this, auto_aim_range:this.projectile_auto_aim_range,
                 auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
             {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
                 no_drag_distance:this.projectile_no_drag_distance}));
@@ -240,10 +243,11 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     get_relative_pos(enemy) {
         return new Vec(enemy.x-this.x, enemy.y-this.y);
     }
-    take_damage(damage, speed, angle) {
+    take_damage(damage, speed, angle, source) {
         this.health -= damage;
     }
 }
+class Tower extends AliveGameObject(TowerBase){}
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
@@ -331,7 +335,7 @@ class SlowingTower extends Tower{
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Tower', {name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;
@@ -345,7 +349,7 @@ class HealingTower extends Tower{
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;
@@ -359,7 +363,7 @@ class BuffingTower extends Tower{
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;

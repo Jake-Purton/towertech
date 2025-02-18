@@ -6,8 +6,9 @@ const Vec = Phaser.Math.Vector2;
 class Projectile extends Entity {
     // team variable can be one of "Enemy", "Player" or "Tower"
     // angle in degrees
+    // source and target are game objects
     constructor(scene, x, y, texture, speed, angle, team,
-                {target=null, auto_aim_strength=1, auto_aim_range=100,
+                {target=null, source=null, auto_aim_strength=1, auto_aim_range=100,
                     pierce_count=0, damage=1, inflict_effect=null,
                 } = {}, entity_properties={}) {
         super(scene, x, y, texture, speed, angle, entity_properties);
@@ -18,6 +19,7 @@ class Projectile extends Entity {
         // attack info
         this.damage = damage;
         this.target = target;
+        this.source = source;
         this.inflict_effect = inflict_effect; // in the form {name:"Burning",amplifier:2,duration:3}
         this.auto_aim_range = auto_aim_range;
         this.auto_aim_stength = auto_aim_strength;

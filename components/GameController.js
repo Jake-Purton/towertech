@@ -39,11 +39,14 @@ const GameController = () => {
         };
 
         function input_data(data) {
-          game.scene.getScene('GameController').take_input(data);
+          console.log('REVIECED DATA:',data)
+          if (data['PlayerID'] === socket.id) {
+            game.scene.getScene('GameController').take_input(data);
+          }
         }
         function output_data(data) {
           data['PlayerID'] = socket.id;
-          console.log('data sent:', data)
+          // console.log('data sent:', data)
           socket.emit("input_from_client_to_game", data);
         }
 

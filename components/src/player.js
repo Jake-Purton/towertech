@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import {AliveGameObject } from './alive_game_object.js';
 import {create_tower } from './tower.js';
 import Body from './components/bodies/body.js';
 import DefaultBody from './components/bodies/default_body.js';
@@ -11,7 +12,9 @@ import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
 
-export default class Player extends Phaser.GameObjects.Container{
+// Uses a mixin to inherit from 2 objects: AliveGameObject and Container
+// True Player class is defined immediately after PlayerBase
+class PlayerBase extends Phaser.GameObjects.Container{
     constructor(scene, x, y, player_id){
 
         // create body parts
@@ -49,6 +52,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // effects info
         this.effects = new Effects(scene);
+        this.last_damage_source = null;
+
+        // game stats
+        this.coins = 0;
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
@@ -74,8 +81,11 @@ export default class Player extends Phaser.GameObjects.Container{
         this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
     }
-    take_damage(damage, speed, angle) {
+    take_damage(damage, speed, angle, source) {
         this.health -= damage;
+        if (source !== null) {
+            this.last_damage_source = source;
+        }
     }
     key_input(data) {
         if (data.Direction === 'Down') {
@@ -96,3 +106,4 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
 }
+export default class Player extends AliveGameObject(PlayerBase) {};

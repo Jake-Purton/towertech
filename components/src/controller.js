@@ -18,7 +18,6 @@ export default class Controller extends Phaser.Scene{
         this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
         this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
         this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
-
     }
     create() {
 
@@ -53,15 +52,21 @@ export default class Controller extends Phaser.Scene{
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
+        // console.log('player_created:', this.player_created);
         if (!this.player_created) {
             // tell server to create a player
             this.output_data({type: 'Constructor'});
-            this.player_created = true;
         }
     }
 
-    take_input(data) {
-        console.log('data received: ',data);
+    take_input(input) {
+        switch (input.type) {
+            case 'Player_Constructor_Acknowledgement':
+                this.player_created = true;
+                break;
+            default:
+                console.log('unused input received: ',input)
+        }
     }
 
     button_pressed(button) {

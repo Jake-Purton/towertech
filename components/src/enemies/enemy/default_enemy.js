@@ -1,10 +1,13 @@
 import * as Phaser from 'phaser';
+import {AliveGameObject } from '../../alive_game_object.js';
 import Effects from "../../effects.js";
 import {random_range} from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
 const Vec = Phaser.Math.Vector2;
 
-export default class Enemy extends Phaser.Physics.Arcade.Sprite{
+// Uses a mixin to inherit from 2 objects: AliveGameObject and Arcade Sprite
+// True Enemy class is defined immediately after EnemyBase
+class EnemyBase extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y, type, path) {
         super(scene, x, y, type);
         scene.add.existing(this);
@@ -19,6 +22,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
 
         // effects info
         this.effects = new Effects(scene);
+        this.last_damage_source = null;
 
         // this.game_tick(0); // sets the position to the start of the path
     }
@@ -41,9 +45,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     get_dead(){
         return (this.path_t >= 1 || this.health<=0)
     }
-    take_damage = (damage, speed=3, angle=null) => {
+    take_damage = (damage, speed=3, angle=null, source=null) => {
         this.health -= damage;
         this.make_hit_particles(damage, speed, angle);
+        if (source !== null) {
+            this.last_damage_source = source;
+        }
     }
     make_hit_particles = (num_particles, speed=1, angle=null) => {
         while (num_particles > 0) {
@@ -137,3 +144,4 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         return new Vec(object.x - this.x, object.y - this.y);
     }
 }
+export default class Enemy extends AliveGameObject(EnemyBase){}
