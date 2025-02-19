@@ -257,7 +257,7 @@ export default class Game extends Phaser.Scene{
         // wave management
         this.wave_manager.game_tick(delta);
 
-        // check gameover
+        // check game over
         if (this.health <= 0) {
             this.end_game();
         }

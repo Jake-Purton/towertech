@@ -1,12 +1,16 @@
 import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
-import {random_range} from "../../utiles.js";
+import {random_range, weighted_random_choice, float_to_random_int} from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
 import DroppedItem from "../../dropped_item.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path) {
+    constructor(scene, x, y, type, path,
+                {health=5, move_speed=1, coin_value=1} = {},
+                loot_table = {drop_chance:0.3, drops:{
+                    'default_body':3, 'default_leg':3, 'default_weapon':3,
+                    'wheel':1, 'robot_leg':1, 'striped_leg':1}}) {
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -15,9 +19,11 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
 
-        // this.move_speed = 1;
-        // this.health = 10;
-        this.coin_value = 1;
+        // stats and info
+        this.move_speed = move_speed;
+        this.health = health;
+        this.coin_value = coin_value;
+        this.loot_table = loot_table;
 
         // effects info
         this.effects = new Effects(scene);
@@ -48,7 +54,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         return (this.path_t >= 1)
     }
     die() {
-        this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, 'robot_leg'));
+        let num_drops = float_to_random_int(this.loot_table.drop_chance);
+        for (let i=0;i<num_drops;i++) {
+            let drop = weighted_random_choice(this.loot_table.drops);
+            this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, drop));
+        }
+
         if (this.last_damage_source !== null) {
             this.last_damage_source.get_kill_credit(this);
         }

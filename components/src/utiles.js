@@ -38,7 +38,7 @@ function modulo(x, n) {
 }
 
 function get_removed(object) {
-    // returns true if an object doesnt exist in phaser/is null
+    // returns true if an object doesn't exist in phaser/is null
     return (object === null || typeof(object.scene) === "undefined")
 }
 
@@ -58,4 +58,35 @@ function get_distance(obj1, obj2) {
     return pos1.distance(pos2);
 }
 
-export {random_gauss, random_choice, random_int, random_range, modulo, get_removed, clamp, RGBtoHEX, get_distance };
+function weighted_random_choice(data) {
+    // takes data in the form {'item1':2, 'item2':1, 'item3':4}
+    // returns one of the keys e.g. 'item1' with its weighted probability, for item 1 being 2/7
+
+    let total_weight = 0;
+    for (let weight of Object.values(data)) {
+        total_weight += weight;
+    }
+    let ran_val = random_range(0, total_weight);
+    for (let item of Object.keys(data)) {
+        ran_val -= data[item];
+        if (ran_val < 0) {
+            return item;
+        }
+    }
+    console.log('weighted random function broke', ran_val, data, total_weight);
+}
+
+function float_to_random_int(val) {
+    // takes a float and converts it to an int randomly
+    // a set of returned ints have a mean equal to the input
+    // e.g. 0.2 would return 0 80% of the time and 1 20% of the time
+    let floor = Math.floor(val);
+    if (Math.random() < val-floor) {
+        floor += 1;
+    }
+    return floor;
+}
+
+export {random_gauss, random_choice, random_int, random_range, modulo,
+    get_removed, clamp, RGBtoHEX, get_distance, weighted_random_choice,
+    float_to_random_int};
