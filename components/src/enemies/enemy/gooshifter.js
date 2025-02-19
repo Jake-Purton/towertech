@@ -21,6 +21,7 @@ export default class Gooshifter extends Enemy{
             let direction = this.relative_position(nearest_player);
             let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
             this.move_speed = 1.5;
+            this.melee_hit(delta_time);
             return this.setPosition(this.x + change.x,this.y + change.y);
         } else {
             if (this.path_t >= this.leave_path){

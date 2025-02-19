@@ -71,6 +71,7 @@ export default class Game extends Phaser.Scene{
         // enemies
         this.load.image('goosniper_projectile','/game_images/projectiles/goosniper_projectile.png');
         this.load.image('gooslinger_projectile','/game_images/projectiles/gooslinger_projectile.png');
+        this.load.image('goo_melee','/game_images/projectiles/goo_melee.png');
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:30, frameHeight:13});

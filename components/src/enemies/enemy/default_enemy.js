@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
 import {random_range} from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
+import {GooMeleeDamage} from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite{
@@ -16,6 +17,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
 
         // this.move_speed = 1;
         // this.health = 10;
+        this.melee_damage = 1;
+        this.tick = 0;
+        this.melee_attack_speed = 1;
 
         // effects info
         this.effects = new Effects(scene);
@@ -23,11 +27,14 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         // this.game_tick(0); // sets the position to the start of the path
     }
     game_tick(delta_time, players, towers){
+        let time = delta_time/this.scene.target_fps;
         // handle effects
-        this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
-        this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
+        this.health += this.effects.get_effect("Healing", 0)*time;
+        this.take_damage(this.effects.get_effect("Burning", 0)*time);
         this.effects.game_tick(delta_time, this);
-
+        
+        this.melee_hit(delta_time);
+        
 
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path
@@ -132,5 +139,13 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     }
     relative_position(object){
         return new Vec(object.x - this.x, object.y - this.y);
+    }
+    melee_hit(delta_time){
+        let time = delta_time/this.scene.target_fps;
+        this.tick += time;
+        if (this.tick > this.melee_attack_speed){
+            this.tick -= this.melee_attack_speed;
+            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, this.melee_damage));
+        }
     }
 }

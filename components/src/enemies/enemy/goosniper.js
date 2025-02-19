@@ -27,6 +27,7 @@ export default class Goosniper extends Enemy{
                 this.cooldown = this.max_cooldown;
                 this.shoot_projectile(players);
             }
+            this.melee_hit(delta_time);
         } else {
             if (this.path_t >= this.leave_path){
                 this.changed = true;

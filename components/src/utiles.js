@@ -21,7 +21,7 @@ function random_int(min,max) {
 function random_range(min,max) {
     // picks a random float in the range, inclusive
     let ran = Math.random();
-    return ran*(max-min+1)+min;
+    return ran*(max-min)+min;
 }
 
 

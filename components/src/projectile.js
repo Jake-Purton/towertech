@@ -134,16 +134,21 @@ class GoosniperProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, speed_multiplier=1) {
         let base_speed = 20;
         super(scene, x, y, 'goosniper_projectile', base_speed*speed_multiplier, angle, 'Enemy',
-            {target:target, auto_aim_strength:0});
+            {target:target, auto_aim_strength:0, damage:4},{target_distance:1000});
     }
 }
 class GooslingerProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, speed_multiplier=1) {
         let base_speed = 10;
         super(scene, x, y, 'gooslinger_projectile', base_speed*speed_multiplier, angle, 'Enemy',
-            {target:target, auto_aim_strength:0});
+            {target:target, auto_aim_strength:0, damage:2},{target_distance:300});
+    }
+}
+class GooMeleeDamage extends Projectile {
+    constructor(scene, x, y, target=null, damage=1) {
+        super(scene, x, y, 'goo_melee', 0, 0, 'Enemy',
+            {target:target, auto_aim_strength:0, damage:damage},{initial_alpha:0, target_distance:5, time_to_live:0.1});
     }
 }
 
-
-export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile };
+export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile, GooMeleeDamage};
