@@ -3,7 +3,7 @@ import {create_tower } from './tower.js';
 import Body from './components/bodies/body.js';
 import DefaultBody from './components/bodies/default_body.js';
 import Leg from './components/legs/leg.js';
-import DefaultLeg from './components/legs/default_leg.js';
+import {RobotLeg, StripedLeg } from './components/leg.js';
 import Wheel from './components/legs/wheel.js';
 import Weapon from './components/weapons/weapon.js';
 import DefaultWeapon from './components/weapons/default_weapon.js';
@@ -11,23 +11,26 @@ import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
 
+const part_converter = {
+    'robot_leg':RobotLeg,
+    'striped_leg':StripedLeg,
+    'default_body':DefaultBody,
+    'default_weapon':DefaultWeapon,
+}
+
 export default class Player extends Phaser.GameObjects.Container{
     constructor(scene, x, y, player_id){
 
-        // create body parts
-        let body = new DefaultBody(scene);
-        let leg = new DefaultLeg(scene);
-        let weapon = new DefaultWeapon(scene);
-
         // create phaser stuff
-        super(scene, x, y, [body, leg, weapon]);
+        super(scene, x, y, []);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
         // assign body parts
-        this.body_object = body;
-        this.weapon = weapon;
-        this.leg = leg;
+        this.set_body('default_body');
+        this.set_weapon('default_weapon');
+        this.set_leg('robot_leg');
+
 
         // variables
         this.velocity = new Vec(0,0);
@@ -77,13 +80,29 @@ export default class Player extends Phaser.GameObjects.Container{
         this.velocity.x *= this.drag**delta_time;
         this.velocity.y *= this.drag**delta_time;
 
-        this.leg.movement_animation(this.velocity);
+        this.leg_object.movement_animation(this.velocity);
 
         let speed_multiplier =  this.effects.get_speed_multiplier();
 
         this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
     }
+    set_body(body) {
+        this.body_name = body;
+        this.body_object = new part_converter[body](this.scene);
+        this.add(this.body_object);
+    }
+    set_leg(leg) {
+        this.leg_name = leg;
+        this.leg_object = new part_converter[leg](this.scene);
+        this.add(this.leg_object);
+    }
+    set_weapon(weapon) {
+        this.weapon_name = weapon;
+        this.weapon_object = new part_converter[weapon](this.scene);
+        this.add(this.weapon_object);
+    }
+
     get_dead() {
         return (this.health<=0)
     }

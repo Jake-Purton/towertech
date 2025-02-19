@@ -13,7 +13,6 @@ export default class DefaultWeapon extends Weapon{
         
         this.left_arm = left_arm;
         this.right_arm = right_arm;
-      
 
     }
     movement_animation(){
