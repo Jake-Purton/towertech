@@ -7,7 +7,7 @@ export default class Goosplitter extends Enemy{
     constructor(scene, x, y, path) {
         super(scene, x, y, 'goosplitter', path);
 
-        this.move_speed = 0.3;
+        this.move_speed = 3000;
         this.health = 10;
     }
     get_dead(){

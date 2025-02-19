@@ -44,12 +44,10 @@ const PhaserGame = () => {
           // console.log('data received from client', data)
           game.scene.getScene('GameScene').take_input(data);
         }
-        function end_game_output(score) {
-
-          
+        function end_game_output(data) {
 
           // function that sends the final score to the server
-          socket.emit("end_game_output", score);
+          socket.emit("end_game_output", data);
         }
         function output_data(player_id, data) {
           // the function to send data to a specific client
