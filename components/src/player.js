@@ -133,7 +133,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
     add_to_inventory(item) {
-        if (item in Object.keys(this.inventory)) {
+        if (Object.keys(this.inventory).includes(item)) {
             this.inventory[item].item_count += 1;
         } else {
             this.inventory[item] = {item_count: 1, item_level:1, equipped: false};
