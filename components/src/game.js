@@ -29,6 +29,7 @@ export default class Game extends Phaser.Scene{
         this.current_wave = null;
 
         // gameplay info
+        this.game_over = false;
         this.score = 0;
         this.health = 1;
 
@@ -167,6 +168,8 @@ export default class Game extends Phaser.Scene{
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
+        if (this.game_over) { return }
+
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
@@ -250,9 +253,16 @@ export default class Game extends Phaser.Scene{
         // player scores
         // player kills
 
-        // end the game 
-        this.end_game_output(this.score);
-        console.log('GAME OVER');
+        // end the game
+        let player_data = [];
+        for (let player_id of Object.keys(this.players)) {
+            player_data.push({player_id: player_id, score: this.players[player_id].player_score, kills: this.players[player_id].kill_count})
+        }
+        let game_data = {game_score: this.score, player_data: player_data}
+        this.end_game_output(game_data);
+
+        this.game_over = true;
+        console.log('GAME OVER', game_data);
 
     }
 
