@@ -86,15 +86,6 @@ const JoinPage: React.FC = () => {
 
     }
 
-    // const callFunction = (num: string) => {
-    //     console.log(`Number submitted: ${num}`);
-    //     if (socket.id) {
-    //         socket.emit("JOIN_ROOM", new JoinRoomMessage(socket.id, num));
-    //     } else {
-    //         console.error("Socket ID is undefined");
-    //     }
-    // };
-
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
             <h1 className="text-4xl font-bold text-orange-600 drop-shadow-md">Join Code</h1>
