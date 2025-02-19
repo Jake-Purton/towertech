@@ -28,7 +28,7 @@ const PhaserGame = () => {
               // debug: true,
             }
           },
-          scene: new Game(output_data),
+          scene: new Game(output_data, init_server),
           backgroundColor: '#50A011',
         };
 
@@ -40,19 +40,20 @@ const PhaserGame = () => {
         };
 
         function input_data(data) {
-          // function that would be used to send inputs to phaser
-          // current assuming data is a json type format
-          // this can be change depending on how input works, this is mostly temporary for testing
-          for (let input of data) {
-            game.scene.getScene('GameScene').take_input(input);
-          }
+          // function that receives data from clients
+          // console.log('data received from client', data)
+          game.scene.getScene('GameScene').take_input(data);
         }
         function output_data(player_id, data) {
           // the function to send data to a specific client
-          console.log('Data sent to '+player_id+':',data);
-          socket.emit("output_from_game_to_client", {player_id: player_id, data: data});
+          data.PlayerID = player_id;
+          // console.log('Data sent to players:', data);
+          socket.emit("output_from_game_to_client", data);
         }
-
+        function init_server() {
+          let roomCode = localStorage.getItem("roomCode");
+          socket.emit("gameStarted", roomCode)
+        }
 
       });
     }

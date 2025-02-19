@@ -11,25 +11,30 @@ export default class Gooshifter extends Enemy{
 
         this.leave_path = Math.random() * 1/2 + 0.1;
         this.changed = false;
+        this.target = null;
     }
     get_dead(){
         return (this.path_t >= 1 || this.health<=0)
     }
     game_tick(delta_time, players, towers){
-        if (this.changed){           
-            let nearest_player = this.find_near_player(players);
-            let direction = this.relative_position(nearest_player);
-            let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
-            this.move_speed = 1.5;
-            return this.setPosition(this.x + change.x,this.y + change.y);
+        if (this.changed){
+            if (this.target == null || this.target.dead) {
+                this.target = this.find_near_player(players);
+            } else {
+                let direction = this.relative_position(this.target);
+                let change = new Vec((delta_time * this.move_speed * direction.x) / direction.length(), (delta_time * this.move_speed * direction.y) / direction.length())
+                this.move_speed = 1.5;
+                this.setPosition(this.x + change.x, this.y + change.y);
+            }
         } else {
             if (this.path_t >= this.leave_path){
                 this.changed = true;
                 this.setTexture('gooshifter');
-                this.play('gooshifter_walk')
+                this.play('gooshifter_walk');
             } else {
                 return super.game_tick(delta_time, players, towers);
             }
         }
+        return false;
     }
 }

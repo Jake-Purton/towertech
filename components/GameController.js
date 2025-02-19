@@ -39,13 +39,13 @@ const GameController = () => {
         };
 
         function input_data(data) {
-          for (let input of data) {
-            game.scene.getScene('GameController').take_input(input);
+          if (data['PlayerID'] === socket.id) {
+            game.scene.getScene('GameController').take_input(data);
           }
         }
         function output_data(data) {
-          // the function to send data to a specific client
-          console.log('Data sent to Game:',data);
+          data['PlayerID'] = socket.id;
+          // console.log('data sent:', data)
           socket.emit("input_from_client_to_game", data);
         }
 

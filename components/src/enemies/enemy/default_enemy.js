@@ -4,7 +4,7 @@ import {random_range} from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
 const Vec = Phaser.Math.Vector2;
 
-export default class Enemy extends Phaser.Physics.Arcade.Sprite{
+export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path) {
         super(scene, x, y, type);
         scene.add.existing(this);
@@ -16,9 +16,11 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
 
         // this.move_speed = 1;
         // this.health = 10;
+        this.coin_value = 1;
 
         // effects info
         this.effects = new Effects(scene);
+        this.last_damage_source = null;
 
         // this.game_tick(0); // sets the position to the start of the path
     }
@@ -38,12 +40,23 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.setPosition(position.x, position.y);
         return this.path_t >= 1;
     }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
+    get_dead() {
+        return (this.health<=0)
     }
-    take_damage = (damage, speed=3, angle=null) => {
+    get_finished_path() {
+        return (this.path_t >= 1)
+    }
+    die() {
+        if (this.last_damage_source !== null) {
+            this.last_damage_source.get_kill_credit(this);
+        }
+    }
+    take_damage = (damage, speed=3, angle=null, source=null) => {
         this.health -= damage;
         this.make_hit_particles(damage, speed, angle);
+        if (source !== null) {
+            this.last_damage_source = source;
+        }
     }
     make_hit_particles = (num_particles, speed=1, angle=null) => {
         while (num_particles > 0) {
@@ -62,10 +75,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         let nearest_player = null;
         let distance = Infinity;
         for (let player of Object.values(players)){
-            let new_distance = this.relative_position(player).length();
-            if (new_distance < distance){
-                distance = new_distance;
-                nearest_player = player;
+            if (!player.dead) {
+                let new_distance = this.relative_position(player).length();
+                if (new_distance < distance){
+                    distance = new_distance;
+                    nearest_player = player;
+                }
             }
         }
         return nearest_player;
@@ -108,15 +123,18 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
     }
     find_near_player_tower(players, towers){
         let player = this.find_near_player(players);
-        let tower = this.find_near_tower(towers);
-        if (tower === null){
-            return player;
+        if (player !== null){
+            let tower = this.find_near_tower(towers);
+            if (tower === null){
+                return player;
+            }
+            if (this.relative_position(player).length() < this.relative_position(tower).length()){
+                return player;
+            } else {
+                return tower;
+            }
         }
-        if (this.relative_position(player).length() < this.relative_position(tower).length()){
-            return player;
-        } else {
-            return tower;
-        }
+
     }
     find_far_player_tower(players, towers){
         let player = this.find_near_player(players);
@@ -134,3 +152,4 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         return new Vec(object.x - this.x, object.y - this.y);
     }
 }
+// export default class Enemy extends AliveGameObject(EnemyBase){}
