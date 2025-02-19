@@ -58,6 +58,7 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // game stats
         this.coins = 0;
+        this.inventory = {};
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
@@ -125,10 +126,18 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     pickup_item(dropped_item) {
-
+        this.add_to_inventory(dropped_item.item_name)
     }
     set_coins(coins) {
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+    }
+    add_to_inventory(item) {
+        if (item in Object.keys(this.inventory)) {
+            this.inventory[item].item_count += 1;
+        } else {
+            this.inventory[item] = {item_count: 1, item_level:1, equipped: false};
+        }
+        this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
     }
 }
