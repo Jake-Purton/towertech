@@ -50,6 +50,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.speed = 0.8;
         this.drag = 0.9;
         this.player_id = player_id;
+        this.pickup_range = 20;
 
         // effects info
         this.effects = new Effects(scene);
@@ -122,6 +123,9 @@ export default class Player extends Phaser.GameObjects.Container{
         if (new_tower != null) {
             this.scene.towers.push(new_tower);
         }
+    }
+    pickup_item(dropped_item) {
+
     }
     set_coins(coins) {
         this.coins = coins;

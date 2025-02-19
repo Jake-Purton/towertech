@@ -15,6 +15,7 @@ export default class Game extends Phaser.Scene{
         this.projectiles = [];
         this.particles = [];
         this.enemies = [];
+        this.dropped_items = [];
 
         // constants
         this.target_fps = 60;
@@ -33,11 +34,17 @@ export default class Game extends Phaser.Scene{
 
     }
     preload() {
+        //// player part images
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
+
         this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
+        this.load.image('robot_leg','/game_images/player_sprite/legs/robot_leg.png')
+        this.load.image('striped_leg','/game_images/player_sprite/legs/striped_leg.png')
         this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+
         this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
 
+        //// particle images
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
         this.load.image('fire_particle','/game_images/particles/Fire.png');
         this.load.image('heart_particle','/game_images/particles/Heart.png');
@@ -190,8 +197,21 @@ export default class Game extends Phaser.Scene{
             tower.game_tick(delta, this.enemies, this.players);
         }
 
-        /// handle projectiles
+        /// handle dropped items
         let remove_list = [];
+        for (let dropped_item of this.dropped_items) {
+            dropped_item.game_tick(delta, this.players);
+            if (dropped_item.get_dead()) {
+                remove_list.push(dropped_item);
+            }
+        }
+        this.dropped_items = this.dropped_items.filter(item => !remove_list.includes(item));
+        for (let object of remove_list) {
+            object.destroy();
+        }
+
+        /// handle projectiles
+        remove_list = [];
         for (let projectile of this.projectiles) {
             projectile.game_tick(delta, this.enemies, this.towers, this.players);
             if (projectile.get_dead()){
@@ -269,13 +289,6 @@ export default class Game extends Phaser.Scene{
             path.lineTo(points[i][0],points[i][1]);
         }
         return path
-    }
-
-    next_wave(){
-        // do stuff
-        // for now this just resets the wave.
-        //deslete this.current_wave;
-        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
     }
 
     dummy_input(){

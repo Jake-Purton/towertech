@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
 import {random_range} from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
+import DroppedItem from "../../dropped_item.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -47,6 +48,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         return (this.path_t >= 1)
     }
     die() {
+        this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, 'robot_leg'));
         if (this.last_damage_source !== null) {
             this.last_damage_source.get_kill_credit(this);
         }

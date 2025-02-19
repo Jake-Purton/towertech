@@ -1,4 +1,6 @@
+import Phaser from "phaser";
 
+const Vec = Phaser.Math.Vector2;
 
 function random_gauss(mean, st_dev, max_change=null) {
     let ran = Math.random(); // generates a value 0 to 1
@@ -49,4 +51,11 @@ function RGBtoHEX(rgb) {
     return output
 }
 
-export {random_gauss, random_choice, random_int, random_range, modulo, get_removed, clamp, RGBtoHEX };
+function get_distance(obj1, obj2) {
+    // returns the distance between 2 sprites
+    let pos1 = new Vec(obj1.x, obj1.y);
+    let pos2 = new Vec(obj2.x, obj2.y);
+    return pos1.distance(pos2);
+}
+
+export {random_gauss, random_choice, random_int, random_range, modulo, get_removed, clamp, RGBtoHEX, get_distance };
