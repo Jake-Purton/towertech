@@ -27,8 +27,9 @@ export default class Game extends Phaser.Scene{
         // current wave
         this.current_wave = null;
 
-        // score
+        // gameplay info
         this.score = 0;
+        this.health = 1;
 
     }
     preload() {
@@ -171,11 +172,17 @@ export default class Game extends Phaser.Scene{
 
         /// handle players
         this.dummy_input();
+        let all_dead = true;
         for (let player of Object.values(this.players)) {
             player.game_tick(delta);
             if (player.get_dead()) {
                 player.die();
+            } else {
+                all_dead = false;
             }
+        }
+        if (all_dead && Object.values(this.players).length>0) {
+            this.end_game();
         }
 
         /// handle towers
@@ -213,19 +220,30 @@ export default class Game extends Phaser.Scene{
         remove_list = [];
         for (let enemy of this.enemies){
             enemy.game_tick(delta, this.players, this.towers);
-            if (enemy.get_dead()){
+            if (enemy.get_finished_path()) {
                 remove_list.push(enemy);
+                this.health -= 1; // temporary
+            } else if (enemy.get_dead()){
+                remove_list.push(enemy);
+                enemy.die();
             }
         }
         // delete all enemies that were added to remove_list
         this.enemies = this.enemies.filter(item => !remove_list.includes(item));
         for (let enemy of remove_list){
-            enemy.die();
             enemy.destroy();
         }
 
         // wave management
         this.wave_manager.game_tick(delta);
+
+        // check gameover
+        if (this.health <= 0) {
+            this.end_game();
+        }
+    }
+    end_game() {
+        console.log('GAME OVER');
     }
 
     take_input(input){

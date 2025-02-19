@@ -41,7 +41,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         return this.path_t >= 1;
     }
     get_dead() {
-        return (this.path_t >= 1 || this.health<=0)
+        return (this.health<=0)
+    }
+    get_finished_path() {
+        return (this.path_t >= 1)
     }
     die() {
         if (this.last_damage_source !== null) {
