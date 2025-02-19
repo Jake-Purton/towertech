@@ -113,12 +113,12 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     set_new_nearby_player(new_nearby_player) {
         this.nearby_player = new_nearby_player;
         this.nearby_player.has_nearby_tower = true;
-        this.scene.output_data(new_nearby_player.player_id,'This player is now in range of a tower');
+        this.scene.output_data(new_nearby_player.player_id, {type:'Tower_In_Range'});
         this.graphics.strokeCircle(this.x,this.y,this.range);
     }
 
     remove_nearby_player() {
-        this.scene.output_data(this.nearby_player.player_id,'This player is no longer in range of a tower');
+        this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range'});
         this.nearby_player.has_nearby_tower = false;
         this.nearby_player = null;
         this.graphics.clear();
@@ -190,7 +190,7 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
 
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, shoot_pos.x, shoot_pos.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
-            {damage:damage, target:this.target, auto_aim_range:this.projectile_auto_aim_range,
+            {damage:damage, target:this.target, source:this, auto_aim_range:this.projectile_auto_aim_range,
                 auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
             {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
                 no_drag_distance:this.projectile_no_drag_distance}));
@@ -240,8 +240,14 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     get_relative_pos(enemy) {
         return new Vec(enemy.x-this.x, enemy.y-this.y);
     }
-    take_damage(damage, speed, angle) {
+    get_dead() {
+        return (this.health<=0)
+    }
+    take_damage(damage, speed, angle, source) {
         this.health -= damage;
+    }
+    get_kill_credit(enemy) {
+        this.scene.players[this.playerid].get_kill_credit(enemy);
     }
 }
 
@@ -256,7 +262,7 @@ class CannonTower extends Tower{
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, Bullet,
-            {gun_scale:1, range:400, fire_distance:150, projectile_no_drag_distance:120,
+            {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
             damage:0.5, fire_rate:10,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
         this.recent_laser = null;
@@ -331,7 +337,7 @@ class SlowingTower extends Tower{
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Tower', {name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;
@@ -345,7 +351,7 @@ class HealingTower extends Tower{
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;
@@ -359,7 +365,7 @@ class BuffingTower extends Tower{
     shoot() {
         this.shoot_cooldown = this.shoot_cooldown_value;
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = true;

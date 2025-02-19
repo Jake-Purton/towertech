@@ -6,7 +6,7 @@ import Wave from './wave.js'
 import WaveManager from "./wave_manager.js"
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func){
+    constructor(output_data_func, init_server_func){
         super('GameScene');
 
         // game object containers
@@ -19,12 +19,17 @@ export default class Game extends Phaser.Scene{
         // constants
         this.target_fps = 60;
         this.output_data = output_data_func;
+        this.init_server = init_server_func;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
 
         // current wave
         this.current_wave = null;
+
+        // gameplay info
+        this.score = 0;
+        this.health = 1;
 
     }
     preload() {
@@ -86,6 +91,8 @@ export default class Game extends Phaser.Scene{
         this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
     }
     create() {
+        this.init_server();
+
         // animations
         this.anims.create({
             key: 'goolime_walk',
@@ -165,8 +172,17 @@ export default class Game extends Phaser.Scene{
 
         /// handle players
         this.dummy_input();
+        let all_dead = true;
         for (let player of Object.values(this.players)) {
             player.game_tick(delta);
+            if (player.get_dead()) {
+                player.die();
+            } else {
+                all_dead = false;
+            }
+        }
+        if (all_dead && Object.values(this.players).length>0) {
+            this.end_game();
         }
 
         /// handle towers
@@ -204,8 +220,12 @@ export default class Game extends Phaser.Scene{
         remove_list = [];
         for (let enemy of this.enemies){
             enemy.game_tick(delta, this.players, this.towers);
-            if (enemy.get_dead()){
+            if (enemy.get_finished_path()) {
                 remove_list.push(enemy);
+                this.health -= 1; // temporary
+            } else if (enemy.get_dead()){
+                remove_list.push(enemy);
+                enemy.die();
             }
         }
         // delete all enemies that were added to remove_list
@@ -216,12 +236,23 @@ export default class Game extends Phaser.Scene{
 
         // wave management
         this.wave_manager.game_tick(delta);
+
+        // check gameover
+        if (this.health <= 0) {
+            this.end_game();
+        }
+    }
+    end_game() {
+        console.log('GAME OVER');
     }
 
     take_input(input){
         switch (input.type) {
             case 'Constructor':
-                this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+                if (!(input.PlayerID in this.players)){
+                    this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+                    // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
+                }
                 break;
             case 'Key_Input':
                 this.players[input.PlayerID].key_input(input);

@@ -42,6 +42,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         this.has_nearby_tower = false;
 
+        // aliveness
+        this.health = 10;
+        this.dead = false;
+
         // constants
         this.speed = 0.8;
         this.drag = 0.9;
@@ -49,6 +53,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // effects info
         this.effects = new Effects(scene);
+        this.last_damage_source = null;
+
+        // game stats
+        this.coins = 0;
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
@@ -74,8 +82,29 @@ export default class Player extends Phaser.GameObjects.Container{
         this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
     }
-    take_damage(damage, speed, angle) {
-        this.health -= damage;
+    get_dead() {
+        return (this.health<=0)
+    }
+    die() {
+        this.dead = true;
+        this.visible = false;
+        this.set_coins(0);
+    }
+    respawn() {
+        this.dead = false;
+        this.visible = true;
+    }
+    take_damage(damage, speed, angle, source) {
+        if (damage !== 0) {
+            this.health -= damage;
+            if (source !== null) {
+                this.last_damage_source = source;
+            }
+        }
+    }
+    get_kill_credit(enemy) {
+        this.scene.score += enemy.coin_value;
+        this.set_coins(this.coins+enemy.coin_value);
     }
     key_input(data) {
         if (data.Direction === 'Down') {
@@ -84,7 +113,6 @@ export default class Player extends Phaser.GameObjects.Container{
             this.key_inputs[data.Key] = 0;
         }
     }
-
     new_tower_input(data) {
         let new_tower = null;
         if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
@@ -94,5 +122,9 @@ export default class Player extends Phaser.GameObjects.Container{
         if (new_tower != null) {
             this.scene.towers.push(new_tower);
         }
+    }
+    set_coins(coins) {
+        this.coins = coins;
+        this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
 }
