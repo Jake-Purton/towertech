@@ -28,7 +28,7 @@ const PhaserGame = () => {
               // debug: true,
             }
           },
-          scene: new Game(output_data, init_server),
+          scene: new Game(output_data, init_server, end_game_output),
           backgroundColor: '#50A011',
         };
 
@@ -43,6 +43,10 @@ const PhaserGame = () => {
           // function that receives data from clients
           // console.log('data received from client', data)
           game.scene.getScene('GameScene').take_input(data);
+        }
+        function end_game_output(score) {
+          // function that sends the final score to the server
+          socket.emit("end_game_output", score);
         }
         function output_data(player_id, data) {
           // the function to send data to a specific client

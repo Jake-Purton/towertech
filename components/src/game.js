@@ -6,7 +6,7 @@ import Wave from './wave.js'
 import WaveManager from "./wave_manager.js"
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func, init_server_func){
+    constructor(output_data_func, init_server_func, end_game_output){
         super('GameScene');
 
         // game object containers
@@ -20,6 +20,7 @@ export default class Game extends Phaser.Scene{
         this.target_fps = 60;
         this.output_data = output_data_func;
         this.init_server = init_server_func;
+        this.end_game_output = end_game_output;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
@@ -243,7 +244,11 @@ export default class Game extends Phaser.Scene{
         }
     }
     end_game() {
+
+        // end the game 
+        this.end_game_output(this.score);
         console.log('GAME OVER');
+
     }
 
     take_input(input){
