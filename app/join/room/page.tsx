@@ -17,7 +17,7 @@ const JoinRoomPage = () => {
     });
     socket.on("gameStarted", (message) =>{
       // route to a different page
-      router.push("/game");
+      router.push("/game_controller");
     });
 
     socket.emit('getUsers');

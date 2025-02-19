@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast, Toaster } from "sonner"; // For notifications
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -12,6 +11,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [message, setMessage] = useState("");
   const router = useRouter();
 
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -20,22 +20,22 @@ export default function RegisterPage() {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmPassword) {
-      toast.error("All fields are required!");
+      setMessage("Please fill in all fields!"); 
       return;
     }
 
     if (!isValidEmail(email)) {
-      toast.error("Invalid email format!");
+      setMessage("Invalid email format!");
       return;
     }
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long!");
+      setMessage("Password must be at least 6 characters long!");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
+      setMessage("Passwords do not match!");
       return;
     }
 
@@ -50,15 +50,15 @@ export default function RegisterPage() {
 
       const data = await res.json();
       if (res.ok) {
-        toast.success(data.message);
+        setMessage(data.message);
         setTimeout(() => {
           router.push("/login"); // Redirect to login after registration
         }, 1500);
       } else {
-        toast.error(data.error);
+        setMessage(data.error);
       }
     } catch (error) {
-      toast.error("Something went wrong. Try again.");
+      setMessage("Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
@@ -66,8 +66,12 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <Toaster richColors />
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        {message && (
+          <div className="mb-4 text-center text-red-500">
+        {message}
+          </div>
+        )}
         <h1 className="text-2xl font-bold text-center mb-6 text-orange-600">Register</h1>
 
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
@@ -141,7 +145,7 @@ export default function RegisterPage() {
         <div className="mt-4 text-center">
           <p>
             Already have an account?{" "}
-            <a href="/Login" className="text-orange-400 underline">
+            <a href="/login" className="text-orange-400 underline">
               Log in
             </a>
           </p>

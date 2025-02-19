@@ -31,15 +31,20 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // variables
         this.velocity = new Vec(0,0);
-        this.key_inputs = new Map([
-            ['UP', 0],
-            ['DOWN', 0],
-            ['LEFT', 0],
-            ['RIGHT', 0]])
+        this.key_inputs = {
+            Up: 0,
+            Down: 0,
+            Left: 0,
+            Right: 0
+        }
         this.move_direction = new Vec(0,0);
         this.prev_tower_button_direction = 'Up';
 
         this.has_nearby_tower = false;
+
+        // aliveness
+        this.health = 10;
+        this.dead = false;
 
         // constants
         this.speed = 0.8;
@@ -48,6 +53,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // effects info
         this.effects = new Effects(scene);
+        this.last_damage_source = null;
+
+        // game stats
+        this.coins = 0;
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
@@ -56,8 +65,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
         this.effects.game_tick(delta_time, this);
 
-        this.move_direction = new Vec(this.key_inputs.get('RIGHT')-this.key_inputs.get('LEFT'),
-                                      this.key_inputs.get('DOWN')-this.key_inputs.get('UP'))
+        this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
+                                      this.key_inputs.Down-this.key_inputs.Up)
 
         this.move_direction.normalize();
         this.move_direction.scale(this.speed * delta_time);
@@ -73,22 +82,49 @@ export default class Player extends Phaser.GameObjects.Container{
         this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
     }
-    take_damage(damage, speed, angle) {
-        this.health -= damage;
+    get_dead() {
+        return (this.health<=0)
     }
-    input_key(key, direction){
-        if (direction === 'Down'){
-            this.key_inputs.set(key, 1);
+    die() {
+        this.dead = true;
+        this.visible = false;
+        this.set_coins(0);
+    }
+    respawn() {
+        this.dead = false;
+        this.visible = true;
+    }
+    take_damage(damage, speed, angle, source) {
+        if (damage !== 0) {
+            this.health -= damage;
+            if (source !== null) {
+                this.last_damage_source = source;
+            }
+        }
+    }
+    get_kill_credit(enemy) {
+        this.scene.score += enemy.coin_value;
+        this.set_coins(this.coins+enemy.coin_value);
+    }
+    key_input(data) {
+        if (data.Direction === 'Down') {
+            this.key_inputs[data.Key] = 1;
         } else {
-            this.key_inputs.set(key, 0);
+            this.key_inputs[data.Key] = 0;
         }
     }
-    create_tower(tower_type, key_direction) {
+    new_tower_input(data) {
         let new_tower = null;
-        if (key_direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-            new_tower = create_tower(tower_type, this.scene, this.x, this.y, this.player_id);
+        if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+            new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id);
         }
-        this.prev_tower_button_direction = key_direction;
-        return new_tower;
+        this.prev_tower_button_direction = data.Direction;
+        if (new_tower != null) {
+            this.scene.towers.push(new_tower);
+        }
+    }
+    set_coins(coins) {
+        this.coins = coins;
+        this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
 }

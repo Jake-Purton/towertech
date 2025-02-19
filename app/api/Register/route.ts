@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sql } from "@vercel/postgres";
+
 
 const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
 
@@ -25,7 +27,7 @@ export async function POST(req: Request) {
     const users = sql_fetch();
 
     // Check for duplicate email
-    if (users.some(user => user.email === email)) {
+    if ((await users).some(user => user.email === email)) {
       return NextResponse.json({ error: "Email already exists" }, { status: 400 });
     }
     if (!validate_email(email)) {    
@@ -38,10 +40,10 @@ export async function POST(req: Request) {
     // Hash password and add new user
     const hashedPassword = hash_password(password);
     const newUser: User = { name, email, password: hashedPassword };
-    users.push(newUser);
+    (await users).push(newUser);
 
     // Save users to database
-    put_users_in_db(users);
+    put_users_in_db(newUser);
 
     console.log("✅ User registered successfully");
     return NextResponse.json({ message: "Registration successful" }, { status: 201 });
@@ -56,13 +58,17 @@ function hash_password(password: string): string {
   return bcrypt.hashSync(password, 10);
 }
 
-function sql_fetch(): User[] {
-  const pw = hash_password("password");
-  return [{ name: "jake", email: "jake@gmail.com", password: pw }]; // Replace with actual SQL query
+async function sql_fetch(): Promise<User[]> {
+  const result = await sql`SELECT * FROM users;`;
+  return result.rows.map(row => ({
+    name: row.name,
+    email: row.email,
+    password: row.password
+  }));
 }
 
-function put_users_in_db(users: User[]) {
-  // Replace with actual SQL query
+async function put_users_in_db(newUser: User) {
+  const abde = await sql`INSERT INTO users (name, email, password) VALUES (${newUser.name}, ${newUser.email}, ${newUser.password});`;
 }
 function validate_email(email: string): boolean {
   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,6 +77,7 @@ function validate_email(email: string): boolean {
 
 function validate_password(password: string): boolean {
   return true; // Replace with actual password validation
+  // make sure it is more than 6 characters...
 }
 
 // Add login handler in the same file
@@ -86,7 +93,7 @@ export async function GET(req: Request) {
 
     //check if database exists
 
-    const users: User[] = sql_fetch();
+    const users: User[] = await sql_fetch();
     const user = users.find(u => u.email === email);
 
     if (!user) {

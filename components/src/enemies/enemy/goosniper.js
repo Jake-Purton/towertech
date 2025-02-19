@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import {GoosniperProjectile } from '../../projectile.js';
+import {GooslingerProjectile, GoosniperProjectile} from '../../projectile.js';
 import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
@@ -31,19 +31,25 @@ export default class Goosniper extends Enemy{
         } else {
             if (this.path_t >= this.leave_path){
                 this.changed = true;
-                this.move_speed = 0
+                this.move_speed = 0;
             } else {
                 return super.game_tick(delta_time, players, towers);
             }
         }
        
     }
-    shoot_projectile(players){
-        this.find_target(players);
-        this.scene.projectiles.push(new GoosniperProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target));
+    shoot_projectile(players, towers){
+        if (this.find_target(players, towers)) {
+            this.scene.projectiles.push(new GoosniperProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target));
+        }
+
     }
-    find_target(players){
-        this.target = this.find_near_player(players);
+    find_target(players, towers){
+        this.target = this.find_near_player(players, towers);
+        if (this.target == null) {
+            return false;
+        }
         this.shoot_angle = this.relative_position(this.target).angle() * 180/Math.PI;
+        return true;
     }
 }

@@ -44,7 +44,7 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
         if (!get_removed(this.target)) {
             let dmg = this.damage * delta_time/this.scene.target_fps/this.total_time_to_live;
             this.damage_dealt += dmg;
-            this.target.take_damage(dmg);
+            this.target.take_damage(dmg, null, null, this.source);
         }
     }
     get_dead() {

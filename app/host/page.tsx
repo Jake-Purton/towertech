@@ -31,7 +31,8 @@ const HostPage = () => {
   const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     if (users.length > 0) {
       router.push("/game");
-      socket.emit("gameStarted", roomCode)
+      localStorage.setItem("roomCode", roomCode);
+      // socket.emit("gameStarted", roomCode)
     }
   };
   return (

@@ -39,6 +39,19 @@ app.prepare().then(() => {
       socket.to(roomCode).emit("gameStarted", "the game has started!");
 
     });
+
+    socket.on("input_from_client_to_game", (data) => {
+      // console.log("input_from_client_to_game", data);
+      // send data to the game
+      socket.to(roomManager.getUserRoom(socket.id)).emit("game_input", data);
+    });
+
+    socket.on("output_from_game_to_client", (data) => {
+      // console.log("output_from_game_to_client", data);
+      // send data to the client
+      socket.to(roomManager.getUserRoom(data.PlayerID)).emit("output_from_game_to_client", data);
+      // socket.emit("output_from_game_to_client", data);
+    });
       
   });
 
