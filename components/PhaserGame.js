@@ -45,6 +45,9 @@ const PhaserGame = () => {
           game.scene.getScene('GameScene').take_input(data);
         }
         function end_game_output(score) {
+
+          
+
           // function that sends the final score to the server
           socket.emit("end_game_output", score);
         }

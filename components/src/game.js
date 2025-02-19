@@ -244,6 +244,11 @@ export default class Game extends Phaser.Scene{
         }
     }
     end_game() {
+        // need to output
+        // gamescore
+        // player ids in the game
+        // player scores
+        // player kills
 
         // end the game 
         this.end_game_output(this.score);
