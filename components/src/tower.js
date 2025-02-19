@@ -1,14 +1,11 @@
 import * as Phaser from 'phaser';
-import {AliveGameObject } from './alive_game_object.js';
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js'
 import {random_gauss, modulo, get_removed } from './utiles.js'
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 const Vec = Phaser.Math.Vector2;
 
-// Uses a mixin to inherit from 2 objects: AliveGameObject and Arcade Sprite
-// True Tower class is defined immediately after TowerBase
-class TowerBase extends Phaser.Physics.Arcade.Sprite {
+class Tower extends Phaser.Physics.Arcade.Sprite {
     // range is in pixels
     // fire_rate is shots per seconds
     constructor(scene, x, y, tower_type, player_id, projectile_class,
@@ -116,12 +113,12 @@ class TowerBase extends Phaser.Physics.Arcade.Sprite {
     set_new_nearby_player(new_nearby_player) {
         this.nearby_player = new_nearby_player;
         this.nearby_player.has_nearby_tower = true;
-        this.scene.output_data(new_nearby_player.player_id,'This player is now in range of a tower');
+        this.scene.output_data(new_nearby_player.player_id, {type:'Tower_In_Range'});
         this.graphics.strokeCircle(this.x,this.y,this.range);
     }
 
     remove_nearby_player() {
-        this.scene.output_data(this.nearby_player.player_id,'This player is no longer in range of a tower');
+        this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range'});
         this.nearby_player.has_nearby_tower = false;
         this.nearby_player = null;
         this.graphics.clear();
@@ -243,11 +240,16 @@ class TowerBase extends Phaser.Physics.Arcade.Sprite {
     get_relative_pos(enemy) {
         return new Vec(enemy.x-this.x, enemy.y-this.y);
     }
+    get_dead() {
+        return (this.health<=0)
+    }
     take_damage(damage, speed, angle, source) {
         this.health -= damage;
     }
+    get_kill_credit(enemy) {
+        this.scene.players[this.playerid].get_kill_credit(enemy);
+    }
 }
-class Tower extends AliveGameObject(TowerBase){}
 
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
@@ -260,7 +262,7 @@ class CannonTower extends Tower{
 class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, Bullet,
-            {gun_scale:1, range:400, fire_distance:150, projectile_no_drag_distance:120,
+            {gun_scale:1, range:150, fire_distance:150, projectile_no_drag_distance:120,
             damage:0.5, fire_rate:10,pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
         this.recent_laser = null;

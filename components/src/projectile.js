@@ -72,8 +72,7 @@ class Projectile extends Entity {
     deal_damage(entity) {
         this.pierced_enemies.push(entity);
         this.pierce_count -= 1;
-        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle());
-        // this.make_hit_particles(entity);
+        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.source);
         this.apply_inflict_effect(entity);
     }
     make_hit_particles(entity) {

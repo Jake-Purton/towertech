@@ -18,7 +18,7 @@ export default class Gooshifter extends Enemy{
     }
     game_tick(delta_time, players, towers){
         if (this.changed){
-            if (this.target == null) {
+            if (this.target == null || this.target.dead) {
                 this.target = this.find_near_player(players);
             } else {
                 let direction = this.relative_position(this.target);

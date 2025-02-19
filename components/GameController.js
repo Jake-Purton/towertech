@@ -39,7 +39,6 @@ const GameController = () => {
         };
 
         function input_data(data) {
-          console.log('REVIECED DATA:',data)
           if (data['PlayerID'] === socket.id) {
             game.scene.getScene('GameController').take_input(data);
           }

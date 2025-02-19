@@ -1,5 +1,4 @@
 import * as Phaser from 'phaser';
-import {AliveGameObject } from './alive_game_object.js';
 import {create_tower } from './tower.js';
 import Body from './components/bodies/body.js';
 import DefaultBody from './components/bodies/default_body.js';
@@ -12,9 +11,7 @@ import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
 
-// Uses a mixin to inherit from 2 objects: AliveGameObject and Container
-// True Player class is defined immediately after PlayerBase
-class PlayerBase extends Phaser.GameObjects.Container{
+export default class Player extends Phaser.GameObjects.Container{
     constructor(scene, x, y, player_id){
 
         // create body parts
@@ -44,6 +41,10 @@ class PlayerBase extends Phaser.GameObjects.Container{
         this.prev_tower_button_direction = 'Up';
 
         this.has_nearby_tower = false;
+
+        // aliveness
+        this.health = 10;
+        this.dead = false;
 
         // constants
         this.speed = 0.8;
@@ -81,11 +82,29 @@ class PlayerBase extends Phaser.GameObjects.Container{
         this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
     }
+    get_dead() {
+        return (this.health<=0)
+    }
+    die() {
+        this.dead = true;
+        this.visible = false;
+        this.set_coins(0);
+    }
+    respawn() {
+        this.dead = false;
+        this.visible = true;
+    }
     take_damage(damage, speed, angle, source) {
-        this.health -= damage;
-        if (source !== null) {
-            this.last_damage_source = source;
+        if (damage !== 0) {
+            this.health -= damage;
+            if (source !== null) {
+                this.last_damage_source = source;
+            }
         }
+    }
+    get_kill_credit(enemy) {
+        this.scene.score += enemy.coin_value;
+        this.set_coins(this.coins+enemy.coin_value);
     }
     key_input(data) {
         if (data.Direction === 'Down') {
@@ -94,7 +113,6 @@ class PlayerBase extends Phaser.GameObjects.Container{
             this.key_inputs[data.Key] = 0;
         }
     }
-
     new_tower_input(data) {
         let new_tower = null;
         if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
@@ -105,5 +123,8 @@ class PlayerBase extends Phaser.GameObjects.Container{
             this.scene.towers.push(new_tower);
         }
     }
+    set_coins(coins) {
+        this.coins = coins;
+        this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+    }
 }
-export default class Player extends AliveGameObject(PlayerBase) {};

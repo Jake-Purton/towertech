@@ -1,13 +1,10 @@
 import * as Phaser from 'phaser';
-import {AliveGameObject } from '../../alive_game_object.js';
 import Effects from "../../effects.js";
 import {random_range} from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
 const Vec = Phaser.Math.Vector2;
 
-// Uses a mixin to inherit from 2 objects: AliveGameObject and Arcade Sprite
-// True Enemy class is defined immediately after EnemyBase
-class EnemyBase extends Phaser.Physics.Arcade.Sprite{
+export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path) {
         super(scene, x, y, type);
         scene.add.existing(this);
@@ -19,6 +16,7 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite{
 
         // this.move_speed = 1;
         // this.health = 10;
+        this.coin_value = 1;
 
         // effects info
         this.effects = new Effects(scene);
@@ -42,8 +40,13 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite{
         this.setPosition(position.x, position.y);
         return this.path_t >= 1;
     }
-    get_dead(){
+    get_dead() {
         return (this.path_t >= 1 || this.health<=0)
+    }
+    die() {
+        if (this.last_damage_source !== null) {
+            this.last_damage_source.get_kill_credit(this);
+        }
     }
     take_damage = (damage, speed=3, angle=null, source=null) => {
         this.health -= damage;
@@ -69,10 +72,12 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite{
         let nearest_player = null;
         let distance = Infinity;
         for (let player of Object.values(players)){
-            let new_distance = this.relative_position(player).length();
-            if (new_distance < distance){
-                distance = new_distance;
-                nearest_player = player;
+            if (!player.dead) {
+                let new_distance = this.relative_position(player).length();
+                if (new_distance < distance){
+                    distance = new_distance;
+                    nearest_player = player;
+                }
             }
         }
         return nearest_player;
@@ -144,4 +149,4 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite{
         return new Vec(object.x - this.x, object.y - this.y);
     }
 }
-export default class Enemy extends AliveGameObject(EnemyBase){}
+// export default class Enemy extends AliveGameObject(EnemyBase){}

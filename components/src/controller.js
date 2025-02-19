@@ -12,6 +12,8 @@ export default class Controller extends Phaser.Scene{
         //variables
         this.player_created = false;
 
+        this.player_coins = 0;
+
     }
     preload() {
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
@@ -56,6 +58,7 @@ export default class Controller extends Phaser.Scene{
         if (!this.player_created) {
             // tell server to create a player
             this.output_data({type: 'Constructor'});
+            this.player_created = true;
         }
     }
 
@@ -63,6 +66,10 @@ export default class Controller extends Phaser.Scene{
         switch (input.type) {
             case 'Player_Constructor_Acknowledgement':
                 this.player_created = true;
+                break;
+            case 'Set_Coins':
+                this.coins = input.coins;
+                console.log('player has '+this.coins+' coins.')
                 break;
             default:
                 console.log('unused input received: ',input)

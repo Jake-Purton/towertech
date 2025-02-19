@@ -6,7 +6,7 @@ import Wave from './wave.js'
 import WaveManager from "./wave_manager.js"
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func){
+    constructor(output_data_func, init_server_func){
         super('GameScene');
 
         // game object containers
@@ -19,12 +19,16 @@ export default class Game extends Phaser.Scene{
         // constants
         this.target_fps = 60;
         this.output_data = output_data_func;
+        this.init_server = init_server_func;
 
         // game data
         this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
 
         // current wave
         this.current_wave = null;
+
+        // score
+        this.score = 0;
 
     }
     preload() {
@@ -86,6 +90,8 @@ export default class Game extends Phaser.Scene{
         this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
     }
     create() {
+        this.init_server();
+
         // animations
         this.anims.create({
             key: 'goolime_walk',
@@ -167,6 +173,9 @@ export default class Game extends Phaser.Scene{
         this.dummy_input();
         for (let player of Object.values(this.players)) {
             player.game_tick(delta);
+            if (player.get_dead()) {
+                player.die();
+            }
         }
 
         /// handle towers
@@ -211,6 +220,7 @@ export default class Game extends Phaser.Scene{
         // delete all enemies that were added to remove_list
         this.enemies = this.enemies.filter(item => !remove_list.includes(item));
         for (let enemy of remove_list){
+            enemy.die();
             enemy.destroy();
         }
 
@@ -223,7 +233,7 @@ export default class Game extends Phaser.Scene{
             case 'Constructor':
                 if (!(input.PlayerID in this.players)){
                     this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
-                    this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
+                    // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
                 }
                 break;
             case 'Key_Input':

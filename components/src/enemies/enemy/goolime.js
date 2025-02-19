@@ -14,7 +14,7 @@ export default class Goolime extends Enemy{
     game_tick(delta_time, players, towers){
         if (this.path_t < this.leave_path){
             return super.game_tick(delta_time, players, towers);
-        } else if (this.target == null) {
+        } else if (this.target == null || this.target.dead) {
             this.target = this.find_near_player(players);
         } else {
             let direction = this.relative_position(this.target);
