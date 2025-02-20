@@ -5,7 +5,7 @@ import {GooBlood} from "../../particle.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path) {
+    constructor(scene, x, y, type, path, health) {
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -15,7 +15,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.play(type+'_walk')
 
         // this.move_speed = 1;
-        // this.health = 10;
+        this.health = health;
+        this.max_health = health;
         this.coin_value = 1;
 
         // effects info

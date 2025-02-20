@@ -4,10 +4,9 @@ const Vec = Phaser.Math.Vector2;
 
 export default class Gooshifter extends Enemy{
     constructor(scene, x, y, path) {
-        super(scene, x, y, 'goober', path);
+        super(scene, x, y, 'goober', path, 8);
 
         this.move_speed = 0.8;
-        this.health = 8;
 
         this.leave_path = Math.random() * 1/2 + 0.1;
         this.changed = false;

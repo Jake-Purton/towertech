@@ -4,9 +4,8 @@ const Vec = Phaser.Math.Vector2;
 
 export default class Goobomber extends Enemy{
     constructor(scene, x, y, path) {
-        super(scene, x, y, 'goobomber', path);
+        super(scene, x, y, 'goobomber', path, 8);
 
         this.move_speed = 0.4;
-        this.health = 8;
     }
 }
