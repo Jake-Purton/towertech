@@ -35,7 +35,7 @@ export default class Game extends Phaser.Scene{
         //// player part images
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
 
-        // this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
+        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png')
         this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png')
         this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');

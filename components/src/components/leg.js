@@ -47,6 +47,12 @@ class Leg extends Phaser.GameObjects.Container{
     
 }
 
+
+class DefaultLeg extends Leg {
+    constructor(scene) {
+        super(scene, 'default_leg');
+    }
+}
 class StripedLeg extends Leg {
     constructor(scene) {
         super(scene, 'striped_leg');
@@ -58,4 +64,4 @@ class RobotLeg extends Leg {
     }
 }
 
-export {RobotLeg, StripedLeg };
+export {DefaultLeg, RobotLeg, StripedLeg };

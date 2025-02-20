@@ -1,12 +1,10 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
-import Body from './components/bodies/body.js';
-import DefaultBody from './components/bodies/default_body.js';
-import Leg from './components/legs/leg.js';
-import {RobotLeg, StripedLeg } from './components/leg.js';
-import Wheel from './components/legs/wheel.js';
-import Weapon from './components/weapons/weapon.js';
-import DefaultWeapon from './components/weapons/default_weapon.js';
+
+import {DefaultBody} from './components/body.js';
+import {DefaultLeg, RobotLeg, StripedLeg } from './components/leg.js';
+import {DefaultWheel } from './components/wheel.js';
+import {DefaultWeapon } from './components/weapon.js';
 import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
@@ -14,7 +12,11 @@ const Vec = Phaser.Math.Vector2;
 const part_converter = {
     'robot_leg':RobotLeg,
     'striped_leg':StripedLeg,
+    'default_leg':DefaultLeg,
+    'wheel':DefaultWheel,
+
     'default_body':DefaultBody,
+
     'default_weapon':DefaultWeapon,
 }
 
@@ -29,7 +31,7 @@ export default class Player extends Phaser.GameObjects.Container{
         // assign body parts
         this.set_body('default_body');
         this.set_weapon('default_weapon');
-        this.set_leg('robot_leg');
+        this.set_leg('default_leg');
 
 
         // variables
@@ -88,16 +90,19 @@ export default class Player extends Phaser.GameObjects.Container{
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
     }
     set_body(body) {
+        this.remove(this.body_object,true);
         this.body_name = body;
         this.body_object = new part_converter[body](this.scene);
         this.add(this.body_object);
     }
     set_leg(leg) {
+        this.remove(this.leg_object,true);
         this.leg_name = leg;
         this.leg_object = new part_converter[leg](this.scene);
         this.add(this.leg_object);
     }
     set_weapon(weapon) {
+        this.remove(this.weapon_object,true);
         this.weapon_name = weapon;
         this.weapon_object = new part_converter[weapon](this.scene);
         this.add(this.weapon_object);
@@ -146,6 +151,15 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     pickup_item(dropped_item) {
         this.add_to_inventory(dropped_item.item_name)
+        if (dropped_item.item_name.split("_")[1] === "leg") {
+            this.set_leg(dropped_item.item_name);
+        } else if (dropped_item.item_name === "wheel") {
+            this.set_leg(dropped_item.item_name);
+        } else if (dropped_item.item_name.split("_")[1] === "body") {
+            this.set_body(dropped_item.item_name);
+        } else if (dropped_item.item_name.split("_")[1] === "weapon") {
+            this.set_weapon(dropped_item.item_name);
+        }
     }
     set_coins(coins) {
         this.coins = coins;

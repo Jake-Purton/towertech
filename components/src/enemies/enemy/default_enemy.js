@@ -8,7 +8,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path,
                 {health=5, move_speed=1, coin_value=1} = {},
-                loot_table = {drop_chance:0.3, drops:{
+                loot_table = {drop_chance:3, drops:{
                     'default_body':3, 'default_leg':3, 'default_weapon':3,
                     'wheel':1, 'robot_leg':1, 'striped_leg':1}}) {
         super(scene, x, y, type);
