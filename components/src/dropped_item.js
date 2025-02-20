@@ -5,7 +5,8 @@ import Entity from './entity.js';
 export default class DroppedItem extends Entity {
     constructor(scene, x, y, item) {
         super(scene, x, y, item, random_range(1,2), random_range(180,-180),
-            {drag: 0.9, initial_angle: random_range(180,-180), initial_angular_velocity: random_range(-10, 10), angular_drag:0.95});
+            {initial_angle: random_range(180,-180),
+                initial_angular_velocity: random_range(-10, 10), angular_drag:0.95, drag:0.9});
         scene.add.existing(this);
         scene.physics.add.existing(this);
 

@@ -1,21 +1,27 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
 
-class Weapon extends Phaser.GameObjects.Container{
-    constructor(scene, texture, x_offset=14, y_offset=-3){
+class Weapon extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, texture, x_offset=0, y_offset=-3, hold_distance=20){
+        super(scene, 0, 0, texture);
 
-        let left_arm = new Phaser.Physics.Arcade.Sprite(scene, -x_offset, y_offset, texture);
-        let right_arm = new Phaser.Physics.Arcade.Sprite(scene, x_offset, y_offset, texture);
-        right_arm.setScale(-1,1);
+        this.x_offset = x_offset;
+        this.y_offset = y_offset;
+        this.hold_distance = hold_distance;
+        this.weapon_direction = 0;
 
-        super(scene, 0, 0, [left_arm, right_arm]);
-        
-        this.left_arm = left_arm;
-        this.right_arm = right_arm;
+        this.set_weapon_direction(180);
 
     }
     movement_animation(){
         
+    }
+    // angle in degrees
+    set_weapon_direction(angle) {
+        this.weapon_direction = angle;
+        this.setAngle(angle);
+        this.setPosition(this.x_offset+this.hold_distance*Math.cos(angle/180*Math.PI),
+                         this.y_offset+this.hold_distance*Math.sin(angle/180*Math.PI));
     }
 }
 
@@ -24,5 +30,10 @@ class DefaultWeapon extends Weapon{
         super(scene, 'default_weapon');
     }
 }
+class PistolWeapon extends Weapon{
+    constructor(scene) {
+        super(scene, 'pistol_weapon');
+    }
+}
 
-export {DefaultWeapon };
+export {DefaultWeapon, PistolWeapon };

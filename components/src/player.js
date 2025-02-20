@@ -1,10 +1,10 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
 
-import {DefaultBody} from './components/body.js';
+import {DefaultBody, RobotBody} from './components/body.js';
 import {DefaultLeg, RobotLeg, StripedLeg } from './components/leg.js';
 import {DefaultWheel } from './components/wheel.js';
-import {DefaultWeapon } from './components/weapon.js';
+import {DefaultWeapon, PistolWeapon } from './components/weapon.js';
 import Effects from './effects.js';
 
 const Vec = Phaser.Math.Vector2;
@@ -16,8 +16,10 @@ const part_converter = {
     'wheel':DefaultWheel,
 
     'default_body':DefaultBody,
+    'robot_body':RobotBody,
 
     'default_weapon':DefaultWeapon,
+    'pistol_weapon':PistolWeapon,
 }
 
 export default class Player extends Phaser.GameObjects.Container{
@@ -29,9 +31,9 @@ export default class Player extends Phaser.GameObjects.Container{
         scene.physics.add.existing(this);
 
         // assign body parts
-        this.set_body('default_body');
-        this.set_weapon('default_weapon');
-        this.set_leg('default_leg');
+        this.set_body('robot_body');
+        this.set_weapon('pistol_weapon');
+        this.set_leg('robot_leg');
 
 
         // variables
@@ -67,6 +69,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
     }
     game_tick(delta_time){ //function run by game.js every game tick
+
+        this.weapon_object.set_weapon_direction(this.weapon_object.weapon_direction+1);
+
+
         // handle effects
         this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
         this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
@@ -94,18 +100,25 @@ export default class Player extends Phaser.GameObjects.Container{
         this.body_name = body;
         this.body_object = new part_converter[body](this.scene);
         this.add(this.body_object);
+        this.reset_part_render_order();
     }
     set_leg(leg) {
         this.remove(this.leg_object,true);
         this.leg_name = leg;
         this.leg_object = new part_converter[leg](this.scene);
         this.add(this.leg_object);
+        this.reset_part_render_order();
     }
     set_weapon(weapon) {
         this.remove(this.weapon_object,true);
         this.weapon_name = weapon;
         this.weapon_object = new part_converter[weapon](this.scene);
         this.add(this.weapon_object);
+        this.reset_part_render_order();
+    }
+    reset_part_render_order(){
+        this.bringToTop(this.weapon_object);
+        this.sendToBack(this.body_object);
     }
 
     get_dead() {
