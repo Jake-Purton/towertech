@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
-import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js'
-import {random_gauss, modulo, get_removed } from './utiles.js'
+import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js';
+import {random_gauss, modulo, get_removed } from './utiles.js';
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 import ProjectileShooter from './projectile_shooter.js';
@@ -44,20 +44,26 @@ class Tower extends ProjectileShooter {
         this.nearby_player = null;
     }
     game_tick(delta_time, enemies, players) {
-        // super.game_tick(delta_time, enemies, players);
-
-        this.shoot_cooldown -= delta_time/this.scene.target_fps;
-        this.time_since_attacking += delta_time/this.scene.target_fps;
+        super.game_tick(delta_time);
 
         if (get_removed(this.target)) {
             this.check_target(enemies);
         }
         this.rotate_gun(delta_time);
-        this.attack_enemies(enemies);
+        this.attack_enemies(enemies, this.effects);
 
         this.check_nearby_player(players);
 
         this.effects.game_tick(delta_time, this);
+    }
+    set_weapon_direction(angle) {
+        this.gun.setAngle(angle);
+    }
+    get_weapon_direction() {
+        return this.gun.angle;
+    }
+    get_projectile_texture_name() {
+        return this.tower_type.concat('_projectile');
     }
     check_nearby_player(players) {
         let new_nearby_player = null;
@@ -119,10 +125,9 @@ class LaserTower extends Tower{
             this.animation_position_tracker = this.recent_laser.animation_position;
         }
     }
-    shoot() {
+    shoot(effects) {
         if (this.check_shooting_blocked()) {
-            this.shoot_cooldown = this.shoot_cooldown_value;
-            let damage = this.damage * this.effects.get_damage_multiplier();
+            let damage = this.damage * effects.get_damage_multiplier();
             let laser = new LineAttack(this.scene, this, this.target,
                 this.tower_type.concat('_projectile'), damage, 0.11, this.animation_speed, this.animation_position_tracker)
             this.recent_laser = laser
@@ -178,8 +183,7 @@ class SlowingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, EffectAOE, {gun_center:[0.5,0.5]}, {fire_rate:10});
     }
-    shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value;
+    shoot(effects) {
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
     }
@@ -192,8 +196,7 @@ class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, EffectAOE, {gun_center:[0.5,0.5]}, {fire_rate:10,});
     }
-    shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value;
+    shoot(effects) {
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
     }
@@ -206,8 +209,7 @@ class BuffingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id) {
         super(scene, x, y, tower_type, player_id, EffectAOE, {gun_center:[0.5,0.5]}, {fire_rate:10});
     }
-    shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value;
+    shoot(effects) {
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
     }

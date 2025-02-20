@@ -42,7 +42,8 @@ export default class Player extends Phaser.GameObjects.Container{
             Up: 0,
             Down: 0,
             Left: 0,
-            Right: 0
+            Right: 0,
+            Attack: 0,
         }
         this.move_direction = new Vec(0,0);
         this.prev_tower_button_direction = 'Up';
@@ -68,16 +69,15 @@ export default class Player extends Phaser.GameObjects.Container{
         this.inventory = {};
 
     }
-    game_tick(delta_time){ //function run by game.js every game tick
-
-        this.weapon_object.set_weapon_direction(this.weapon_object.weapon_direction+1);
-
+    game_tick(delta_time, enemies){ //function run by game.js every game tick
 
         // handle effects
         this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
         this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
         this.effects.game_tick(delta_time, this);
 
+
+        // physics + movement
         this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
                                       this.key_inputs.Down-this.key_inputs.Up)
 
@@ -88,12 +88,20 @@ export default class Player extends Phaser.GameObjects.Container{
         this.velocity.x *= this.drag**delta_time;
         this.velocity.y *= this.drag**delta_time;
 
-        this.leg_object.movement_animation(this.velocity);
-
         let speed_multiplier =  this.effects.get_speed_multiplier();
 
         this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
         this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+
+        // part management
+        this.leg_object.movement_animation(this.velocity);
+        this.weapon_object.game_tick(delta_time);
+        if (this.key_inputs.Attack) {
+            this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
+        } else {
+            this.weapon_object.attack_button_up();
+        }
+
     }
     set_body(body) {
         this.remove(this.body_object,true);
@@ -154,6 +162,19 @@ export default class Player extends Phaser.GameObjects.Container{
             this.key_inputs[data.Key] = 1;
         } else {
             this.key_inputs[data.Key] = 0;
+        }
+    }
+    attack_input(data) {
+        if (data.Direction === 'Down') {
+            this.key_inputs.Attack = 1;
+        } else {
+            this.key_inputs.Attack = 0;
+        }
+        if (data.Auto_Target === true) {
+            this.weapon_object.auto_target = true;
+        } else {
+            this.weapon_object.auto_target = false;
+            this.weapon_object.set_weapon_direction(data.Angle);
         }
     }
     new_tower_input(data) {

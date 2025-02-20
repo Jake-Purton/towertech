@@ -48,6 +48,10 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         this.target_type = target_type; // can be one of "Closest", "Furthest", "Front", "Back", "MostHealth", "LeastHealth"
         this.stay_on_same_target = stay_on_same_target; // if true will keep attacking same target even if new target appears, e.g. a new closest target
     }
+    game_tick(delta_time) {
+        this.shoot_cooldown -= delta_time/this.scene.target_fps;
+        this.time_since_attacking += delta_time/this.scene.target_fps;
+    }
     check_target(enemies) {
         if (!this.stay_on_same_target || get_removed(this.target)) {
             this.locate_target(enemies);
@@ -94,39 +98,44 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
                 return -enemy.health*10000-this.get_relative_pos(enemy).length()
         }
     }
-    attack_enemies(enemies) {
+    attack_enemies(enemies, effects) {
         if (this.ready_to_shoot && this.shoot_cooldown<0) {
-            this.shoot();
+            this.shoot(effects);
+            this.shoot_cooldown = this.shoot_cooldown_value/effects.get_speed_multiplier();
             this.check_target(enemies);
             this.time_since_attacking = 0;
+            return true;
         }
+        return false;
     }
-    shoot() {
-        this.shoot_cooldown = this.shoot_cooldown_value/this.effects.get_speed_multiplier();
+    shoot(effects) {
         // create a new projectile object and add it to projectiles list
-        let angle = random_gauss(this.gun.angle, this.fire_spread, this.fire_spread*3);
+        let angle = random_gauss(this.get_weapon_direction(), this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
-        let damage = this.damage * this.effects.get_damage_multiplier();
-        let speed = this.fire_velocity * this.effects.get_speed_multiplier();
+        let damage = this.damage * effects.get_damage_multiplier();
+        let speed = this.fire_velocity * effects.get_speed_multiplier();
         let shoot_pos = this.get_projectile_source_position();
 
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, shoot_pos.x, shoot_pos.y, this.tower_type.concat('_projectile'), speed, angle, 'Tower',
-            {damage:damage, target:this.target, source:this, auto_aim_range:this.projectile_auto_aim_range,
+            this.scene, shoot_pos.x, shoot_pos.y, this.get_projectile_texture_name(), speed, angle, 'Tower',
+            {damage:damage, target:this.target, source:this.get_projectile_source(), auto_aim_range:this.projectile_auto_aim_range,
                 auto_aim_strength:this.projectile_auto_aim_strength,pierce_count:this.pierce_count},
             {target_distance:fire_distance, speed_min_to_kill:this.projectile_min_speed,
                 no_drag_distance:this.projectile_no_drag_distance}));
     }
     get_projectile_source_position() {
-        return new Vec(this.x + this.width*this.projectile_spawn_location*Math.cos(this.gun.angle/180*Math.PI),
-            this.y + this.width*this.projectile_spawn_location*Math.sin(this.gun.angle/180*Math.PI))
+        return new Vec(this.x + this.width*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
+            this.y + this.width*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
+    }
+    get_projectile_source() {
+        return this
     }
     rotate_gun(delta_time) {
         this.ready_to_shoot = false;
         if (!get_removed(this.target)) {
             // get angle towards target
             let target_angle = this.get_relative_pos(this.target).angle()*180/Math.PI;
-            let current_angle = this.gun.angle;
+            let current_angle = this.get_weapon_direction();
 
             // rotate gun - ye i dont understand this code either i kinda eyeballed the maths
             // rotates a maximum of this.max_turn_speed per tick
@@ -136,7 +145,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
                 dis = 360-dis;
             }
             if (dis < this.max_turn_speed*delta_time) {
-                this.gun.setAngle(target_angle);
+                this.set_weapon_direction(target_angle);
                 this.ready_to_shoot = true;
             } else {
                 let flip;
@@ -146,16 +155,19 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
                     flip = 1
                 }
                 if (diff % 360 < 180) {
-                    this.gun.setAngle(current_angle + this.max_turn_speed * delta_time * flip)
+                    this.set_weapon_direction(current_angle + this.max_turn_speed * delta_time * flip)
                 } else {
-                    this.gun.setAngle(current_angle - this.max_turn_speed * delta_time * flip)
+                    this.set_weapon_direction(current_angle - this.max_turn_speed * delta_time * flip)
                 }
             }
             // Rotates gun slowly when not attacking
         } else if (this.time_since_attacking > 1.5) {
-            this.gun.setAngle(this.gun.angle + this.passive_turn_speed);
+            this.set_weapon_direction(this.get_weapon_direction() + this.passive_turn_speed);
         }
     }
+    get_projectile_texture_name() {return ''}
+    set_weapon_direction(angle) {}
+    get_weapon_direction() {return 0;}
     // returns the relative position from this to the passed enemy
     get_relative_pos(enemy) {
         return new Vec(enemy.x-this.x, enemy.y-this.y);

@@ -182,7 +182,7 @@ export default class Game extends Phaser.Scene{
         this.dummy_input();
         let all_dead = true;
         for (let player of Object.values(this.players)) {
-            player.game_tick(delta);
+            player.game_tick(delta, this.enemies);
             if (player.get_dead()) {
                 player.die();
             } else {
@@ -278,6 +278,9 @@ export default class Game extends Phaser.Scene{
             case 'Key_Input':
                 this.players[input.PlayerID].key_input(input);
                 break;
+            case 'Attack_Input':
+                this.players[input.PlayerID].attack_input(input);
+                break;
             case 'Create_Tower':
                 this.players[input.PlayerID].new_tower_input(input);
                 break;
@@ -323,6 +326,12 @@ export default class Game extends Phaser.Scene{
         }
         if (this.kprs.space.isUp) {
             this.take_input({PlayerID: 'TempPlayerId', type:'Create_Tower', Direction: 'Up', Tower: 'LaserTower'})
+        }
+        if (this.kprs.shift.isDown) {
+            this.take_input({PlayerID: 'TempPlayerId', type:'Attack_Input', Direction:'Down', Auto_Target:true, Angle:140});
+        }
+        if (this.kprs.shift.isUp) {
+            this.take_input({PlayerID: 'TempPlayerId', type:'Attack_Input', Direction:'Up', Auto_Target:true});
         }
     }
 }
