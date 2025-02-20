@@ -100,25 +100,29 @@ export default class Player extends Phaser.GameObjects.Container{
         this.body_name = body;
         this.body_object = new part_converter[body](this.scene);
         this.add(this.body_object);
-        this.reset_part_render_order();
+        this.refresh_player_parts();
     }
     set_leg(leg) {
         this.remove(this.leg_object,true);
         this.leg_name = leg;
         this.leg_object = new part_converter[leg](this.scene);
         this.add(this.leg_object);
-        this.reset_part_render_order();
+        this.refresh_player_parts();
     }
     set_weapon(weapon) {
         this.remove(this.weapon_object,true);
         this.weapon_name = weapon;
         this.weapon_object = new part_converter[weapon](this.scene);
         this.add(this.weapon_object);
-        this.reset_part_render_order();
+        this.refresh_player_parts();
     }
-    reset_part_render_order(){
-        this.bringToTop(this.weapon_object);
-        this.sendToBack(this.body_object);
+    refresh_player_parts(){
+        if (typeof(this.body_object) !== 'undefined' && typeof(this.weapon_object) !== 'undefined' && typeof(this.leg_object) !== 'undefined') {
+            this.bringToTop(this.weapon_object);
+            this.sendToBack(this.leg_object);
+            this.weapon_object.set_scale(this.body_object.get_scale_multiplier());
+            this.leg_object.set_scale(this.body_object.get_scale_multiplier());
+        }
     }
 
     get_dead() {
