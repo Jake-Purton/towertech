@@ -3,25 +3,27 @@ const Vec = Phaser.Math.Vector2;
 import {modulo } from '../utiles.js';
 
 class Weapon extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, texture, {x_offset=0, y_offset=0, hold_distance=16, length=20} = {}){
+    constructor(scene, texture, projectile_class, {x_offset=0, y_offset=0, hold_distance=16, length=20,
+            fire_cooldown=0.2, range=150, fire_distance=150, } = {}){
         super(scene, 0, 0, texture);
 
         this.x_offset = x_offset;
         this.y_offset = y_offset;
         this.hold_distance = hold_distance;
+
         this.weapon_direction = 0;
 
         this.weapon_length = length;
         this.set_scale(1);
 
         this.set_weapon_direction(180);
-
-    }
-    movement_animation(){
     }
     set_scale(scale) {
         this.setScale(scale*this.weapon_length/this.width);
     }
+
+
+
     // angle in degrees
     set_weapon_direction(angle) {
         this.weapon_direction = angle;

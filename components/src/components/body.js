@@ -11,8 +11,6 @@ class Body extends Phaser.Physics.Arcade.Sprite{
         this.set_scale(1);
 
     }
-    movement_animation(){
-    }
     set_scale(scale) {
         this.setScale(scale*this.body_height/this.height);
     }
