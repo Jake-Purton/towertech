@@ -3,7 +3,6 @@ import next from "next";
 import { Server } from "socket.io";
 import { RoomManager } from "./src/rooms.js";
 import { handleMessage, handleJoinRoom, handleDisconnect } from "./src/eventHandlers.js";
-import { sql } from "@vercel/postgres";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -34,26 +33,8 @@ app.prepare().then(() => {
       socket.emit("updateUsers", users);
     });
 
-    socket.on("end_game_output", async (data) => {
-      console.log("end_game_output", data);
-
-      // {gamescore, playerdata}
-      // playerdata = list of dicts with playerID and score and player kills
-
-      // we wanna put this into the database
-      
-      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${data.gamescore}) RETURNING gameid`;
-      const gameid = result.rows[0].gameid;
-      console.log(gameid);
-
-      console.log(data.player_data);
-
-      for (const player of data.player_data) {
-        const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore) VALUES (${gameid}, ${player.player_id}, ${player.kills}, ${player.score}) RETURNING *`;
-        console.log(playerResult);
-      }
-
-      
+    socket.on("end_game", () => {
+      console.log("end the game");
 
     });
 
