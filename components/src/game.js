@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import {random_choice } from './utiles.js';
-import WaveManager from "./wave_manager.js"
+import Level from "./level.js";
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func, init_server_func){
@@ -19,12 +19,6 @@ export default class Game extends Phaser.Scene{
         this.target_fps = 60;
         this.output_data = output_data_func;
         this.init_server = init_server_func;
-
-        // game data
-        this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-
-        // current wave
-        this.current_wave = null;
 
         // gameplay info
         this.score = 0;
@@ -44,6 +38,8 @@ export default class Game extends Phaser.Scene{
         this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
 
+        //// background
+        this.load.image('background','/game_images/background.png');
 
         //// particle images
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
@@ -154,22 +150,11 @@ export default class Game extends Phaser.Scene{
         // game objects
         this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
 
-
-        //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
-        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
+        // create Level (map info and enemy path)
+        this.level = new Level(this, 'main', 0, 0, this.scale.width, this.scale.height);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
-
-        // random numbers
-        this.RNG = new Phaser.Math.RandomDataGenerator();
-
-        this.wave_manager = new WaveManager(this);
-
-
-        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter"], "enemyWeights":[10, 5,5,5,5,5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
-
-        this.wave_manager.load_waves(test)
 
     }
     // delta is the delta_time value, it is the milliseconds since last frame
@@ -255,8 +240,8 @@ export default class Game extends Phaser.Scene{
             enemy.destroy();
         }
 
-        // wave management
-        this.wave_manager.game_tick(delta);
+        // level(wave) management
+        this.level.game_tick(delta);
 
         // check game over
         if (this.health <= 0) {
@@ -285,14 +270,6 @@ export default class Game extends Phaser.Scene{
                 this.players[input.PlayerID].new_tower_input(input);
                 break;
         }
-    }
-
-    load_path(points){
-        let path = new Phaser.Curves.Path(points[0][0], points[0][1]);
-        for (let i=1;i<points.length;i++) {
-            path.lineTo(points[i][0],points[i][1]);
-        }
-        return path
     }
 
     dummy_input(){
