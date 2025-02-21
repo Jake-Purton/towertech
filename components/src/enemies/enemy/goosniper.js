@@ -1,15 +1,14 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import {GooslingerProjectile, GoosniperProjectile} from '../../projectile.js';
+import {GoosniperProjectile} from '../../projectile.js';
 import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goosniper extends Enemy{
     constructor(scene, x, y, path) {
-        super(scene, x, y, 'goosniper', path);
+        super(scene, x, y, 'goosniper', path,
+            {health: 10, move_speed:0.5});
 
-        this.move_speed = 0.5;
-        this.health = 10;
         this.cooldown = 100;
         this.max_cooldown = 100;
         this.target = null;
