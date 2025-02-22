@@ -50,18 +50,18 @@ const PhaserGame = () => {
 
           // go to the next page for host
 
-
-          const token = localStorage.getItem('token');
+          // the token encoded with the room id for security
+          const roomToken = localStorage.getItem('roomToken');
 
           // if there is a token, we can send the data to the server
-          if (token) {
+          if (roomToken) {
             try {
               const response = await fetch('/api/endGame', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ token, gameData: data }),
+                body: JSON.stringify({ roomToken, gameData: data }),
               });
 
               const result = await response.json();

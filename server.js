@@ -45,7 +45,7 @@ app.prepare().then(() => {
       socket.emit("updateUsers", users);
     });
 
-    socket.on("end_game", () => {
+    socket.on("end_game", (/*room code here */) => {
 
       // TO DO Replace the socket ids with the user ids
       console.log("end the game");
