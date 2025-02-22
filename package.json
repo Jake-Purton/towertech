@@ -13,6 +13,7 @@
     "@vercel/postgres": "^0.10.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
     "eslint": "^9.18.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.1.2",
