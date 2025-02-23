@@ -36,7 +36,7 @@ export default class Button extends Phaser.GameObjects.Container {
         this.button_pressed = false;
         this.enabled = true;
     }
-    mouse_down() {
+    mouse_down(pointer) {
         if (this.enabled) {
             this.button_down();
         }

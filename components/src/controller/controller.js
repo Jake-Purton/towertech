@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
-import {modulo } from './utiles.js';
-import Button from './button.js';
+import {modulo } from '../utiles.js';
+import Button from '../button.js';
 
 
 export default class Controller extends Phaser.Scene{
@@ -46,6 +46,9 @@ export default class Controller extends Phaser.Scene{
             press_command:() => this.button_pressed('Right'),
             release_command:() => this.button_released('Right')})
 
+        new Button(this, 700, 120, {text:'Tower',height:90,width:150,
+            release_command:() => this.move_menu('CreateTower')})
+
         let towers = ['CannonTower','SniperTower','BallistaTower','LaserTower','FlamethrowerTower',
         'HealingTower','SlowingTower','BuffingTower'];
 
@@ -79,6 +82,10 @@ export default class Controller extends Phaser.Scene{
             default:
                 console.log('unused input received: ',input)
         }
+    }
+
+    move_menu = (menu) => {
+        this.scene.switch(menu);
     }
 
     button_pressed(button) {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { socket } from "../app/src/socket";
-import Controller from './src/controller.js';
+import Controller from './src/controller/controller.js';
+import CreateTowerMenu from "./src/controller/create_tower_menu.js";
 
 const GameController = () => {
   const gameRef = useRef(null);
@@ -12,9 +13,30 @@ const GameController = () => {
         if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
 
+
+        const ForceLandscape = async () => {
+          window.orientation
+          // if (window.screen.orientation && window.screen.orientation.lock) {
+          //   try {
+          //     await window.screen.orientation.lock("landscape");
+          //   } catch (err) {
+          //     console.warn("Screen orientation lock failed:", err);
+          //   }
+          // }
+        }
+
+        const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          ForceLandscape();
+        }
+
+        let display_width = Math.min(window.innerWidth-20,1000);
+        let display_height = Math.min(window.innerHeight-20,800);
+
+
         const config = {
-          width: 800,
-          height: 600,
+          width: display_width,//800,
+          height: display_height,//600,
           type: Phaser.AUTO,
           parent: gameRef.current,
           audio: {
@@ -27,7 +49,7 @@ const GameController = () => {
               gravity: { y: 0 },
             }
           },
-          scene: new Controller(output_data),
+          scene: [new Controller(output_data), new CreateTowerMenu(output_data)],
           backgroundColor: '#c267e3',
         };
 
