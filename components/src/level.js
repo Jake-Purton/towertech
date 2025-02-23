@@ -4,23 +4,39 @@ import WaveManager from "./wave_manager.js";
 export default class Level extends Phaser.Physics.Arcade.Sprite {
     static map_data = {
         // 'original': {map_texture: '', enemy_path:[[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]},
-        'main': {map_texture:'background', enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]}}
-    constructor(scene, map_name, x, y, width, height) {
+        'main': {map_texture:'background', width:800, height:800, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]}}
+    constructor(scene, map_name, screen_width, screen_height) {
         let info = Level.map_data[map_name];
-        super(scene, x, y, info.map_texture);
+        super(scene, 0, 0, info.map_texture);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        this.x_pos = x;
-        this.y_pos = y;
-        this.screen_width = width;
-        this.screen_height = height;
+        this.x_pos = 0;
+        this.y_pos = 0;
+
+
+        // adjust camera to make map fill screen
+        this.texture_width = info.width;
+        this.texture_height = info.height;
+
+        let texture_ratio = this.texture_width/this.texture_height;
+        if (screen_width/screen_height > texture_ratio) {
+            this.display_width = screen_height*texture_ratio;
+            this.display_height = screen_height;
+        } else {
+            this.display_width = screen_width;
+            this.display_height = screen_width/texture_ratio;
+        }
+        console.log(this.texture_width, this.texture_height, screen_width, screen_height, this.display_width, this.display_height);
+        this.scene.cameras.main.setZoom(this.display_width/this.texture_width, this.display_height/this.texture_height);
+        this.scene.cameras.main.setScroll((this.texture_width-screen_width)/2,(this.texture_height-screen_height)/2);
+        this.scene.cameras.main.setViewport(0,0, screen_width,  screen_height);
 
         this.enemy_path = this.load_path(info.enemy_path);
         this.depth = -10;
 
-        this.setScale(this.screen_width/this.width, this.screen_height/this.height);
-        this.setPosition(this.x_pos+this.screen_width/2, this.y_pos+this.screen_height/2);
+        this.setScale(this.texture_width/this.width, this.texture_height/this.height);
+        this.setPosition(this.texture_width/2, this.texture_height/2);
 
         // wave stuf
         this.current_wave = null;
@@ -36,12 +52,12 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
     }
     load_path(points){
         let path = new Phaser.Curves.Path(
-            this.x_pos + points[0][0]*this.screen_width,
-            this.y_pos + points[0][1]*this.screen_height);
+            this.x_pos + points[0][0]*this.texture_width,
+            this.y_pos + points[0][1]*this.texture_height);
         for (let i=1;i<points.length;i++) {
             path.lineTo(
-                this.x_pos + points[i][0]*this.screen_width,
-                this.y_pos + points[i][1]*this.screen_height);
+                this.x_pos + points[i][0]*this.texture_width,
+                this.y_pos + points[i][1]*this.texture_height);
         }
         return path
     }
