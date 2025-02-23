@@ -35,7 +35,15 @@ app.prepare().then(() => {
     // socket.on("disconnect", handleDisconnect(socket, roomManager));
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();
-      socket.emit("roomCode", roomCode);
+      const tokenOptions = { expiresIn: '1d' };
+      jwt.sign({ roomCode }, JWT_SECRET, tokenOptions, (err, roomToken) => {
+        if (err) {
+          console.error("Error creating token:", err);
+          return;
+        }
+        socket.emit("roomCode", {roomCode, roomToken});
+      });
+
       console.log("room created with code: ", roomCode);
       socket.join(roomCode);
     });
@@ -45,9 +53,33 @@ app.prepare().then(() => {
       socket.emit("updateUsers", users);
     });
 
-    socket.on("end_game", (/*room code here */) => {
+    socket.on("end_game", (roomToken) => {
 
-      // TO DO Replace the socket ids with the user ids
+      jwt.verify(roomToken, JWT_SECRET, async (err, decoded) => {
+        if (err) {
+          console.error("Invalid token:", err);
+          return;
+        }
+        const roomCode = decoded.roomCode;
+        console.log("Room code from token:", roomCode);
+        // Add your logic here using the roomCode
+
+        const users = roomManager.getUsersInRoom(roomCode);
+
+        for (const user of users) {
+
+          if (user.usersUserID) {
+            console.log("User ID:", user.usersUserID);
+            // add the game data to the database
+
+            // this is so cooked bro
+            const result = await sql `UPDATE playeringame SET userid = ${user.usersUserID} WHERE userid = ${user.userID}`;
+
+            console.log("result", result);
+          }
+        }
+      });
+
       console.log("end the game");
 
     });

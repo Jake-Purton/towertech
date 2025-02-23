@@ -80,7 +80,7 @@ const PhaserGame = () => {
           }
 
           // function that sends the end game message to the server
-          socket.emit("end_game");
+          socket.emit("end_game", roomToken);
         }
 
 
