@@ -15,7 +15,7 @@ const GameController = () => {
 
 
         const ForceLandscape = async () => {
-          window.orientation
+          // window.orientation
           // if (window.screen.orientation && window.screen.orientation.lock) {
           //   try {
           //     await window.screen.orientation.lock("landscape");

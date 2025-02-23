@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {modulo } from '../utiles.js';
 import Button from '../button.js';
+import Joystick from '../joystick.js';
 
 
 export default class Controller extends Phaser.Scene{
@@ -24,6 +25,9 @@ export default class Controller extends Phaser.Scene{
 
         this.load.image('button','/game_images/UI/button.png');
         this.load.image('button2','/game_images/UI/button2.png');
+
+        this.load.image('joystick_base','/game_images/UI/joystick_base.png');
+        this.load.image('joystick_head','/game_images/UI/joystick_head.png');
     }
     create() {
 
@@ -59,6 +63,8 @@ export default class Controller extends Phaser.Scene{
                  press_command:() => this.make_tower(towers[i],'Down'),
                  release_command:() => this.make_tower(towers[i],'Up')})
         }
+
+        new Joystick(this, 150, 650, {holding_command:this.joystick_holding, release_command:this.joystick_release});
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -88,14 +94,20 @@ export default class Controller extends Phaser.Scene{
         this.scene.switch(menu);
     }
 
-    button_pressed(button) {
+    button_pressed = (button) => {
         this.output_data({type:'Key_Input', Key: button, Direction: 'Down'});
     }
-    button_released(button) {
+    button_released = (button) => {
         this.output_data({type:'Key_Input', Key: button, Direction: 'Up'});
     }
-    make_tower(tower, direction) {
+    make_tower = (tower, direction) => {
         this.output_data({type:'Create_Tower', Tower: tower, Direction: direction})
+    }
+    joystick_holding = (x,y) => {
+        this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'})
+    }
+    joystick_release = () => {
+        this.output_data({type:'Joystick_Input', Direction: 'Up'})
     }
 
 }

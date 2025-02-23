@@ -266,6 +266,9 @@ export default class Game extends Phaser.Scene{
             case 'Attack_Input':
                 this.players[input.PlayerID].attack_input(input);
                 break;
+            case 'Joystick_Input':
+                this.players[input.PlayerID].joystick_input(input);
+                break;
             case 'Create_Tower':
                 this.players[input.PlayerID].new_tower_input(input);
                 break;

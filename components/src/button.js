@@ -26,7 +26,6 @@ export default class Button extends Phaser.GameObjects.Container {
         this.texture.on('pointerout', this.mouse_remove_hover, this);
 
         // variables
-        console.log('made button',x,y);
         this.x_pos = x;
         this.y_pos = y;
         this.shrink_ratio = shrink_ratio;
