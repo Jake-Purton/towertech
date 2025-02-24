@@ -11,6 +11,8 @@ export default class Goosplitter extends Enemy{
     }
     get_dead(){
         if (this.path_t >= 1 || this.health<=0){
+            // This should be moved elsewhere.
+            // this function is just to check if the enemy is dead or not.
             this.spawn_splits()
             return true;
         }

@@ -22,7 +22,7 @@ export default class BossWave extends Wave
     {
         super.game_tick(deltaTime);
         //If the boss enemy is still alive,
-        if (this.bossEnemy.get_dead())
+        if (this.bossEnemy != null && this.bossEnemy.health > 0)
         {
             //re-add deltaTime so that the remaining time is a respite after beating the boss.
             this.remainingTime += deltaTime;
@@ -40,6 +40,10 @@ export default class BossWave extends Wave
 
     get_wave_progress()
     {
+        if (this.bossEnemy == null)
+        {
+            return 0;
+        }
         return this.bossEnemy.health / this.bossEnemy.max_health;
     }
 }
