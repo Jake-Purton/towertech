@@ -15,11 +15,13 @@ const GameController = () => {
 
         let display_width = Math.min(window.innerWidth-20,3000);
         let display_height = Math.min(window.innerHeight-20,3000);
+        let mobile_device = /Mobi|Android/i.test(navigator.userAgent);
 
         let scene_info = {
           output_data_func: output_data,
           screen_width: display_width,
-          screen_height: display_height};
+          screen_height: display_height,
+          mobile_device: mobile_device};
 
         const config = {
           width: display_width,//800,
@@ -28,6 +30,11 @@ const GameController = () => {
           parent: gameRef.current,
           audio: {
             disableWebAudio: true
+          },
+          scale: {
+            mode: Phaser.Scale.RESIZE,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            orientation: Phaser.Scale.LANDSCAPE,
           },
           physics: {
             default: 'arcade',

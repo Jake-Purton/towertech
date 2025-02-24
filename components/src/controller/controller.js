@@ -12,8 +12,7 @@ export default class Controller extends Phaser.Scene{
         this.output_data = scene_info.output_data_func;
         this.screen_width = scene_info.screen_width;
         this.screen_height = scene_info.screen_height;
-
-        this.portrait = (this.screen_height > this.screen_width);
+        this.mobile_device = scene_info.mobile_device;
 
         //variables
         this.player_created = false;
@@ -35,15 +34,18 @@ export default class Controller extends Phaser.Scene{
     }
     create() {
 
-        new Joystick(this, this.screen_width-100, this.screen_height-100, {holding_command:this.joystick_holding, release_command:this.joystick_release});
+        window.addEventListener('resize', () => {this.resized()});
+        // this.input.on('resize', this.resized, this);
 
-        this.print('portrait: '+this.portrait+' w:'+this.screen_width+' h:'+this.screen_height);
+        // this.print('portrait: '+this.portrait+' w:'+this.screen_width+' h:'+this.screen_height);
 
-        this.scale.startFullscreen();
-
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('portrait').catch(err => console.log(err));
+        if (this.mobile_device) {
+            this.prompt_tap_text = this.add.text(this.screen_width/2, this.screen_height/2, 'Tap to Start');
+            this.input.once('pointerup',function() {this.init_fullscreen()},this);
+        } else {
+            this.create_ui();
         }
+
 
 
         // make ui
@@ -103,6 +105,24 @@ export default class Controller extends Phaser.Scene{
             default:
                 console.log('unused input received: ',input)
         }
+    }
+    init_fullscreen = () => {
+        this.prompt_tap_text.destroy();
+        this.scale.startFullscreen();
+        screen.orientation.lock('landscape').then(
+            () => {
+                this.resized();
+                this.create_ui();
+            }
+        )
+
+    }
+    resized = () => {
+        this.screen_width = window.innerWidth;
+        this.screen_height = window.innerHeight;
+    }
+    create_ui = () => {
+        new Joystick(this, this.screen_width-100, this.screen_height-100, {holding_command:this.joystick_holding, release_command:this.joystick_release});
     }
 
     move_menu = (menu) => {
