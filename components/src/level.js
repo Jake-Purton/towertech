@@ -21,22 +21,16 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
         this.texture_height = info.height;
 
         let texture_ratio = this.texture_width/this.texture_height;
-        let camera_x = 0;
-        let camera_y = 0;
         if (screen_width/screen_height > texture_ratio) {
             this.display_width = screen_height*texture_ratio;
             this.display_height = screen_height;
-            camera_x = (this.display_width-this.texture_width)/2
         } else {
             this.display_width = screen_width;
             this.display_height = screen_width/texture_ratio;
-            camera_x = (this.display_height-this.texture_height)/2
         }
         this.scene.cameras.main.setZoom(this.display_width/this.texture_width, this.display_height/this.texture_height);
         this.scene.cameras.main.setScroll((this.texture_width-this.display_width)/2,(this.texture_height-this.display_height)/2);
-        this.scene.cameras.main.setViewport(camera_x, camera_y, this.display_width, this.display_height);
-
-
+        this.scene.cameras.main.setViewport((screen_width-this.display_width)/2, (screen_height-this.display_height)/2, this.display_width, this.display_height);
 
         this.enemy_path = this.load_path(info.enemy_path);
         this.depth = -10;

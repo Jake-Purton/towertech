@@ -5,11 +5,15 @@ import Joystick from '../joystick.js';
 
 
 export default class Controller extends Phaser.Scene{
-    constructor(output_data_func){
+    constructor(scene_info){
         super('GameController');
 
         // constants
-        this.output_data = output_data_func;
+        this.output_data = scene_info.output_data_func;
+        this.screen_width = scene_info.screen_width;
+        this.screen_height = scene_info.screen_height;
+
+        this.portrait = (this.screen_height > this.screen_width);
 
         //variables
         this.player_created = false;
@@ -31,40 +35,51 @@ export default class Controller extends Phaser.Scene{
     }
     create() {
 
+        new Joystick(this, this.screen_width-100, this.screen_height-100, {holding_command:this.joystick_holding, release_command:this.joystick_release});
+
+        this.print('portrait: '+this.portrait+' w:'+this.screen_width+' h:'+this.screen_height);
+
+        this.scale.startFullscreen();
+
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('portrait').catch(err => console.log(err));
+        }
+
+
         // make ui
-        let f1 = () => console.log('press');
-        let f2 = () => console.log('release');
+        // let f1 = () => console.log('press');
+        // let f2 = () => console.log('release');
 
         // this.thingy = new Button(this, 40, 40, {press_command:f1, release_command:f2});
 
-        new Button(this, 250, 120, {text:'Left',height:90,width:150,
-            press_command:() => this.button_pressed('Left'),
-            release_command:() => this.button_released('Left')})
-        new Button(this, 400, 65, {text:'UP',height:90,width:150,
-            press_command:() => this.button_pressed('Up'),
-            release_command:() => this.button_released('Up')})
-        new Button(this, 400, 175, {text:'Down',height:90,width:150,
-            press_command:() => this.button_pressed('Down'),
-            release_command:() => this.button_released('Down')})
-        new Button(this, 550, 120, {text:'Right',height:90,width:150,
-            press_command:() => this.button_pressed('Right'),
-            release_command:() => this.button_released('Right')})
-
-        new Button(this, 700, 120, {text:'Tower',height:90,width:150,
-            release_command:() => this.move_menu('CreateTower')})
-
-        let towers = ['CannonTower','SniperTower','BallistaTower','LaserTower','FlamethrowerTower',
-        'HealingTower','SlowingTower','BuffingTower'];
-
-        let tower_button;
-        for (let i=0;i<towers.length;i++) {
-            tower_button = new Button(this,140+modulo(i,3)*260,280+Math.floor(i/3)*80,
-                {texture:'button2',text:towers[i].replace('Tower',''),width:240,height:60,
-                 press_command:() => this.make_tower(towers[i],'Down'),
-                 release_command:() => this.make_tower(towers[i],'Up')})
-        }
-
-        new Joystick(this, 150, 650, {holding_command:this.joystick_holding, release_command:this.joystick_release});
+        // new Button(this, 250, 120, {text:'Left',height:90,width:150,
+        //     press_command:() => this.button_pressed('Left'),
+        //     release_command:() => this.button_released('Left')})
+        // new Button(this, 400, 65, {text:'UP',height:90,width:150,
+        //     press_command:() => this.button_pressed('Up'),
+        //     release_command:() => this.button_released('Up')})
+        // new Button(this, 400, 175, {text:'Down',height:90,width:150,
+        //     press_command:() => this.button_pressed('Down'),
+        //     release_command:() => this.button_released('Down')})
+        // new Button(this, 550, 120, {text:'Right',height:90,width:150,
+        //     press_command:() => this.button_pressed('Right'),
+        //     release_command:() => this.button_released('Right')})
+        //
+        // new Button(this, 700, 120, {text:'Tower',height:90,width:150,
+        //     release_command:() => this.move_menu('CreateTower')})
+        //
+        // let towers = ['CannonTower','SniperTower','BallistaTower','LaserTower','FlamethrowerTower',
+        // 'HealingTower','SlowingTower','BuffingTower'];
+        //
+        // let tower_button;
+        // for (let i=0;i<towers.length;i++) {
+        //     tower_button = new Button(this,140+modulo(i,3)*260,280+Math.floor(i/3)*80,
+        //         {texture:'button2',text:towers[i].replace('Tower',''),width:240,height:60,
+        //          press_command:() => this.make_tower(towers[i],'Down'),
+        //          release_command:() => this.make_tower(towers[i],'Up')})
+        // }
+        //
+        // new Joystick(this, 150, 650, {holding_command:this.joystick_holding, release_command:this.joystick_release});
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -108,6 +123,9 @@ export default class Controller extends Phaser.Scene{
     }
     joystick_release = () => {
         this.output_data({type:'Joystick_Input', Direction: 'Up'})
+    }
+    print = (text) => {
+        this.output_data({type:'Print', text: text});
     }
 
 }

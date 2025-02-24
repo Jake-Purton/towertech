@@ -3,10 +3,12 @@ import Button from '../button.js';
 
 
 export default class CreateTowerMenu extends Phaser.Scene {
-    constructor(output_data_func) {
+    constructor(scene_info) {
         super('CreateTower')
 
-        this.output_data = output_data_func;
+        this.output_data = scene_info.output_data_func;
+        this.screen_width = scene_info.screen_width;
+        this.screen_height = scene_info.screen_height;
     }
     preload() {
 
