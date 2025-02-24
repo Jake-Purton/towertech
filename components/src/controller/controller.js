@@ -115,6 +115,7 @@ export default class Controller extends Phaser.Scene{
                 this.create_ui();
             }
         )
+        this.print('game started!')
 
     }
     resized = () => {
@@ -122,7 +123,8 @@ export default class Controller extends Phaser.Scene{
         this.screen_height = window.innerHeight;
     }
     create_ui = () => {
-        new Joystick(this, this.screen_width-100, this.screen_height-100, {holding_command:this.joystick_holding, release_command:this.joystick_release});
+        new Joystick(this, this.screen_width-130, this.screen_height-130, {holding_command:this.joystick_holding, release_command:this.joystick_release});
+        new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack', texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released})
     }
 
     move_menu = (menu) => {
@@ -146,6 +148,12 @@ export default class Controller extends Phaser.Scene{
     }
     print = (text) => {
         this.output_data({type:'Print', text: text});
+    }
+    attack_pressed = () => {
+        this.output_data({type:'Attack_Input', Direction:'Down', Auto_Target:true});
+    }
+    attack_released = () => {
+        this.output_data({type:'Attack_Input', Direction:'Up'});
     }
 
 }

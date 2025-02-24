@@ -29,19 +29,22 @@ export default class Joystick extends Phaser.GameObjects.Container {
 
         this.holding = false;
         this.max_drag_distance = max_drag_distance;
+        this.active_pointer_id = null;
     }
 
-    mouse_down = () => {
-        this.button_down();
+    mouse_down = (pointer) => {
+        if (this.active_pointer_id === null) {
+            this.button_down(pointer);
+        }
     }
-    mouse_up = () => {
-        this.button_up();
+    mouse_up = (pointer) => {
+        if (pointer.id === this.active_pointer_id) {
+            this.button_up(pointer);
+        }
     }
-    mouse_move = (event) => {
-        if (this.holding) {
-            let target_x = event.x-this.x;
-            let target_y = event.y-this.y;
-            let target = new Vec(event.x-this.x, event.y-this.y);
+    mouse_move = (pointer) => {
+        if (this.holding && pointer.id === this.active_pointer_id) {
+            let target = new Vec(pointer.x-this.x, pointer.y-this.y);
             if (target.length() > this.max_drag_distance) {
                 target.setLength(this.max_drag_distance);
             }
@@ -49,11 +52,13 @@ export default class Joystick extends Phaser.GameObjects.Container {
             this.holding_command(target.x / this.max_drag_distance, target.y / this.max_drag_distance);
         }
     }
-    button_down = () => {
+    button_down = (pointer) => {
+        this.active_pointer_id = pointer.id;
         this.holding = true;
     }
-    button_up = () => {
+    button_up = (pointer) => {
         this.holding = false;
+        this.active_pointer_id = null;
         this.joystick_head.setPosition(0,0);
         this.release_command();
     }

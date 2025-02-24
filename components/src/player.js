@@ -57,7 +57,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.dead = false;
 
         // constants
-        this.speed = 0.8;
+        this.speed = 0.4;
         this.drag = 0.9;
         this.player_id = player_id;
         this.pickup_range = 20;
@@ -182,14 +182,14 @@ export default class Player extends Phaser.GameObjects.Container{
     attack_input(data) {
         if (data.Direction === 'Down') {
             this.key_inputs.Attack = 1;
+            if (data.Auto_Target === true) {
+                this.weapon_object.auto_target = true;
+            } else {
+                this.weapon_object.auto_target = false;
+                this.weapon_object.set_weapon_direction(data.Angle);
+            }
         } else {
             this.key_inputs.Attack = 0;
-        }
-        if (data.Auto_Target === true) {
-            this.weapon_object.auto_target = true;
-        } else {
-            this.weapon_object.auto_target = false;
-            this.weapon_object.set_weapon_direction(data.Angle);
         }
     }
     new_tower_input(data) {

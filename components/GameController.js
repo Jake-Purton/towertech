@@ -36,6 +36,9 @@ const GameController = () => {
             autoCenter: Phaser.Scale.CENTER_BOTH,
             orientation: Phaser.Scale.LANDSCAPE,
           },
+          input: {
+            activePointers: 4,
+          },
           physics: {
             default: 'arcade',
             arcade: {

@@ -34,24 +34,25 @@ export default class Button extends Phaser.GameObjects.Container {
 
         this.button_pressed = false;
         this.enabled = true;
+        this.active_pointer_id = null;
     }
     mouse_down(pointer) {
-        if (this.enabled) {
-            this.button_down();
+        if (this.enabled && this.active_pointer_id === null) {
+            this.button_down(pointer);
         }
     }
-    mouse_up() {
+    mouse_up(pointer) {
         if (this.enabled) {
-            this.button_up();
+            this.button_up(pointer);
         }
     }
-    mouse_hovered() {
+    mouse_hovered(pointer) {
         if (this.enabled) {
             this.texture.setTint(RGBtoHEX([200, 200, 200]))
         }
     }
-    mouse_remove_hover() {
-        if (this.enabled) {
+    mouse_remove_hover(pointer) {
+        if (this.enabled && pointer.id === this.active_pointer_id) {
             this.texture.clearTint();
             if (this.button_pressed) {
                 this.button_up();
@@ -68,15 +69,19 @@ export default class Button extends Phaser.GameObjects.Container {
         this.texture.clearTint();
     }
 
-    button_down() {
-        this.button_pressed = true;
-        this.setScale(this.shrink_ratio);
-        if (this.press_command !== null) {
-            this.press_command();
+    button_down(pointer) {
+        if (!this.button_pressed) {
+            this.button_pressed = true;
+            this.active_pointer_id = pointer.id;
+            this.setScale(this.shrink_ratio);
+            if (this.press_command !== null) {
+                this.press_command();
+            }
         }
     }
     button_up() {
         this.button_pressed = false;
+        this.active_pointer_id = null;
         this.setScale(1);
         if (this.release_command !== null) {
             this.release_command();
