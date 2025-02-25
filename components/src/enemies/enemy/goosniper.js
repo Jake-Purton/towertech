@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import {GoosniperProjectile} from '../../projectile.js';
+import {GooslingerProjectile, GoosniperProjectile} from '../../projectile.js';
 import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
