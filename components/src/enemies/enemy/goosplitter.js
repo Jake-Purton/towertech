@@ -5,11 +5,16 @@ const Vec = Phaser.Math.Vector2;
 
 export default class Goosplitter extends Enemy{
     constructor(scene, x, y, path) {
-        super(scene, x, y, 'goosplitter', path, 10);
-
-        this.move_speed = 0.3;
+        super(scene, x, y, 'goosplitter', path,
+            {health: 10, move_speed:0.3});
     }
-
+    get_dead() {
+        if (this.health <= 0) {
+            this.spawn_splits()
+            return true;
+        }
+        return false;
+    }
     die() {
         this.spawn_splits();
         super.die();

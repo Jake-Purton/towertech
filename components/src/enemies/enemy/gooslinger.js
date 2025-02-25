@@ -5,16 +5,13 @@ const Vec = Phaser.Math.Vector2;
 
 export default class Gooslinger extends Enemy{
     constructor(scene, x, y, path) {
-        super(scene, x, y, 'gooslinger', path, 5);
+        super(scene, x, y, 'gooslinger', path,
+            {health: 5, move_speed:0.4});
 
-        this.move_speed = 0.4;
         this.cooldown = 100;
         this.max_cooldown = 100;
         this.target = null;
         this.shoot_angle = 0;
-    }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
     }
     game_tick(delta_time, players, towers){
         this.cooldown -= 1;

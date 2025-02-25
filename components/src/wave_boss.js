@@ -13,7 +13,7 @@ export default class BossWave extends Wave
 
         super(game, length, spawnDelay, waveEnemies, waveWeights, numEnemies);
 
-        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.enemy_path);
+        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path);
         game.enemies.push(this.bossEnemy);
         this.nextSpawn += 5 * this.game.target_fps;
     }

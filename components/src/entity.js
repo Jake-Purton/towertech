@@ -14,6 +14,7 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
                     speed_min_to_kill=1, time_to_live=5, alpha_min_to_kill=0.1, scale_min_to_kill=0,
                     drag=null, no_drag_distance=0, target_distance=100,
                     rotate_to_direction=false,
+                    initial_angle=0, initial_angular_velocity=0, angular_drag=0.9,
                     acceleration=null,
                     colour=null, colour_change=[0,0,0]} = {}) {
 
@@ -58,6 +59,11 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         this.no_drag_distance = no_drag_distance;
         this.distance_tracker = 0;
 
+        this.angle_deg = initial_angle;
+        this.angular_velocity = initial_angular_velocity;
+        this.angular_drag = angular_drag;
+
+
         // kill particle info
         this.speed_min_to_kill = speed_min_to_kill;
         this.time_to_live = time_to_live;
@@ -100,6 +106,10 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         // visual stuff
         if (this.rotate_to_direction) {
             this.setAngle(this.velocity.angle()*180/Math.PI);
+        } else {
+            this.angular_velocity *= this.angular_drag**delta_time;
+            this.angle_deg += this.angular_velocity*delta_time;
+            this.setAngle(this.angle_deg);
         }
         this.setAlpha(clamp(this.alpha+this.alpha_change*delta_time/this.scene.target_fps,0,1));
         this.setScale(clamp(this.scale+this.scale_change*delta_time/this.scene.target_fps,0,100));

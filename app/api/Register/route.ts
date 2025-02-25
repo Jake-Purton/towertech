@@ -27,6 +27,9 @@ export async function POST(req: Request) {
     const users = sql_fetch();
 
     // Check for duplicate email
+    if ((await users).some((user) => user.name === name)) {
+      return NextResponse.json({ error: "Name already exists" }, { status: 400 });
+    }
     if ((await users).some(user => user.email === email)) {
       return NextResponse.json({ error: "Email already exists" }, { status: 400 });
     }
