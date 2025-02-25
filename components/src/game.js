@@ -1,9 +1,7 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
-import { spawn_enemy } from './enemies/enemy/enemy.js';
 import {random_choice } from './utiles.js';
-import Wave from './wave.js'
-import WaveManager from "./wave_manager.js"
+import Level from "./level.js";
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func, init_server_func, end_game_output){
@@ -15,18 +13,13 @@ export default class Game extends Phaser.Scene{
         this.projectiles = [];
         this.particles = [];
         this.enemies = [];
+        this.dropped_items = [];
 
         // constants
         this.target_fps = 60;
         this.output_data = output_data_func;
         this.init_server = init_server_func;
         this.end_game_output = end_game_output;
-
-        // game data
-        this.enemy_path = this.load_path([[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]);
-
-        // current wave
-        this.current_wave = null;
 
         // gameplay info
         this.game_over = false;
@@ -35,11 +28,22 @@ export default class Game extends Phaser.Scene{
 
     }
     preload() {
+        //// player part images
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
-        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
-        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
-        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
 
+        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
+        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png')
+        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png')
+        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+
+        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
+
+        //// background
+        this.load.image('background','/game_images/background.png');
+
+        //// particle images
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
         this.load.image('fire_particle','/game_images/particles/Fire.png');
         this.load.image('heart_particle','/game_images/particles/Heart.png');
@@ -146,24 +150,13 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerID');
+        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
 
-
-        //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
-        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
+        // create Level (map info and enemy path)
+        this.level = new Level(this, 'main', 0, 0, this.scale.width, this.scale.height);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
-
-        // random numbers
-        this.RNG = new Phaser.Math.RandomDataGenerator();
-
-        this.wave_manager = new WaveManager(this);
-
-
-        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter"], "enemyWeights":[10, 5,5,5,5,5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
-
-        this.wave_manager.load_waves(test)
 
     }
     // delta is the delta_time value, it is the milliseconds since last frame
@@ -178,7 +171,7 @@ export default class Game extends Phaser.Scene{
         this.dummy_input();
         let all_dead = true;
         for (let player of Object.values(this.players)) {
-            player.game_tick(delta);
+            player.game_tick(delta, this.enemies);
             if (player.get_dead()) {
                 player.die();
             } else {
@@ -194,8 +187,21 @@ export default class Game extends Phaser.Scene{
             tower.game_tick(delta, this.enemies, this.players);
         }
 
-        /// handle projectiles
+        /// handle dropped items
         let remove_list = [];
+        for (let dropped_item of this.dropped_items) {
+            dropped_item.game_tick(delta, this.players);
+            if (dropped_item.get_dead()) {
+                remove_list.push(dropped_item);
+            }
+        }
+        this.dropped_items = this.dropped_items.filter(item => !remove_list.includes(item));
+        for (let object of remove_list) {
+            object.destroy();
+        }
+
+        /// handle projectiles
+        remove_list = [];
         for (let projectile of this.projectiles) {
             projectile.game_tick(delta, this.enemies, this.towers, this.players);
             if (projectile.get_dead()){
@@ -238,10 +244,10 @@ export default class Game extends Phaser.Scene{
             enemy.destroy();
         }
 
-        // wave management
-        this.wave_manager.game_tick(delta);
+        // level(wave) management
+        this.level.game_tick(delta);
 
-        // check gameover
+        // check game over
         if (this.health <= 0) {
             this.end_game();
         }
@@ -277,61 +283,52 @@ export default class Game extends Phaser.Scene{
             case 'Key_Input':
                 this.players[input.PlayerID].key_input(input);
                 break;
+            case 'Attack_Input':
+                this.players[input.PlayerID].attack_input(input);
+                break;
             case 'Create_Tower':
                 this.players[input.PlayerID].new_tower_input(input);
                 break;
         }
     }
 
-    load_path(points){
-        let path = new Phaser.Curves.Path(points[0][0], points[0][1]);
-        for (let i=1;i<points.length;i++) {
-            path.lineTo(points[i][0],points[i][1]);
-        }
-        return path
-    }
-
-    next_wave(){
-        // do stuff
-        // for now this just resets the wave.
-        //deslete this.current_wave;
-        //this.current_wave = new Wave(this, 10, 1, ["goober", "goolime"], [5, 10], 5);
-    }
-
     dummy_input(){
-        return
         // dummy method that attempts to recreate how inputs would be taken
         if (this.kprs.up.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Up', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Up', Direction:'Down'});
         }
         if (this.kprs.down.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Down', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Down', Direction:'Down'});
         }
         if (this.kprs.right.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Right', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Right', Direction:'Down'});
         }
         if (this.kprs.left.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Left', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Left', Direction:'Down'});
         }
         if (this.kprs.up.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Up', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Up', Direction:'Up'});
         }
         if (this.kprs.down.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Down', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Down', Direction:'Up'});
         }
         if (this.kprs.right.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Right', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Right', Direction:'Up'});
         }
         if (this.kprs.left.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', Key: 'Left', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Left', Direction:'Up'});
         }
         if (this.kprs.space.isDown) {
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Down'],['Tower',random_choice(['LaserTower'])]]))
+            this.take_input({PlayerID: 'TempPlayerId', type:'Create_Tower', Direction: 'Down', Tower: 'LaserTower'})
         }
         if (this.kprs.space.isUp) {
-            this.take_input(new Map([['PlayerID', 'TempPlayerID'],
-                ['Key','PLACE_TOWER'],['Direction','Up'],['Tower','ThisThingIsPointless']]))
+            this.take_input({PlayerID: 'TempPlayerId', type:'Create_Tower', Direction: 'Up', Tower: 'LaserTower'})
+        }
+        if (this.kprs.shift.isDown) {
+            this.take_input({PlayerID: 'TempPlayerId', type:'Attack_Input', Direction:'Down', Auto_Target:true, Angle:140});
+        }
+        if (this.kprs.shift.isUp) {
+            this.take_input({PlayerID: 'TempPlayerId', type:'Attack_Input', Direction:'Up', Auto_Target:true});
         }
     }
 }

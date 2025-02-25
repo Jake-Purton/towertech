@@ -3,7 +3,7 @@ const config = {
   plugins: {
     tailwindcss: {},
   },
-  StrictMode: true,
+  reactStrictMode: true,
 };
 
 export default config;

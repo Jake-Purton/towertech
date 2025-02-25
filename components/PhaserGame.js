@@ -14,7 +14,7 @@ const PhaserGame = () => {
 
         const config = {
           width: 800,
-          height: 600,
+          height: 800,
           type: Phaser.AUTO,
           parent: gameRef.current,
           audio: {
