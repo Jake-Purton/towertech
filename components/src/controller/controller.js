@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import {modulo } from '../utiles.js';
+import Text from '../text.js';
 import Button from '../button.js';
 import Joystick from '../joystick.js';
 
@@ -10,9 +11,9 @@ export default class Controller extends Phaser.Scene{
 
         // constants
         this.output_data = scene_info.output_data_func;
-        this.screen_width = scene_info.screen_width;
-        this.screen_height = scene_info.screen_height;
         this.mobile_device = scene_info.mobile_device;
+        this.max_screen_width = scene_info.max_screen_width;
+        this.max_screen_height = scene_info.max_screen_height;
 
         //variables
         this.player_created = false;
@@ -34,38 +35,15 @@ export default class Controller extends Phaser.Scene{
     }
     create() {
 
-        window.addEventListener('resize', () => {this.resized()});
-        // this.input.on('resize', this.resized, this);
-
-        // this.print('portrait: '+this.portrait+' w:'+this.screen_width+' h:'+this.screen_height);
+        window.addEventListener('resize', () => {this.create_ui()});
 
         if (this.mobile_device) {
-            this.prompt_tap_text = this.add.text(this.screen_width/2, this.screen_height/2, 'Tap to Start');
+            this.prompt_tap_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 'Tap to Start');
             this.input.once('pointerup',function() {this.init_fullscreen()},this);
         } else {
             this.create_ui();
         }
 
-
-
-        // make ui
-        // let f1 = () => console.log('press');
-        // let f2 = () => console.log('release');
-
-        // this.thingy = new Button(this, 40, 40, {press_command:f1, release_command:f2});
-
-        // new Button(this, 250, 120, {text:'Left',height:90,width:150,
-        //     press_command:() => this.button_pressed('Left'),
-        //     release_command:() => this.button_released('Left')})
-        // new Button(this, 400, 65, {text:'UP',height:90,width:150,
-        //     press_command:() => this.button_pressed('Up'),
-        //     release_command:() => this.button_released('Up')})
-        // new Button(this, 400, 175, {text:'Down',height:90,width:150,
-        //     press_command:() => this.button_pressed('Down'),
-        //     release_command:() => this.button_released('Down')})
-        // new Button(this, 550, 120, {text:'Right',height:90,width:150,
-        //     press_command:() => this.button_pressed('Right'),
-        //     release_command:() => this.button_released('Right')})
         //
         // new Button(this, 700, 120, {text:'Tower',height:90,width:150,
         //     release_command:() => this.move_menu('CreateTower')})
@@ -85,7 +63,6 @@ export default class Controller extends Phaser.Scene{
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
-        // console.log('player_created:', this.player_created);
         if (!this.player_created) {
             // tell server to create a player
             this.output_data({type: 'Constructor'});
@@ -113,23 +90,30 @@ export default class Controller extends Phaser.Scene{
         // change this so that it works on those devices
         screen.orientation.lock('landscape').then(
             () => {
-                this.resized();
                 this.create_ui();
             }
         )
         this.print('game started!')
 
     }
-    resized = () => {
-        this.screen_width = window.innerWidth;
-        this.screen_height = window.innerHeight;
-    }
     create_ui = () => {
-        new Joystick(this, this.screen_width-130, this.screen_height-130, {holding_command:this.joystick_holding, release_command:this.joystick_release});
-        new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
-                    texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released})
-        new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),
-            release_command:() => this.make_tower('LaserTower','Up')});
+        this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
+        this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
+        if (typeof(this.ui_objects) !== 'undefined') {
+            for (let obj of this.ui_objects) {
+                obj.destroy();
+            }
+        }
+        this.ui_objects = [
+            new Joystick(this, this.screen_width-130, this.screen_height-130, {holding_command:this.joystick_holding, release_command:this.joystick_release}),
+            new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
+                texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),
+            new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),
+                release_command:() => this.make_tower('LaserTower','Up')}),
+            // this.create.text(10, 10, 'Money: 69420', {fontFamily:'Tahoma', fontStyle:'bold',color:'#333', fontSize:20}),
+            new Text(this, 10, 10, 'Money:234242342',{center:false}),
+        ]
+        console.log(this.ui_objects);
     }
 
     move_menu = (menu) => {

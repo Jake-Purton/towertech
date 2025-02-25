@@ -52,7 +52,7 @@ export default class Button extends Phaser.GameObjects.Container {
         }
     }
     mouse_remove_hover(pointer) {
-        if (this.enabled && pointer.id === this.active_pointer_id) {
+        if (this.enabled && (pointer.id === this.active_pointer_id || !this.button_pressed)) {
             this.texture.clearTint();
             if (this.button_pressed) {
                 this.button_up();

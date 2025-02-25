@@ -13,19 +13,17 @@ const GameController = () => {
         if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
 
-        let display_width = Math.min(window.innerWidth-20,3000);
-        let display_height = Math.min(window.innerHeight-20,3000);
         let mobile_device = /Mobi|Android/i.test(navigator.userAgent);
 
         let scene_info = {
           output_data_func: output_data,
-          screen_width: display_width,
-          screen_height: display_height,
+          max_screen_width: 1000,
+          max_screen_height: 400,
           mobile_device: mobile_device};
 
         const config = {
-          width: display_width,//800,
-          height: display_height,//600,
+          width: 800,
+          height: 600,
           type: Phaser.AUTO,
           parent: gameRef.current,
           audio: {
@@ -47,10 +45,8 @@ const GameController = () => {
             }
           },
           scene: [new Controller(scene_info), new CreateTowerMenu(scene_info)],
-          backgroundColor: '#ff0000',
+          backgroundColor: '#674444',
         };
-
-        output_data({width: display_width, height: display_height});
 
         const game = new Phaser.Game(config);
 
