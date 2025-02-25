@@ -109,6 +109,8 @@ export default class Controller extends Phaser.Scene{
     init_fullscreen = () => {
         this.prompt_tap_text.destroy();
         this.scale.startFullscreen();
+        // the function screen.orientation.lock doesnt exist sometimes
+        // change this so that it works on those devices
         screen.orientation.lock('landscape').then(
             () => {
                 this.resized();
@@ -124,7 +126,10 @@ export default class Controller extends Phaser.Scene{
     }
     create_ui = () => {
         new Joystick(this, this.screen_width-130, this.screen_height-130, {holding_command:this.joystick_holding, release_command:this.joystick_release});
-        new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack', texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released})
+        new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
+                    texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released})
+        new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),
+            release_command:() => this.make_tower('LaserTower','Up')});
     }
 
     move_menu = (menu) => {
