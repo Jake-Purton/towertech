@@ -83,6 +83,8 @@ export default class Game extends Phaser.Scene{
         this.load.image('gooslinger_projectile','/game_images/projectiles/gooslinger_projectile.png');
         this.load.image('goocaster_projectile','/game_images/projectiles/goocaster_projectile.png');
         this.load.image('goobouncer_projectile','/game_images/projectiles/goobouncer_projectile.png');
+        this.load.image('gootower_projectile','/game_images/projectiles/gootower_projectile.png');
+        this.load.image('goobullet_projectile','/game_images/projectiles/goobullet_projectile.png');
         this.load.image('goo_melee','/game_images/projectiles/goo_melee.png');
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goocrab','/game_images/enemy_sprites/enemy/goocrab.png', {frameWidth:30, frameHeight:13});
@@ -161,7 +163,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
+        //this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
 
 
         //game, length, spawnDelay, enemyArray, enemyWeights, numEnemies
@@ -176,7 +178,7 @@ export default class Game extends Phaser.Scene{
         this.wave_manager = new WaveManager(this);
 
 
-        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter","goocaster","goobouncer","goocrab","goobullet"], "enemyWeights":[1,1,1,1,1,1,1,1,1,10], "enemyCount": 10} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
+        let test = '{"waves":[ {"type":"wave", "length":15, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter","goocaster","goobouncer","goocrab","goobuilder"], "enemyWeights":[0,0,0,0,0,0,0,0,0,10], "enemyCount": 1} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
 
         this.wave_manager.load_waves(test)
 
@@ -263,34 +265,34 @@ export default class Game extends Phaser.Scene{
         console.log('GAME OVER');
     }
 
-    // take_input(input){
-    //     switch (input.type) {
-    //         case 'Constructor':
-    //             if (!(input.PlayerID in this.players)){
-    //                 this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
-    //                 // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
-    //             }
-    //             break;
-    //         case 'Key_Input':
-    //             this.players[input.PlayerID].key_input(input);
-    //             break;
-    //         case 'Create_Tower':
-    //             this.players[input.PlayerID].new_tower_input(input);
-    //             break;
-    //     }
-    // }
-    
     take_input(input){
-        if (input.PlayerID in this.players){
-            let player = this.players[input.PlayerID];
-            // check if input is placing a tower or movement
-            if (input.Key == 'PLACE_TOWER'){
-                this.players[input.PlayerID].new_tower_input(input);                
-            } else {
-                player.key_input({Key: input.Key, Direction: input.Direction});
-            }
+        switch (input.type) {
+            case 'Constructor':
+                if (!(input.PlayerID in this.players)){
+                    this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+                    // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
+                }
+                break;
+            case 'Key_Input':
+                this.players[input.PlayerID].key_input(input);
+                break;
+            case 'Create_Tower':
+                this.players[input.PlayerID].new_tower_input(input);
+                break;
         }
     }
+    
+    // take_input(input){
+    //     if (input.PlayerID in this.players){
+    //         let player = this.players[input.PlayerID];
+    //         // check if input is placing a tower or movement
+    //         if (input.Key == 'PLACE_TOWER'){
+    //             this.players[input.PlayerID].new_tower_input(input);                
+    //         } else {
+    //             player.key_input({Key: input.Key, Direction: input.Direction});
+    //         }
+    //     }
+    // }
 
     load_path(points){
         let path = new Phaser.Curves.Path(points[0][0], points[0][1]);
@@ -308,7 +310,7 @@ export default class Game extends Phaser.Scene{
     }
 
     dummy_input(){
-        // return
+        return
         
         // dummy method that attempts to recreate how inputs would be taken
         if (this.kprs.space.isDown) {

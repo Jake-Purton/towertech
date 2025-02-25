@@ -5,9 +5,9 @@ import {GoobulletProjectile } from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goobullet extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.8, health=8, coin_value=1, melee_damage=1, 
-                                    melee_attack_speed=1, target=null, cooldown=5, 
-                                    max_cooldown=5, shoot_angle=0, damage=2} = {}) {
+    constructor(scene, x, y, path, {move_speed=0.8, health=100, coin_value=1, melee_damage=1, 
+                                    melee_attack_speed=1, target=null, cooldown=3, 
+                                    max_cooldown=3, shoot_angle=0, damage=2} = {}) {
         super(scene, x, y, 'goobullet', path, 
             {move_speed:move_speed, health:health, coin_value:coin_value, melee_damage:melee_damage, 
                 melee_attack_speed:melee_attack_speed, target:target, cooldown:cooldown,
