@@ -6,7 +6,7 @@ export default class Goober extends Enemy{
     constructor(scene, x, y, path) {
         super(scene, x, y, 'goober', path);
 
-        this.move_speed = 80;
+        this.move_speed = 0.8;
         this.health = 5;
     }
     get_dead(){

@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import Game from './game.js';
 import Wave from './wave.js'
 
 export default class WaveManager

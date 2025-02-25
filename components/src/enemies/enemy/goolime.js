@@ -4,10 +4,9 @@ const Vec = Phaser.Math.Vector2;
 
 export default class Goolime extends Enemy{
     constructor(scene, x, y, path) {
-        super(scene, x, y, 'goolime', path);
+        super(scene, x, y, 'goolime', path,
+            {health: 3, move_speed:1});
 
-        this.move_speed = 100;
-        this.health = 3;
         this.leave_path = 0.2;
         this.target = null;
     }
