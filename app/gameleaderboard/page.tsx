@@ -89,7 +89,7 @@ export default function GameLeaderboard() {
             </tbody>
           </table>
 
-          {/* 分页按钮 */}
+          {/* paging button */}
           <div className="flex justify-center space-x-4 mt-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
