@@ -82,20 +82,25 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
         // effects info
         this.effects = new Effects(scene);
 
+        this.enabled = true;
+        this.health = 100
+
     }
     game_tick(delta_time, enemies, players) {
-        this.shoot_cooldown -= delta_time/this.scene.target_fps;
-        this.time_since_attacking += delta_time/this.scene.target_fps;
+        if (this.enabled){
+            this.shoot_cooldown -= delta_time/this.scene.target_fps;
+            this.time_since_attacking += delta_time/this.scene.target_fps;
 
-        if (get_removed(this.target)) {
-            this.check_target(enemies);
+            if (get_removed(this.target)) {
+                this.check_target(enemies);
+            }
+            this.rotate_gun(delta_time);
+            this.attack_enemies(enemies);
+
+            this.check_nearby_player(players);
+
+            this.effects.game_tick(delta_time, this);
         }
-        this.rotate_gun(delta_time);
-        this.attack_enemies(enemies);
-
-        this.check_nearby_player(players);
-
-        this.effects.game_tick(delta_time, this);
     }
     check_nearby_player(players) {
         let new_nearby_player = null;
@@ -248,6 +253,12 @@ class Tower extends Phaser.Physics.Arcade.Sprite {
     }
     get_kill_credit(enemy) {
         this.scene.players[this.playerid].get_kill_credit(enemy);
+    }
+    disable_tower(){
+        this.enabled = false;
+    }
+    enable_tower(){
+        this.enabled = true;
     }
 }
 

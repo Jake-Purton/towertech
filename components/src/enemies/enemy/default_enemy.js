@@ -6,7 +6,9 @@ import {GooMeleeDamage} from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path) {
+    constructor(scene, x, y, type, path, {move_speed=1, health=10, coin_value=1, melee_damage=1, 
+                                            melee_attack_speed=1, leave_path=1, target=null, damage=1, 
+                                            changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {}) {
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -15,12 +17,21 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
 
-        // this.move_speed = 1;
-        // this.health = 10;
-        this.coin_value = 1;
-        this.melee_damage = 1;
+        this.move_speed = move_speed;
+        this.health = health;
+        this.coin_value = coin_value;
+        this.melee_damage = melee_damage;
         this.tick = 0;
-        this.melee_attack_speed = 1;
+        this.melee_attack_speed = melee_attack_speed;
+        this.on_path = true;
+        this.leave_path = leave_path;
+        this.target = target;
+        this.changed = changed;
+        this.cooldown = cooldown;
+        this.max_cooldown = max_cooldown;
+        this.shoot_angle = shoot_angle;
+        this.damage = damage;
+        this.max_health = health * 1.5;
 
         // effects info
         this.effects = new Effects(scene);
@@ -96,10 +107,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         let furthest_player = null;
         let distance = 0;
         for (let player of Object.values(players)){
-            let new_distance = this.relative_position(player).length();
-            if (new_distance > distance){
-                distance = new_distance;
-                furthest_player = player;
+            if (!player.dead) {
+                let new_distance = this.relative_position(player).length();
+                if (new_distance > distance){
+                    distance = new_distance;
+                    furthest_player = player;
+                }
             }
         }
         return furthest_player;
@@ -130,16 +143,17 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     find_near_player_tower(players, towers){
         let player = this.find_near_player(players);
-        if (player !== null){
-            let tower = this.find_near_tower(towers);
-            if (tower === null){
-                return player;
-            }
-            if (this.relative_position(player).length() < this.relative_position(tower).length()){
-                return player;
-            } else {
-                return tower;
-            }
+        let tower = this.find_near_tower(towers);
+        if (tower === null){
+            return player;
+        }
+        if (player === null){
+            return tower;
+        }
+        if (this.relative_position(player).length() < this.relative_position(tower).length()){
+            return player;
+        } else {
+            return tower;
         }
 
     }
@@ -148,6 +162,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         let tower = this.find_near_tower(towers);
         if (tower === null){
             return player;
+        }
+        if (player === null){
+            return tower;
         }
         if (this.relative_position(player).length() > this.relative_position(tower).length()){
             return player;
@@ -164,6 +181,17 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
             this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, this.melee_damage));
+        }
+    }
+    return_to_path(delta_time){
+        let direction = this.relative_position(this.target);
+        this.melee_hit(delta_time);
+        if (direction.length() <= delta_time * this.move_speed){
+            this.on_path = true
+            return this.setPosition(this.target.x, this.target.y);
+        } else {
+            let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
+            return this.setPosition(this.x + change.x, this.y + change.y);
         }
     }
 }

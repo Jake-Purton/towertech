@@ -4,11 +4,12 @@ import { spawn_enemy } from './enemy.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goosplitter extends Enemy{
-    constructor(scene, x, y, path) {
-        super(scene, x, y, 'goosplitter', path);
+    constructor(scene, x, y, path, {move_speed=0.3, health=10, coin_value=1, melee_damage=1, 
+                                    melee_attack_speed=1} = {}) {
+        super(scene, x, y, 'goosplitter', path, 
+            {move_speed:move_speed, health:health, coin_value:coin_value, 
+                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed});
 
-        this.move_speed = 0.3;
-        this.health = 10;
     }
     get_dead(){
         if (this.path_t >= 1 || this.health<=0){
