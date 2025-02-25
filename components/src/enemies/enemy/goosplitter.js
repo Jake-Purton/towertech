@@ -9,15 +9,12 @@ export default class Goosplitter extends Enemy{
 
         this.move_speed = 0.3;
     }
-    get_dead(){
-        if (this.path_t >= 1 || this.health<=0){
-            // This should be moved elsewhere.
-            // this function is just to check if the enemy is dead or not.
-            this.spawn_splits()
-            return true;
-        }
-        return false;
+
+    die() {
+        this.spawn_splits();
+        super.die();
     }
+
     spawn_splits(){
         for (let i=-1;i<1;i++) {
             let split_path_t = Phaser.Math.Clamp(this.path_t + (20)/this.path.getLength()*i,0,1);
