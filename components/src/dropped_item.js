@@ -17,10 +17,12 @@ export default class DroppedItem extends Entity {
         this.physics_tick(delta_time);
         if (!this.picked_up) {
             for (let player of Object.values(players)) {
-                let distance = get_distance(player, this);
-                if (distance < player.pickup_range) {
-                    player.pickup_item(this);
-                    this.picked_up = true;
+                if (!player.dead) {
+                    let distance = get_distance(player, this);
+                    if (distance < player.pickup_range) {
+                        player.pickup_item(this);
+                        this.picked_up = true;
+                    }
                 }
             }
         }

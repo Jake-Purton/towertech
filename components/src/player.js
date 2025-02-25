@@ -72,42 +72,42 @@ export default class Player extends Phaser.GameObjects.Container{
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
+        if (!this.dead) {
+            // handle effects
+            this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
+            this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
+            this.effects.game_tick(delta_time, this);
 
-        // handle effects
-        this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
-        this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
-        this.effects.game_tick(delta_time, this);
 
+            // physics + movement
+            if (this.joystick_down) {
+                this.move_direction = new Vec().copy(this.joystick_direction);
+            } else {
+                this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
+                    this.key_inputs.Down-this.key_inputs.Up)
+                this.move_direction.normalize();
+            }
 
-        // physics + movement
-        if (this.joystick_down) {
-            this.move_direction = new Vec().copy(this.joystick_direction);
-        } else {
-            this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
-                this.key_inputs.Down-this.key_inputs.Up)
-            this.move_direction.normalize();
+            this.move_direction.scale(this.speed * delta_time);
+
+            this.velocity.add(this.move_direction);
+            this.velocity.x *= this.drag**delta_time;
+            this.velocity.y *= this.drag**delta_time;
+
+            let speed_multiplier =  this.effects.get_speed_multiplier();
+
+            this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
+            this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+
+            // part management
+            this.leg_object.movement_animation(this.velocity);
+            this.weapon_object.game_tick(delta_time);
+            if (this.key_inputs.Attack) {
+                this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
+            } else {
+                this.weapon_object.attack_button_up();
+            }
         }
-
-        this.move_direction.scale(this.speed * delta_time);
-
-        this.velocity.add(this.move_direction);
-        this.velocity.x *= this.drag**delta_time;
-        this.velocity.y *= this.drag**delta_time;
-
-        let speed_multiplier =  this.effects.get_speed_multiplier();
-
-        this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
-        this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
-
-        // part management
-        this.leg_object.movement_animation(this.velocity);
-        this.weapon_object.game_tick(delta_time);
-        if (this.key_inputs.Attack) {
-            this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
-        } else {
-            this.weapon_object.attack_button_up();
-        }
-
     }
     set_body(body) {
         this.remove(this.body_object,true);
@@ -160,8 +160,10 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     get_kill_credit(enemy) {
-        this.scene.score += enemy.coin_value;
-        this.set_coins(this.coins+enemy.coin_value);
+        if (!this.dead) {
+            this.scene.score += enemy.coin_value;
+            this.set_coins(this.coins+enemy.coin_value);
+        }
     }
     key_input(data) {
         if (data.Direction === 'Down') {
@@ -193,13 +195,15 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     new_tower_input(data) {
-        let new_tower = null;
-        if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-            new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id);
-        }
-        this.prev_tower_button_direction = data.Direction;
-        if (new_tower != null) {
-            this.scene.towers.push(new_tower);
+        if (!this.dead) {
+            let new_tower = null;
+            if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
+                new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id);
+            }
+            this.prev_tower_button_direction = data.Direction;
+            if (new_tower != null) {
+                this.scene.towers.push(new_tower);
+            }
         }
     }
     pickup_item(dropped_item) {
