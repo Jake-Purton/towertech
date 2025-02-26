@@ -3,6 +3,7 @@ import {RGBtoHEX } from '../utiles.js';
 import Text from '../ui_widgets/text.js';
 import Button from '../ui_widgets/button.js';
 import Joystick from '../ui_widgets/joystick.js';
+import AttackButton from "../ui_widgets/attack_button.js";
 import {Rectangle} from "../ui_widgets/shape.js";
 
 
@@ -33,6 +34,9 @@ export default class Controller extends Phaser.Scene{
 
         this.load.image('joystick_base','/game_images/UI/joystick_base4.png');
         this.load.image('joystick_head','/game_images/UI/joystick_head2.png');
+
+        this.load.image('attack_button','/game_images/UI/attack_base.png');
+        this.load.image('attack_button_head','/game_images/UI/attack_head.png');
     }
     create() {
 
@@ -115,6 +119,8 @@ export default class Controller extends Phaser.Scene{
 
             new Joystick(this, this.screen_width-120, this.screen_height-120, {base_size:200, holding_command:this.joystick_holding, release_command:this.joystick_release}),
 
+            new AttackButton(this, 120, this.screen_height-120, {width:200, height:200, joystick_base:'attack_button', joystick_head:'attack_button_head', holding_command:this.attack_pressed, release_command:this.attack_released}),
+
             // new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
             //     texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),
             // new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),
@@ -122,7 +128,6 @@ export default class Controller extends Phaser.Scene{
             // this.create.text(10, 10, 'Money: 69420', {fontFamily:'Tahoma', fontStyle:'bold',color:'#333', fontSize:20}),
             // new Text(this, 10, 10, 'Money:234242342',{center:false}),
         ]
-        console.log(this.ui_objects);
     }
 
     move_menu = (menu) => {
@@ -147,8 +152,8 @@ export default class Controller extends Phaser.Scene{
     print = (text) => {
         this.output_data({type:'Print', text: text});
     }
-    attack_pressed = () => {
-        this.output_data({type:'Attack_Input', Direction:'Down', Auto_Target:true});
+    attack_pressed = (auto_target, angle=90) => {
+        this.output_data({type:'Attack_Input', Direction:'Down', Auto_Target:auto_target, Angle:angle});
     }
     attack_released = () => {
         this.output_data({type:'Attack_Input', Direction:'Up'});
