@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {RGBtoHEX} from "./utiles.js";
+import {RGBtoHEX} from "../utiles.js";
 
 export default class Button extends Phaser.GameObjects.Container {
     // x and y are the center point of the object

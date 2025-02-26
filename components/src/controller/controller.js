@@ -1,8 +1,9 @@
 import * as Phaser from 'phaser';
-import {modulo } from '../utiles.js';
-import Text from '../text.js';
-import Button from '../button.js';
-import Joystick from '../joystick.js';
+import {RGBtoHEX } from '../utiles.js';
+import Text from '../ui_widgets/text.js';
+import Button from '../ui_widgets/button.js';
+import Joystick from '../ui_widgets/joystick.js';
+import {Rectangle} from "../ui_widgets/shape.js";
 
 
 export default class Controller extends Phaser.Scene{
@@ -30,8 +31,8 @@ export default class Controller extends Phaser.Scene{
         this.load.image('button','/game_images/UI/button.png');
         this.load.image('button2','/game_images/UI/button2.png');
 
-        this.load.image('joystick_base','/game_images/UI/joystick_base3.png');
-        this.load.image('joystick_head','/game_images/UI/joystick_head.png');
+        this.load.image('joystick_base','/game_images/UI/joystick_base4.png');
+        this.load.image('joystick_head','/game_images/UI/joystick_head2.png');
     }
     create() {
 
@@ -105,13 +106,21 @@ export default class Controller extends Phaser.Scene{
             }
         }
         this.ui_objects = [
-            new Joystick(this, this.screen_width-130, this.screen_height-130, {base_size:256,holding_command:this.joystick_holding, release_command:this.joystick_release}),
-            new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
-                texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),
-            new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),
-                release_command:() => this.make_tower('LaserTower','Up')}),
+            // background and segmentation
+            new Rectangle(this, 0, 0, this.screen_width, this.screen_height, RGBtoHEX([32, 44, 49])),
+
+            new Rectangle(this, 10, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
+            new Rectangle(this, this.screen_width-230, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
+            new Rectangle(this, 240, 10, this.screen_width-480, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
+
+            new Joystick(this, this.screen_width-120, this.screen_height-120, {base_size:200, holding_command:this.joystick_holding, release_command:this.joystick_release}),
+
+            // new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
+            //     texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),
+            // new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),
+            //     release_command:() => this.make_tower('LaserTower','Up')}),
             // this.create.text(10, 10, 'Money: 69420', {fontFamily:'Tahoma', fontStyle:'bold',color:'#333', fontSize:20}),
-            new Text(this, 10, 10, 'Money:234242342',{center:false}),
+            // new Text(this, 10, 10, 'Money:234242342',{center:false}),
         ]
         console.log(this.ui_objects);
     }
