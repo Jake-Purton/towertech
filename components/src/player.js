@@ -67,7 +67,6 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // game stats
         this.coins = 0;
-
         this.kill_count = 0;
         this.player_score = 0;
         this.inventory = {};
