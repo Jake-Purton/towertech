@@ -47,6 +47,8 @@ export default class Player extends Phaser.GameObjects.Container{
         }
         this.move_direction = new Vec(0,0);
         this.prev_tower_button_direction = 'Up';
+        this.joystick_down = false;
+        this.joystick_direction = new Vec(0,0);
 
         this.has_nearby_tower = false;
 
@@ -55,7 +57,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.dead = false;
 
         // constants
-        this.speed = 0.8;
+        this.speed = 0.4;
         this.drag = 0.9;
         this.player_id = player_id;
         this.pickup_range = 20;
@@ -83,10 +85,14 @@ export default class Player extends Phaser.GameObjects.Container{
 
 
         // physics + movement
-        this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
-                                      this.key_inputs.Down-this.key_inputs.Up)
+        if (this.joystick_down) {
+            this.move_direction = new Vec().copy(this.joystick_direction);
+        } else {
+            this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
+                this.key_inputs.Down-this.key_inputs.Up)
+            this.move_direction.normalize();
+        }
 
-        this.move_direction.normalize();
         this.move_direction.scale(this.speed * delta_time);
 
         this.velocity.add(this.move_direction);
@@ -171,17 +177,26 @@ export default class Player extends Phaser.GameObjects.Container{
             this.key_inputs[data.Key] = 0;
         }
     }
+    joystick_input(data) {
+        if (data.Direction === 'Down') {
+            this.joystick_down = true;
+            this.joystick_direction.x = data.x;
+            this.joystick_direction.y = data.y;
+        } else {
+            this.joystick_down = false;
+        }
+    }
     attack_input(data) {
         if (data.Direction === 'Down') {
             this.key_inputs.Attack = 1;
+            if (data.Auto_Target === true) {
+                this.weapon_object.auto_target = true;
+            } else {
+                this.weapon_object.auto_target = false;
+                this.weapon_object.set_weapon_direction(data.Angle);
+            }
         } else {
             this.key_inputs.Attack = 0;
-        }
-        if (data.Auto_Target === true) {
-            this.weapon_object.auto_target = true;
-        } else {
-            this.weapon_object.auto_target = false;
-            this.weapon_object.set_weapon_direction(data.Angle);
         }
     }
     new_tower_input(data) {
