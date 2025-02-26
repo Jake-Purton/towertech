@@ -16,7 +16,11 @@ const HostPage = () => {
 
     socket.emit("createRoom");
 
-    const handleRoomCode = (code: string) => setRoomCode(code);
+    const handleRoomCode = (data) => {
+      console.log("Room code received:", data);
+      setRoomCode(data.roomCode);
+      localStorage.setItem("roomToken", data.roomToken);
+    };
     const handleUpdateUsers = (userList: User[]) => setUsers(userList);
 
     socket.on("roomCode", handleRoomCode);

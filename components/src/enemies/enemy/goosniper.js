@@ -8,7 +8,6 @@ export default class Goosniper extends Enemy{
     constructor(scene, x, y, path) {
         super(scene, x, y, 'goosniper', path,
             {health: 10, move_speed:0.5});
-
         this.cooldown = 100;
         this.max_cooldown = 100;
         this.target = null;

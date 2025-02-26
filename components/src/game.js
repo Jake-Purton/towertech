@@ -150,11 +150,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-<<<<<<< HEAD
         this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerID');
-=======
-        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
->>>>>>> main
 
         // create Level (map info and enemy path)
         this.level = new Level(this, 'main', this.scale.width, this.scale.height);

@@ -68,12 +68,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // game stats
         this.coins = 0;
-<<<<<<< HEAD
+
         this.kill_count = 0;
         this.player_score = 0;
-=======
         this.inventory = {};
->>>>>>> main
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
