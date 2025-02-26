@@ -35,7 +35,6 @@ export default class Player extends Phaser.GameObjects.Container{
         this.set_weapon('pistol_weapon');
         this.set_leg('robot_leg');
 
-
         // variables
         this.velocity = new Vec(0,0);
         this.key_inputs = {
@@ -53,7 +52,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.has_nearby_tower = false;
 
         // aliveness
-        this.health = 10;
+        this.health = 1000;
         this.dead = false;
 
         // constants
@@ -75,42 +74,41 @@ export default class Player extends Phaser.GameObjects.Container{
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
+        if (!this.dead) {
+            // handle effects
+            this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
+            this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
+            this.effects.game_tick(delta_time, this);
 
-        // handle effects
-        this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
-        this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
-        this.effects.game_tick(delta_time, this);
+            // physics + movement
+            if (this.joystick_down) {
+                this.move_direction = new Vec().copy(this.joystick_direction);
+            } else {
+                this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
+                    this.key_inputs.Down-this.key_inputs.Up)
+                this.move_direction.normalize();
+            }
 
+            this.move_direction.scale(this.speed * delta_time);
 
-        // physics + movement
-        if (this.joystick_down) {
-            this.move_direction = new Vec().copy(this.joystick_direction);
-        } else {
-            this.move_direction = new Vec(this.key_inputs.Right-this.key_inputs.Left,
-                this.key_inputs.Down-this.key_inputs.Up)
-            this.move_direction.normalize();
+            this.velocity.add(this.move_direction);
+            this.velocity.x *= this.drag**delta_time;
+            this.velocity.y *= this.drag**delta_time;
+
+            let speed_multiplier =  this.effects.get_speed_multiplier();
+
+            this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
+            this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+
+            // part management
+            this.leg_object.movement_animation(this.velocity);
+            this.weapon_object.game_tick(delta_time);
+            if (this.key_inputs.Attack) {
+                this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
+            } else {
+                this.weapon_object.attack_button_up();
+            }
         }
-
-        this.move_direction.scale(this.speed * delta_time);
-
-        this.velocity.add(this.move_direction);
-        this.velocity.x *= this.drag**delta_time;
-        this.velocity.y *= this.drag**delta_time;
-
-        let speed_multiplier =  this.effects.get_speed_multiplier();
-
-        this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
-        this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
-
-        // part management
-        this.leg_object.movement_animation(this.velocity);
-        this.weapon_object.game_tick(delta_time);
-        if (this.key_inputs.Attack) {
-            this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
-        } else {
-            this.weapon_object.attack_button_up();
-        }
-
     }
     set_body(body) {
         this.remove(this.body_object,true);
@@ -139,6 +137,7 @@ export default class Player extends Phaser.GameObjects.Container{
             this.sendToBack(this.leg_object);
             this.weapon_object.set_scale(this.body_object.get_scale_multiplier());
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
+            this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
         }
     }
 
