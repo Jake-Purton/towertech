@@ -8,13 +8,18 @@ export default class Goosplitter extends Enemy{
         super(scene, x, y, 'goosplitter', path,
             {health: 10, move_speed:0.3});
     }
-    get_dead(){
-        if (this.health<=0){
+    get_dead() {
+        if (this.health <= 0) {
             this.spawn_splits()
             return true;
         }
         return false;
     }
+    die() {
+        this.spawn_splits();
+        super.die();
+    }
+
     spawn_splits(){
         for (let i=-1;i<1;i++) {
             let split_path_t = Phaser.Math.Clamp(this.path_t + (20)/this.path.getLength()*i,0,1);

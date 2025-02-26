@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<'success' | 'error'>('error');
   const router = useRouter();
 
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -50,14 +51,17 @@ export default function RegisterPage() {
 
       const data = await res.json();
       if (res.ok) {
+        setMessageType('success');
         setMessage(data.message);
         setTimeout(() => {
           router.push("/login"); // Redirect to login after registration
         }, 1500);
       } else {
+        setMessageType('error');
         setMessage(data.error);
       }
     } catch (error) {
+      setMessageType('error');
       setMessage("Something went wrong. Try again.");
     } finally {
       setLoading(false);
@@ -65,11 +69,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black-900 text-white">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         {message && (
-          <div className="mb-4 text-center text-red-500">
-        {message}
+          <div className={`mb-4 text-center ${
+            messageType === 'success' ? 'text-green-500' : 'text-red-500'
+          }`}>
+            {message}
           </div>
         )}
         <h1 className="text-2xl font-bold text-center mb-6 text-orange-600">Register</h1>

@@ -20,9 +20,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.play(type+'_walk')
 
         // stats and info
-        this.move_speed = move_speed;
         this.health = health;
-        this.coin_value = coin_value;
+        this.max_health = health;
+        this.coin_value = 1;
+        this.move_speed = move_speed;
         this.loot_table = loot_table;
 
         // effects info

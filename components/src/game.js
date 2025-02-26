@@ -150,10 +150,14 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
+<<<<<<< HEAD
+        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerID');
+=======
         this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
+>>>>>>> main
 
         // create Level (map info and enemy path)
-        this.level = new Level(this, 'main', 0, 0, this.scale.width, this.scale.height);
+        this.level = new Level(this, 'main', this.scale.width, this.scale.height);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
@@ -286,8 +290,14 @@ export default class Game extends Phaser.Scene{
             case 'Attack_Input':
                 this.players[input.PlayerID].attack_input(input);
                 break;
+            case 'Joystick_Input':
+                this.players[input.PlayerID].joystick_input(input);
+                break;
             case 'Create_Tower':
                 this.players[input.PlayerID].new_tower_input(input);
+                break;
+            case 'Print':
+                console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);
                 break;
         }
     }

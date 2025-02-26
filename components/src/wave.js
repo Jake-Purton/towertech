@@ -101,7 +101,9 @@ export default class Wave
     #spawn_enemy(enemyName)
     {
         // spawn the enemy
-        this.game.enemies.push(spawn_enemy(this.game, -50, -50, enemyName, this.game.level.enemy_path));
+        let enemy = spawn_enemy(this.game, -50, -50, enemyName, this.game.level.enemy_path);
+        this.game.enemies.push(enemy);
+        return enemy;
         // this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));
     }
 
