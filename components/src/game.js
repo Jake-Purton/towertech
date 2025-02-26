@@ -4,7 +4,7 @@ import {random_choice } from './utiles.js';
 import Level from "./level.js";
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func, init_server_func){
+    constructor(output_data_func, init_server_func, end_game_output){
         super('GameScene');
 
         // game object containers
@@ -19,8 +19,10 @@ export default class Game extends Phaser.Scene{
         this.target_fps = 60;
         this.output_data = output_data_func;
         this.init_server = init_server_func;
+        this.end_game_output = end_game_output;
 
         // gameplay info
+        this.game_over = false;
         this.score = 0;
         this.health = 1;
 
@@ -167,6 +169,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
+
         this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // create Level (map info and enemy path)
@@ -178,6 +181,8 @@ export default class Game extends Phaser.Scene{
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
+        if (this.game_over) { return }
+
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
@@ -268,7 +273,23 @@ export default class Game extends Phaser.Scene{
         }
     }
     end_game() {
-        console.log('GAME OVER');
+        // need to output
+        // gamescore
+        // player ids in the game
+        // player scores
+        // player kills
+
+        // end the game
+        let player_data = [];
+        for (let player_id of Object.keys(this.players)) {
+            player_data.push({player_id: player_id, score: this.players[player_id].player_score, kills: this.players[player_id].kill_count})
+        }
+        let game_data = {game_score: this.score, player_data: player_data}
+        this.end_game_output(game_data);
+
+        this.game_over = true;
+        console.log('GAME OVER', game_data);
+
     }
 
     take_input(input){

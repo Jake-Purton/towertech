@@ -2,7 +2,19 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
 import { RoomManager } from "./src/rooms.js";
+import jwt from "jsonwebtoken";
 import { handleMessage, handleJoinRoom, handleDisconnect } from "./src/eventHandlers.js";
+import dotenv from "dotenv";
+import { sql } from "@vercel/postgres";
+
+dotenv.config();
+
+const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("❌ JWT secret is not set (check readme for adding secrets)");
+  process.exit(1); // Exit the process if JWT_SECRET is not set
+}
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -23,7 +35,15 @@ app.prepare().then(() => {
     // socket.on("disconnect", handleDisconnect(socket, roomManager));
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();
-      socket.emit("roomCode", roomCode);
+      const tokenOptions = { expiresIn: '1d' };
+      jwt.sign({ roomCode }, JWT_SECRET, tokenOptions, (err, roomToken) => {
+        if (err) {
+          console.error("Error creating token:", err);
+          return;
+        }
+        socket.emit("roomCode", {roomCode, roomToken});
+      });
+
       console.log("room created with code: ", roomCode);
       socket.join(roomCode);
     });
@@ -31,6 +51,75 @@ app.prepare().then(() => {
 
       const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
       socket.emit("updateUsers", users);
+    });
+
+    socket.on("end_game", (roomToken) => {
+
+      jwt.verify(roomToken, JWT_SECRET, async (err, decoded) => {
+        if (err) {
+          console.error("Invalid token:", err);
+          return;
+        }
+        const roomCode = decoded.roomCode;
+        console.log("Room code from token:", roomCode);
+        // Add your logic here using the roomCode
+
+        const users = roomManager.getUsersInRoom(roomCode);
+
+        for (const user of users) {
+
+          if (user.usersUserID) {
+            console.log("User ID:", user.usersUserID);
+            // add the game data to the database
+
+            // this is so cooked bro
+            const result = await sql `UPDATE playeringame SET userid = ${user.usersUserID} WHERE userid = ${user.userID}`;
+
+            console.log("result", result);
+          }
+        }
+      });
+
+      console.log("end the game");
+
+    });
+
+    socket.on("joinRoomAuthenticated", async ({ userId, roomCode, token }) => {
+      console.log("joinRoomAuthenticated", userId, roomCode, token);
+      if (!token) {
+        console.error("Token must be provided");
+        socket.emit("RoomErr", "Token must be provided");
+        return;
+      }
+    
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("decoded", decoded);
+    
+        if (roomManager.getRoom(roomCode)) {
+
+          const email = decoded.email;
+          const result = await sql`SELECT id, name FROM users WHERE email = ${email}`;
+
+          const usersUserID = result.rows[0].id;
+          const usersUserName = result.rows[0].name;
+
+          roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
+          socket.join(roomCode);
+    
+          console.log(userId, "joined room", roomCode);
+          const users = roomManager.getUsersInRoom(roomCode);
+          socket.to(roomCode).emit("updateUsers", users);
+    
+          socket.emit("roomJoinSuccess", "Successfully joined room " + roomCode);
+        } else {
+          socket.emit("RoomErr", "Room number " + roomCode + " does not exist");
+        }
+      } catch (error) {
+        console.error("Invalid token:", error);
+        socket.emit("RoomErr", "Invalid token");
+      }
+
     });
 
     socket.on("gameStarted", (roomCode) => {

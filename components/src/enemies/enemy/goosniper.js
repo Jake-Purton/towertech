@@ -14,6 +14,12 @@ export default class Goosniper extends Enemy{
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
                 leave_path:leave_path, target:target, changed:changed, cooldown:cooldown,
                 max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage});
+        this.cooldown = 100;
+        this.max_cooldown = 100;
+        this.target = null;
+        this.shoot_angle = 0;
+        this.leave_path = random_range(0.2,0.53);
+        this.changed = false;
     }
     get_dead(){
         return (this.path_t >= 1 || this.health<=0)

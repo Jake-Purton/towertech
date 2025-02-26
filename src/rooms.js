@@ -7,8 +7,8 @@ class Room {
   }
 
   // Adds a user to the room
-  addUser(userID, username) {
-    this.users.push({userID, username});
+  addUser(userID, username, usersUserID) {
+    this.users.push({userID, username, usersUserID});
   }
 
   // Removes a user from the room
@@ -18,7 +18,7 @@ class Room {
 
   // Gets the list of users in the room
   getUsers() {
-    // returns the {userID, username} pairs
+    // returns the {userID, username, userUserID} triples
     return this.users;
   }
 }
@@ -63,7 +63,13 @@ class RoomManager {
 
   addUserToRoom(userId, roomName, username) {
     if (this.rooms[roomName]) {
-      this.rooms[roomName].addUser(userId, username);
+      this.rooms[roomName].addUser(userId, username, null);
+    }
+  }
+
+  addUserToRoomAuth(userId, roomName, username, usersUserID) {
+    if (this.rooms[roomName]) {
+      this.rooms[roomName].addUser(userId, username, usersUserID);
     }
   }
 
@@ -75,7 +81,7 @@ class RoomManager {
 
   getUsersInRoom(roomName) {
     if (this.rooms[roomName]) {
-      // return a list of {userID, username} pairs
+      // return a list of {userID, username usersUserID} triples
       return this.rooms[roomName].getUsers();
     }
     return [];
