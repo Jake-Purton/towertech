@@ -10,28 +10,31 @@ if (!JWT_SECRET) {
 
 export async function POST(req: Request) {
   try {
-    const { token, gameData } = await req.json();
+    const data = await req.json();
 
-    if (!token) {
+    console.log("THIS IS HERE AND THE FOLLOWING IS DATA")
+    console.log(data)
+
+    if (!data.roomToken) {
       return NextResponse.json({ error: "Token is required" }, { status: 400 });
     }
 
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const decoded = jwt.verify(data.roomToken, JWT_SECRET);
       console.log("✅ Token is valid");
 
       // Insert game data into the database
-      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${gameData.gamescore}) RETURNING gameid`;
+      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${data.gameData.gamescore}) RETURNING gameid`;
       const gameid = result.rows[0].gameid;
       console.log(gameid);
 
-      console.log(gameData.player_data);
+      console.log(data.gameData.player_data);
 
       try {
 
-        for (const player of gameData.player_data) {
+        for (const player of data.gameData.player_data) {
           console.log(player);
-          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore) VALUES (${gameid}, ${player.player_id}, ${player.kills}, ${player.score}) RETURNING *`;
+          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore) VALUES (${gameid}, '0', ${player.kills}, ${player.score}) RETURNING *`;
           console.log(playerResult);
 
 

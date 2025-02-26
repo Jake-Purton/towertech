@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { socket } from "../app/src/socket";
 import Game from './src/game.js';
 
 const PhaserGame = () => {
   const gameRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -52,6 +54,7 @@ const PhaserGame = () => {
 
           // the token encoded with the room id for security
           const roomToken = localStorage.getItem('roomToken');
+          console.log(roomToken)
 
           // if there is a token, we can send the data to the server
           if (roomToken) {
@@ -68,6 +71,7 @@ const PhaserGame = () => {
 
               if (result.success) {
                 console.log('Game data successfully sent to the server');
+                router.push("/home");
               } else {
                 console.log('Failed to send game data to the server:', result.error);
               }
@@ -81,6 +85,7 @@ const PhaserGame = () => {
 
           // function that sends the end game message to the server
           socket.emit("end_game", roomToken);
+
         }
 
 
