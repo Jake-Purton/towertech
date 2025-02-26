@@ -2,8 +2,19 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
 import { RoomManager } from "./src/rooms.js";
+import jwt from "jsonwebtoken";
 import { handleMessage, handleJoinRoom, handleDisconnect } from "./src/eventHandlers.js";
+import dotenv from "dotenv";
 import { sql } from "@vercel/postgres";
+
+dotenv.config();
+
+const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("❌ JWT secret is not set (check readme for adding secrets)");
+  process.exit(1); // Exit the process if JWT_SECRET is not set
+}
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -24,7 +35,15 @@ app.prepare().then(() => {
     // socket.on("disconnect", handleDisconnect(socket, roomManager));
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();
-      socket.emit("roomCode", roomCode);
+      const tokenOptions = { expiresIn: '1d' };
+      jwt.sign({ roomCode }, JWT_SECRET, tokenOptions, (err, roomToken) => {
+        if (err) {
+          console.error("Error creating token:", err);
+          return;
+        }
+        socket.emit("roomCode", {roomCode, roomToken});
+      });
+
       console.log("room created with code: ", roomCode);
       socket.join(roomCode);
     });
@@ -34,26 +53,72 @@ app.prepare().then(() => {
       socket.emit("updateUsers", users);
     });
 
-    socket.on("end_game_output", async (data) => {
-      console.log("end_game_output", data);
+    socket.on("end_game", (roomToken) => {
 
-      // {gamescore, playerdata}
-      // playerdata = list of dicts with playerID and score and player kills
+      jwt.verify(roomToken, JWT_SECRET, async (err, decoded) => {
+        if (err) {
+          console.error("Invalid token:", err);
+          return;
+        }
+        const roomCode = decoded.roomCode;
+        console.log("Room code from token:", roomCode);
+        // Add your logic here using the roomCode
 
-      // we wanna put this into the database
-      
-      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${data.gamescore}) RETURNING gameid`;
-      const gameid = result.rows[0].gameid;
-      console.log(gameid);
+        const users = roomManager.getUsersInRoom(roomCode);
 
-      console.log(data.player_data);
+        for (const user of users) {
 
-      for (const player of data.player_data) {
-        const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore) VALUES (${gameid}, ${player.player_id}, ${player.kills}, ${player.score}) RETURNING *`;
-        console.log(playerResult);
+          if (user.usersUserID) {
+            console.log("User ID:", user.usersUserID);
+            // add the game data to the database
+
+            // this is so cooked bro
+            const result = await sql `UPDATE playeringame SET userid = ${user.usersUserID} WHERE userid = ${user.userID}`;
+
+            console.log("result", result);
+          }
+        }
+      });
+
+      console.log("end the game");
+
+    });
+
+    socket.on("joinRoomAuthenticated", async ({ userId, roomCode, token }) => {
+      console.log("joinRoomAuthenticated", userId, roomCode, token);
+      if (!token) {
+        console.error("Token must be provided");
+        socket.emit("RoomErr", "Token must be provided");
+        return;
       }
+    
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("decoded", decoded);
+    
+        if (roomManager.getRoom(roomCode)) {
 
-      
+          const email = decoded.email;
+          const result = await sql`SELECT id, name FROM users WHERE email = ${email}`;
+
+          const usersUserID = result.rows[0].id;
+          const usersUserName = result.rows[0].name;
+
+          roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
+          socket.join(roomCode);
+    
+          console.log(userId, "joined room", roomCode);
+          const users = roomManager.getUsersInRoom(roomCode);
+          socket.to(roomCode).emit("updateUsers", users);
+    
+          socket.emit("roomJoinSuccess", "Successfully joined room " + roomCode);
+        } else {
+          socket.emit("RoomErr", "Room number " + roomCode + " does not exist");
+        }
+      } catch (error) {
+        console.error("Invalid token:", error);
+        socket.emit("RoomErr", "Invalid token");
+      }
 
     });
 
