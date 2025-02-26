@@ -1,14 +1,20 @@
 import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
-import {random_range} from "../../utiles.js";
+import {random_range, float_to_random_int, weighted_random_choice } from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
-import {GooMeleeDamage} from '../../projectile.js';
+import {GooMeleeDamage} from "../../projectile.js";
+import DroppedItem from "../../dropped_item.js";
+
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path, {move_speed=1, health=10, coin_value=1, melee_damage=1, 
-                                            melee_attack_speed=1, leave_path=1, target=null, damage=1, 
-                                            changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {}) {
+    constructor(scene, x, y, type, path,
+                {move_speed=1, health=10, coin_value=1, melee_damage=1,
+                    melee_attack_speed=1, leave_path=1, target=null, damage=1,
+                    changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
+                    loot_table = {drop_chance:3, drops:{
+                        'default_body':1, 'default_leg':1, 'default_weapon':1,
+                            'wheel':1, 'robot_leg':1, 'striped_leg':1, 'pistol_weapon':4, 'robot_body':4}}) {
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -17,6 +23,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
 
+        // stats and info
         this.move_speed = move_speed;
         this.health = health;
         this.coin_value = coin_value;
@@ -31,7 +38,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.max_cooldown = max_cooldown;
         this.shoot_angle = shoot_angle;
         this.damage = damage;
-        this.max_health = health * 1.5;
+        this.max_health = health;
+        this.loot_table = loot_table;
 
         // effects info
         this.effects = new Effects(scene);
@@ -45,9 +53,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.health += this.effects.get_effect("Healing", 0)*time;
         this.take_damage(this.effects.get_effect("Burning", 0)*time);
         this.effects.game_tick(delta_time, this);
-        
+
         this.melee_hit(delta_time);
-        
+
 
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path
@@ -65,6 +73,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         return (this.path_t >= 1)
     }
     die() {
+        let num_drops = float_to_random_int(this.loot_table.drop_chance);
+        for (let i=0;i<num_drops;i++) {
+            let drop = weighted_random_choice(this.loot_table.drops);
+            this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, drop));
+        }
+
         if (this.last_damage_source !== null) {
             this.last_damage_source.get_kill_credit(this);
         }
@@ -143,17 +157,16 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     find_near_player_tower(players, towers){
         let player = this.find_near_player(players);
-        let tower = this.find_near_tower(towers);
-        if (tower === null){
-            return player;
-        }
-        if (player === null){
-            return tower;
-        }
-        if (this.relative_position(player).length() < this.relative_position(tower).length()){
-            return player;
-        } else {
-            return tower;
+        if (player !== null){
+            let tower = this.find_near_tower(towers);
+            if (tower === null){
+                return player;
+            }
+            if (this.relative_position(player).length() < this.relative_position(tower).length()){
+                return player;
+            } else {
+                return tower;
+            }
         }
 
     }

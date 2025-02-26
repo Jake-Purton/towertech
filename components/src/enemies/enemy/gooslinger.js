@@ -4,18 +4,15 @@ import {GooslingerProjectile } from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Gooslinger extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.4, health=5, coin_value=1, 
-                                    melee_damage=1, melee_attack_speed=1, 
-                                    target=null, cooldown=3, max_cooldown=3, 
+    constructor(scene, x, y, path, {move_speed=0.4, health=5, coin_value=1,
+                                    melee_damage=1, melee_attack_speed=1,
+                                    target=null, cooldown=3, max_cooldown=3,
                                     shoot_angle=0, damage=2} = {}) {
-        super(scene, x, y, 'gooslinger', path, 
-            {move_speed:move_speed, health:health, coin_value:coin_value, 
-                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
-                target:target, cooldown:cooldown, max_cooldown:max_cooldown, 
+        super(scene, x, y, 'gooslinger', path,
+            {move_speed:move_speed, health:health, coin_value:coin_value,
+                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
+                target:target, cooldown:cooldown, max_cooldown:max_cooldown,
                 shoot_angle:shoot_angle, damage:damage});
-    }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;

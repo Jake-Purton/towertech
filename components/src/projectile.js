@@ -62,9 +62,11 @@ class Projectile extends Entity {
             iterable = Object.values(iterable);
         }
         for (let entity of iterable) {
-            if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
-                this.deal_damage(entity);
-                return true;
+            if (!entity.dead) {
+                if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
+                    this.deal_damage(entity);
+                    return true;
+                }
             }
         }
         return false;
@@ -164,7 +166,7 @@ class GootowerProjectile extends Projectile {
 class GoobulletProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=5, damage=1, auto_aim_strength=0} = {}) {
         super(scene, x, y, 'goobullet_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000});
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
     }
 }
 class GooMeleeDamage extends Projectile {

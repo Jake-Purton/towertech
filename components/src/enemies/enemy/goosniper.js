@@ -5,14 +5,14 @@ import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goosniper extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.5, health=10, coin_value=1, melee_damage=1, 
-                                    melee_attack_speed=1, leave_path=random_range(0.2,0.53), 
-                                    target=null, changed=false, cooldown=5, max_cooldown=5, 
+    constructor(scene, x, y, path, {move_speed=0.5, health=10, coin_value=1, melee_damage=1,
+                                    melee_attack_speed=1, leave_path=random_range(0.2,0.53),
+                                    target=null, changed=false, cooldown=5, max_cooldown=5,
                                     shoot_angle=0, damage=4} = {}) {
-        super(scene, x, y, 'goosniper', path, 
-            {move_speed:move_speed, health:health, coin_value:coin_value, 
-                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
-                leave_path:leave_path, target:target, changed:changed, cooldown:cooldown, 
+        super(scene, x, y, 'goosniper', path,
+            {move_speed:move_speed, health:health, coin_value:coin_value,
+                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
+                leave_path:leave_path, target:target, changed:changed, cooldown:cooldown,
                 max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage});
     }
     get_dead(){
@@ -20,7 +20,7 @@ export default class Goosniper extends Enemy{
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;
-        if (this.changed){           
+        if (this.changed){
             this.cooldown -= time;
             if (this.cooldown <= 0){
                 this.cooldown += this.max_cooldown;

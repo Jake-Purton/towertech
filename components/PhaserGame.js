@@ -12,9 +12,12 @@ const PhaserGame = () => {
         if (!socket.connected) socket.connect();
         socket.on("game_input", input_data);
 
+        let display_width = Math.min(window.innerWidth-20,3000);
+        let display_height = Math.min(window.innerHeight-20,3000);
+
         const config = {
-          width: 800,
-          height: 600,
+          width: display_width,
+          height: display_height,
           type: Phaser.AUTO,
           parent: gameRef.current,
           audio: {
@@ -25,11 +28,11 @@ const PhaserGame = () => {
             arcade: {
               fps: 60,
               gravity: { y: 0 },
-              // debug: true,
+              debug: true,
             }
           },
           scene: new Game(output_data, init_server),
-          backgroundColor: '#50A011',
+          backgroundColor: '#000000',
         };
 
         const game = new Phaser.Game(config);

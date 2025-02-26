@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { socket } from "../app/src/socket";
-import Controller from './src/controller.js';
+import Controller from './src/controller/controller.js';
+import CreateTowerMenu from "./src/controller/create_tower_menu.js";
 
 const GameController = () => {
   const gameRef = useRef(null);
@@ -12,13 +13,31 @@ const GameController = () => {
         if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
 
+        let display_width = Math.min(window.innerWidth-20,3000);
+        let display_height = Math.min(window.innerHeight-20,3000);
+        let mobile_device = /Mobi|Android/i.test(navigator.userAgent);
+
+        let scene_info = {
+          output_data_func: output_data,
+          screen_width: display_width,
+          screen_height: display_height,
+          mobile_device: mobile_device};
+
         const config = {
-          width: 800,
-          height: 600,
+          width: display_width,//800,
+          height: display_height,//600,
           type: Phaser.AUTO,
           parent: gameRef.current,
           audio: {
             disableWebAudio: true
+          },
+          scale: {
+            mode: Phaser.Scale.RESIZE,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            orientation: Phaser.Scale.LANDSCAPE,
+          },
+          input: {
+            activePointers: 4,
           },
           physics: {
             default: 'arcade',
@@ -27,9 +46,11 @@ const GameController = () => {
               gravity: { y: 0 },
             }
           },
-          scene: new Controller(output_data),
-          backgroundColor: '#c267e3',
+          scene: [new Controller(scene_info), new CreateTowerMenu(scene_info)],
+          backgroundColor: '#ff0000',
         };
+
+        output_data({width: display_width, height: display_height});
 
         const game = new Phaser.Game(config);
 
