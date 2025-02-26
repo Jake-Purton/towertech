@@ -68,7 +68,12 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // game stats
         this.coins = 0;
+<<<<<<< HEAD
+        this.kill_count = 0;
+        this.player_score = 0;
+=======
         this.inventory = {};
+>>>>>>> main
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
@@ -161,6 +166,8 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     get_kill_credit(enemy) {
         this.scene.score += enemy.coin_value;
+        this.kill_count += 1;
+        this.player_score += enemy.coin_value;
         this.set_coins(this.coins+enemy.coin_value);
     }
     key_input(data) {
