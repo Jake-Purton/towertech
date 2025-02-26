@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { useRouter } from "next/navigation";
+import { QRCodeSVG } from 'qrcode.react';
 
 type User = { userID: string; username: string };
 
@@ -10,11 +11,23 @@ const HostPage = () => {
   const router = useRouter();
   const [roomCode, setRoomCode] = useState("");
   const [users, setUsers] = useState<User[]>([]);
-
+  const [ipAddress, setIpAddress] = useState<string>("");
+  
   useEffect(() => {
-    if (!socket.connected) socket.connect(); // Ensure socket is connected before emitting
+    // Get IP address
+    const getIPAddress = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/getip');
+        const data = await response.json();
+        setIpAddress(data.ip);
+      } catch (error) {
+        console.error('Failed to get IP address:', error);
+      }
+    };
 
+    if (!socket.connected) socket.connect();
     socket.emit("createRoom");
+    getIPAddress();
 
     const handleRoomCode = (code: string) => setRoomCode(code);
     const handleUpdateUsers = (userList: User[]) => setUsers(userList);
@@ -28,6 +41,9 @@ const HostPage = () => {
     };
   }, []);
 
+  // Create the URL for the QR code
+  const joinUrl = ipAddress ? `http://${ipAddress}:3000/join` : '';
+
   const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     if (users.length > 0) {
       router.push("/game");
@@ -40,14 +56,29 @@ const HostPage = () => {
       <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
 
       <div className="flex flex-col items-center gap-10 w-full max-w-lg mt-10 bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-700">
-        {roomCode ? (
-          <div className="w-full text-center">
-            <div className="mt-2 p-5 border border-gray-600 rounded-xl bg-gray-900 text-3xl font-semibold tracking-widest text-orange-500 shadow-sm">
-              {roomCode}
+        {roomCode && (
+          <>
+            <div className="w-full text-center">
+              <div className="mt-2 p-5 border border-gray-600 rounded-xl bg-gray-900 text-3xl font-semibold tracking-widest text-orange-500 shadow-sm">
+                {roomCode}
+              </div>
             </div>
-          </div>
-        ) : (
-          <p className="text-gray-400 text-lg font-medium">Creating room...</p>
+            
+            {/* QR Code Section */}
+            {ipAddress && (
+              <div className="bg-white p-4 rounded-xl">
+                <QRCodeSVG
+                  value={joinUrl}
+                  size={200}
+                  level="L"
+                />
+              </div>
+            )}
+            
+            <p className="text-sm text-gray-400">
+              Join URL: {joinUrl}
+            </p>
+          </>
         )}
 
         <div className="w-full">
