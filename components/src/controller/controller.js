@@ -30,7 +30,7 @@ export default class Controller extends Phaser.Scene{
         this.load.image('button','/game_images/UI/button.png');
         this.load.image('button2','/game_images/UI/button2.png');
 
-        this.load.image('joystick_base','/game_images/UI/joystick_base.png');
+        this.load.image('joystick_base','/game_images/UI/joystick_base3.png');
         this.load.image('joystick_head','/game_images/UI/joystick_head.png');
     }
     create() {
@@ -105,7 +105,7 @@ export default class Controller extends Phaser.Scene{
             }
         }
         this.ui_objects = [
-            new Joystick(this, this.screen_width-130, this.screen_height-130, {holding_command:this.joystick_holding, release_command:this.joystick_release}),
+            new Joystick(this, this.screen_width-130, this.screen_height-130, {base_size:256,holding_command:this.joystick_holding, release_command:this.joystick_release}),
             new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
                 texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),
             new Button(this, 200, 100, {text:'make tower',width:300,height:100,press_command:() => this.make_tower('LaserTower','Down'),

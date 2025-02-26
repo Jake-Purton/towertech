@@ -3,15 +3,18 @@ const Vec = Phaser.Math.Vector2;
 
 export default class Joystick extends Phaser.GameObjects.Container {
     // holding value gets passed an x and y value, which each scale from -1 to 1
-    constructor(scene, x, y, {joystick_base='joystick_base',joystick_head='joystick_head', max_drag_distance=50,
+    constructor(scene, x, y, {joystick_base='joystick_base',joystick_head='joystick_head',
+        base_size=200, head_size=80, max_drag_distance=50,
             holding_command=(x, y) => void 0, release_command=() => void 0,
     }={}) {
         super(scene, x, y, []);
         scene.add.existing(this);
 
         this.joystick_base = new Phaser.GameObjects.Sprite(scene, 0, 0, joystick_base);
+        this.joystick_base.setDisplaySize(base_size, base_size);
         this.add(this.joystick_base);
         this.joystick_head = new Phaser.GameObjects.Sprite(scene, 0, 0, joystick_head);
+        this.joystick_head.setDisplaySize(head_size, head_size);
         this.add(this.joystick_head);
 
         // setup button

@@ -45,7 +45,7 @@ const GameController = () => {
             }
           },
           scene: [new Controller(scene_info), new CreateTowerMenu(scene_info)],
-          backgroundColor: '#674444',
+          backgroundColor: '#151421',
         };
 
         const game = new Phaser.Game(config);
