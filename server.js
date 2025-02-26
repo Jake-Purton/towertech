@@ -119,13 +119,13 @@ app.prepare().then(() => {
         console.error("Invalid token:", error);
         socket.emit("RoomErr", "Invalid token");
       }
+
     });
 
     socket.on("gameStarted", (roomCode) => {
       // the game has started
       // send a message to everyone in  that room saying that thge game has started
       socket.to(roomCode).emit("gameStarted", "the game has started!");
-
     });
 
     socket.on("input_from_client_to_game", (data) => {

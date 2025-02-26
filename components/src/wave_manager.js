@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import Wave from './wave.js'
+import Wave from './wave.js';
+import BossWave from './wave_boss.js';
 
 export default class WaveManager
 {
@@ -116,7 +117,8 @@ export default class WaveManager
                     newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
                     break;
                 case "boss":
-                    // boss waves not implemented yet.
+                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
+                    break;
                     // break;
                 default:
                     alert("Invalid wave type"+wave.type+".");
