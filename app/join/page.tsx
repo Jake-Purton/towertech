@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { JoinRoomMessage } from "../src/messages";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { printTreeView } from "next/dist/build/utils";
 
 async function verifyToken(token: string) {
@@ -25,7 +25,8 @@ async function verifyToken(token: string) {
 }
 
 const JoinPage: React.FC = () => {
-    const router = useRouter()
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState({ name: "", email: "" });
@@ -36,6 +37,10 @@ const JoinPage: React.FC = () => {
     
     
     useEffect(() => {
+        const roomCode = searchParams.get('roomCode');
+        if (roomCode) {
+            setNumber(roomCode);
+        }
 
         const checkToken = async () => {
             const token = localStorage.getItem("token");
@@ -76,7 +81,7 @@ const JoinPage: React.FC = () => {
             socket.off("RoomErr", onRoomErr);
             socket.off("roomJoinSuccess", onSuccess);
         };
-    }, []);
+    }, [searchParams]);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();

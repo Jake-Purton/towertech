@@ -47,7 +47,7 @@ const HostPage = () => {
   }, []);
 
   // Create the URL for the QR code
-  const joinUrl = ipAddress ? `http://${ipAddress}:3000/join` : '';
+  const joinUrl = ipAddress ? `http://${ipAddress}:3000/join?roomCode=${roomCode}` : '';
 
   const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     if (users.length > 0 && !gameStarted) {
