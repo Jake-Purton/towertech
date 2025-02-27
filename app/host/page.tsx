@@ -12,6 +12,7 @@ const HostPage = () => {
   const [roomCode, setRoomCode] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [ipAddress, setIpAddress] = useState<string>("");
+  const [gameStarted, setGameStarted] = useState(false);
   
   useEffect(() => {
     // Get IP address
@@ -49,7 +50,8 @@ const HostPage = () => {
   const joinUrl = ipAddress ? `http://${ipAddress}:3000/join` : '';
 
   const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    if (users.length > 0) {
+    if (users.length > 0 && !gameStarted) {
+      setGameStarted(true);
       router.push("/game");
       localStorage.setItem("roomCode", roomCode);
       // socket.emit("gameStarted", roomCode)
@@ -106,9 +108,9 @@ const HostPage = () => {
         </div>
         <button
           className={`mt-6 px-4 py-2 rounded-lg shadow-md transition-all ${
-            users.length === 0 ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
+            users.length === 0 || gameStarted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
           } text-white`}
-          disabled={users.length === 0}
+          disabled={users.length === 0 || gameStarted}
           onClick={startGame}
         >
           Start the Game

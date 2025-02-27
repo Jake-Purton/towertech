@@ -32,6 +32,7 @@ const JoinPage: React.FC = () => {
     const [number, setNumber] = useState('');
     const [message, setMessage] = useState<string>("");
     const [username, setUsername] = useState<string>("");
+    const [isSubmitted, setIsSubmitted] = useState(false);
     
     
     useEffect(() => {
@@ -98,6 +99,7 @@ const JoinPage: React.FC = () => {
                 dataSenderAuthenticated(number, token);
             }
         }
+        setIsSubmitted(true);
     };
 
     const dataSenderAuthenticated = (code: string, token: string) => {
@@ -184,7 +186,13 @@ const JoinPage: React.FC = () => {
                         }}  
                     />
                 </label>
-                <button type="submit" className="mt-6 px-4 py-2 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 transition-all">
+                <button
+                    type="submit"
+                    className={`mt-6 px-4 py-2 rounded-lg shadow-md transition-all ${
+                        isSubmitted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
+                    } text-white`}
+                    disabled={isSubmitted}
+                >
                     Submit
                 </button>
             </form>
