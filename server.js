@@ -73,9 +73,9 @@ app.prepare().then(() => {
             // add the game data to the database
 
             // this is so cooked bro
-            const result = await sql `UPDATE playeringame SET userid = ${user.usersUserID} WHERE userid = ${user.userID}`;
+            const result = await sql `UPDATE playeringame SET userid = ${user.usersUserID} WHERE userid = '0'`;
 
-            console.log("result", result);
+            console.log("result of updating id: ", result);
           }
         }
       });
