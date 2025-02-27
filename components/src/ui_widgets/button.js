@@ -5,8 +5,12 @@ export default class Button extends Phaser.GameObjects.Container {
     // x and y are the center point of the object
     constructor(scene, x, y, {texture='button', text='Text',
             text_style={fontFamily:'Tahoma', fontStyle:'bold',color:'#333', fontSize:25},
-            width=100, height=40, shrink_ratio=0.95,
+            width=100, height=40, shrink_ratio=0.95, center=true,
             press_command=() => void 0, release_command=() => void 0} = {}) {
+        if (!center) {
+            x+=width/2;
+            y+=height/2;
+        }
         super(scene, x, y, []);
         scene.add.existing(this);
 

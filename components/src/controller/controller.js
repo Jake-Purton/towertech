@@ -29,8 +29,9 @@ export default class Controller extends Phaser.Scene{
         this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
         this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
 
-        this.load.image('button','/game_images/UI/button.png');
+        this.load.image('button1','/game_images/UI/button.png');
         this.load.image('button2','/game_images/UI/button2.png');
+        this.load.image('button','/game_images/UI/Basic button.png');
 
         this.load.image('joystick_base','/game_images/UI/joystick_base4.png');
         this.load.image('joystick_head','/game_images/UI/joystick_head2.png');
@@ -104,6 +105,7 @@ export default class Controller extends Phaser.Scene{
     create_ui = () => {
         this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
         this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
+        this.print(this.screen_width+"-"+this.screen_height);
         if (typeof(this.ui_objects) !== 'undefined') {
             for (let obj of this.ui_objects) {
                 obj.destroy();
@@ -115,11 +117,15 @@ export default class Controller extends Phaser.Scene{
 
             new Rectangle(this, 10, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
             new Rectangle(this, this.screen_width-230, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
-            new Rectangle(this, 240, 10, this.screen_width-480, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
+            new Rectangle(this, 240, 56, this.screen_width-480, this.screen_height-66, RGBtoHEX([49, 60, 74]), 10),
 
             new Joystick(this, this.screen_width-120, this.screen_height-120, {base_size:200, holding_command:this.joystick_holding, release_command:this.joystick_release}),
-
             new AttackButton(this, 120, this.screen_height-120, {width:200, height:200, joystick_base:'attack_button', joystick_head:'attack_button_head', holding_command:this.attack_pressed, release_command:this.attack_released}),
+
+            // tab buttons
+            new Button(this, 240, 10, {text:'Main', center:false, width:104, height:40}),
+            new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40}),
+            new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40}),
 
             // new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
             //     texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),

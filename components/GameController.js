@@ -17,8 +17,8 @@ const GameController = () => {
 
         let scene_info = {
           output_data_func: output_data,
-          max_screen_width: 1000,
-          max_screen_height: 400,
+          max_screen_width: 804,
+          max_screen_height: 385,
           mobile_device: mobile_device};
 
         const config = {
