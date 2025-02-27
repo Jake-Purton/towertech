@@ -5,6 +5,7 @@ import Button from '../ui_widgets/button.js';
 import Joystick from '../ui_widgets/joystick.js';
 import AttackButton from "../ui_widgets/attack_button.js";
 import {Rectangle} from "../ui_widgets/shape.js";
+import Player from '../player.js';
 
 
 export default class Controller extends Phaser.Scene{
@@ -24,11 +25,19 @@ export default class Controller extends Phaser.Scene{
 
     }
     preload() {
+        // player images
         this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
-        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
-        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
-        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
 
+        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
+        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png')
+        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png')
+        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+
+        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
+
+        // ui images
         this.load.image('button1','/game_images/UI/button.png');
         this.load.image('button2','/game_images/UI/button2.png');
         this.load.image('button','/game_images/UI/Basic button.png');
@@ -111,21 +120,29 @@ export default class Controller extends Phaser.Scene{
                 obj.destroy();
             }
         }
+
+        this.sub_menu_ui_objects = [];
+        this.sub_menu_container = {x:240, y:56, width:this.screen_width-480, height:this.screen_height-66}
+
         this.ui_objects = [
             // background and segmentation
             new Rectangle(this, 0, 0, this.screen_width, this.screen_height, RGBtoHEX([32, 44, 49])),
 
             new Rectangle(this, 10, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
             new Rectangle(this, this.screen_width-230, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), 10),
-            new Rectangle(this, 240, 56, this.screen_width-480, this.screen_height-66, RGBtoHEX([49, 60, 74]), 10),
+            new Rectangle(this, this.sub_menu_container.x, this.sub_menu_container.y,
+                this.sub_menu_container.width, this.sub_menu_container.height, RGBtoHEX([49, 60, 74]), 10),
 
-            new Joystick(this, this.screen_width-120, this.screen_height-120, {base_size:200, holding_command:this.joystick_holding, release_command:this.joystick_release}),
-            new AttackButton(this, 120, this.screen_height-120, {width:200, height:200, joystick_base:'attack_button', joystick_head:'attack_button_head', holding_command:this.attack_pressed, release_command:this.attack_released}),
+            new Joystick(this, this.screen_width-120, this.screen_height-120, {base_size:200,
+                holding_command:this.joystick_holding, release_command:this.joystick_release}),
+            new AttackButton(this, 120, this.screen_height-120, {width:200, height:200,
+                joystick_base:'attack_button', joystick_head:'attack_button_head',
+                holding_command:this.attack_pressed, release_command:this.attack_released}),
 
             // tab buttons
-            new Button(this, 240, 10, {text:'Main', center:false, width:104, height:40}),
-            new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40}),
-            new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40}),
+            new Button(this, 240, 10, {text:'Main', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Main",this.sub_menu_container)}),
+            new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Player",this.sub_menu_container)}),
+            new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Tower",this.sub_menu_container)}),
 
             // new Button(this, 130, this.screen_height-130, {width: 200, height:200 ,text:'Attack',
             //     texture:'joystick_base', press_command:this.attack_pressed, release_command:this.attack_released}),
@@ -136,8 +153,25 @@ export default class Controller extends Phaser.Scene{
         ]
     }
 
-    move_menu = (menu) => {
-        this.scene.switch(menu);
+    move_sub_menu = (menu, container_rect) => {
+        for (let obj of this.sub_menu_ui_objects) {
+            console.log('destroy',obj);
+            obj.destroy();
+        }
+        switch (menu) {
+            case "Player":
+                break;
+            case "Tower":
+                break;
+            default:
+                this.create_main_menu(container_rect);
+                break;
+        }
+    }
+    create_main_menu(container_rect) {
+        this.sub_menu_ui_objects = [new Player(this, container_rect.x+container_rect.width/2, container_rect.y+60, 'UI_PLAYER_DISPLAY')];
+
+        this.sub_menu_ui_objects[0].setScale(3);
     }
 
     button_pressed = (button) => {
