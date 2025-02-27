@@ -99,6 +99,15 @@ class Tower extends ProjectileShooter {
     get_kill_credit(enemy) {
         this.scene.players[this.playerid].get_kill_credit(enemy);
     }
+    set_pos(x, y) {
+        this.setPosition(x, y);
+        this.gun.setPosition(x, y);
+    }
+    set_as_ui_display() {
+        this.setAlpha(0);
+        this.gun.setOrigin(0.5, 0.5);
+        this.gun.setAngle(-45);
+    }
 }
 
 class CannonTower extends Tower{
@@ -238,4 +247,4 @@ function create_tower(tower_type, scene, x, y, player_id){
 }
 
 export {CannonTower, LaserTower, SniperTower, FlamethrowerTower, BallistaTower,
-    WeakeningTower, SlowingTower, HealingTower, BuffingTower, create_tower };
+    WeakeningTower, SlowingTower, HealingTower, BuffingTower, create_tower};

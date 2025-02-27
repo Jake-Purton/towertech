@@ -1,10 +1,11 @@
 import * as Phaser from 'phaser';
 import {RGBtoHEX} from "../utiles.js";
+const Vec = Phaser.Math.Vector2;
 
 export default class Button extends Phaser.GameObjects.Container {
     // x and y are the center point of the object
     constructor(scene, x, y, {texture='button', text='Text',
-            text_style={fontFamily:'Tahoma', fontStyle:'bold',color:'#333', fontSize:25},
+            text_style={fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:25},
             width=100, height=40, shrink_ratio=0.95, center=true,
             press_command=() => void 0, release_command=() => void 0} = {}) {
         if (!center) {
@@ -39,6 +40,7 @@ export default class Button extends Phaser.GameObjects.Container {
         this.button_pressed = false;
         this.enabled = true;
         this.active_pointer_id = null;
+        this.pointer_prev_pos = null;
     }
     mouse_down(pointer) {
         if (this.enabled && this.active_pointer_id === null) {
