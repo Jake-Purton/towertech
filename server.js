@@ -73,16 +73,10 @@ app.prepare().then(() => {
             // add the game data to the database
 
             // update the first instance of it
-            const result = await sql `WITH to_update AS (
-                  SELECT id FROM playeringame
-                  WHERE userid = '0'
-                  ORDER BY id -- Adjust ordering if needed
-                  LIMIT 1
-              )
+            const result = await sql `
               UPDATE playeringame
               SET userid = ${user.usersUserID}
-              FROM to_update
-              WHERE playeringame.id = to_update.id;
+              WHERE userid = '0' AND playerid = ${user.userID};
             `;
 
             console.log("result of updating id: ", result);
