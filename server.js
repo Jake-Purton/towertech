@@ -72,10 +72,14 @@ app.prepare().then(() => {
             console.log("User ID:", user.usersUserID);
             // add the game data to the database
 
-            // this is so cooked bro
-            const result = await sql `UPDATE playeringame SET userid = ${user.usersUserID} WHERE userid = ${user.userID}`;
+            // update the first instance of it
+            const result = await sql `
+              UPDATE playeringame
+              SET userid = ${user.usersUserID}
+              WHERE userid = '0' AND playerid = ${user.userID};
+            `;
 
-            console.log("result", result);
+            console.log("result of updating id: ", result);
           }
         }
       });

@@ -34,12 +34,8 @@ export async function POST(req: Request) {
 
         for (const player of data.gameData.player_data) {
           console.log(player);
-          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore) VALUES (${gameid}, '0', ${player.kills}, ${player.score}) RETURNING *`;
+          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}) RETURNING *`;
           console.log(playerResult);
-
-
-          // the idea is to put the player ids into the database and then if a player has an authenticated token then they can put their name in
-          // (the name replaces the playerid)
         }
       } catch (error) {
         console.log(error);
