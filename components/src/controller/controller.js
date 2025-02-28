@@ -26,13 +26,41 @@ export default class Controller extends Phaser.Scene{
 
         // constants
         this.tower_data = {
-            "CannonTower":{title:"Cannon", cost:5},
-            "LaserTower":{title:"Laser", cost:20},
-            "SniperTower":{title:"Sniper", cost:20},
-            "FlamethrowerTower":{title:"Flamer", cost:20},
-            "BallistaTower":{title:"Ballista", cost:20},
-            "WeakeningTower":{title:"Weakener", cost:20},
-            "SlowingTower":{title:"Slower", cost:20},
+            "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
+            "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
+            "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
+            "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
+            "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
+            "WeakeningTower":{title:"Weakener", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
+            "SlowingTower":{title:"Slower", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
 
         };
 
@@ -98,25 +126,8 @@ export default class Controller extends Phaser.Scene{
         } else {
             this.create_ui();
         }
-
-        //
-        // new Button(this, 700, 120, {text:'Tower',height:90,width:150,
-        //     release_command:() => this.move_menu('CreateTower')})
-        //
-        // let towers = ['CannonTower','SniperTower','BallistaTower','LaserTower','FlamethrowerTower',
-        // 'HealingTower','SlowingTower','BuffingTower'];
-        //
-        // let tower_button;
-        // for (let i=0;i<towers.length;i++) {
-        //     tower_button = new Button(this,140+modulo(i,3)*260,280+Math.floor(i/3)*80,
-        //         {texture:'button2',text:towers[i].replace('Tower',''),width:240,height:60,
-        //          press_command:() => this.make_tower(towers[i],'Down'),
-        //          release_command:() => this.make_tower(towers[i],'Up')})
-        // }
-        //
-        // new Joystick(this, 150, 650, {holding_command:this.joystick_holding, release_command:this.joystick_release});
     }
-    // delta is the delta_time value, it is the milliseconds since last frame
+
     update(time, delta) {
         if (!this.player_created) {
             // tell server to create a player
@@ -155,11 +166,7 @@ export default class Controller extends Phaser.Scene{
         this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
         this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
         this.print(this.screen_width+"-"+this.screen_height);
-        if (typeof(this.ui_objects) !== 'undefined') {
-            for (let obj of this.ui_objects) {
-                obj.destroy();
-            }
-        }
+        this.destroy_ui_list(this.ui_objects);
 
         this.sub_menu_ui_objects = [];
         this.sub_menu_container = {x:240, y:56, width:this.screen_width-480, height:this.screen_height-66}
@@ -190,22 +197,27 @@ export default class Controller extends Phaser.Scene{
             new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Player",this.sub_menu_container)}),
             new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Tower",this.sub_menu_container)}),
         ]
+        this.prev_sub_menu = "None"
         this.move_sub_menu("Main",this.sub_menu_container);
     }
 
     move_sub_menu = (menu, container_rect) => {
-        for (let obj of this.sub_menu_ui_objects) {
-            obj.destroy();
-        }
-        switch (menu) {
-            case "Player":
-                break;
-            case "Tower":
-                this.create_tower_menu(container_rect);
-                break;
-            default:
-                this.create_main_menu(container_rect);
-                break;
+        if (menu !== this.prev_sub_menu) {
+            this.prev_sub_menu = menu;
+            this.destroy_ui_list(this.sub_menu_ui_objects);
+            this.destroy_ui_list(this.tower_buy_ui_objects);
+            switch (menu) {
+                case "Player":
+                    break;
+                case "Tower":
+                    this.create_tower_menu(container_rect);
+                    this.sub_menu_ui_objects[0].button_down({id:1});
+                    this.sub_menu_ui_objects[0].button_up({id:1});
+                    break;
+                default:
+                    this.create_main_menu(container_rect);
+                    break;
+            }
         }
     }
     create_main_menu(container_rect) {
@@ -220,33 +232,47 @@ export default class Controller extends Phaser.Scene{
             this.sub_menu_ui_objects.push(new SelectorButton(this,
                 container_rect.x+i*60+10, container_rect.y+10,
                 {text:'',width:50, height:50, center:false, texture:'selector_button',
-                press_command:()=>this.create_tower_buy_menu(towers[i],container_rect)},
+                press_command:()=>this.create_tower_buy_menu(towers[i],container_rect),
+                select_tint:RGBtoHEX([200,200,200])},
                 {sector_x:container_rect.x, sector_width:container_rect.width,
                 max_scroll:(towers.length*60+10)-container_rect.width,
                 displayed_class:towers[i]}));
         }
+        for (let item of this.sub_menu_ui_objects) {
+            item.set_select_group(this.sub_menu_ui_objects);
+        }
     }
     create_tower_buy_menu(tower_type, container_rect) {
-        if (typeof(this.tower_buy_ui_objects) !== 'undefined') {
-            for (let obj of this.tower_buy_ui_objects) {
+        this.destroy_ui_list(this.tower_buy_ui_objects);
+        let tower_info = this.tower_data[tower_type];
+        let level_info = tower_info.level_stats[0];
+        let description_string = tower_info.description+"\nDamage: "+level_info.damage+"\nFire Rate: "+level_info.fire_rate+"\nRange: "+level_info.range;
+        this.tower_buy_ui_objects = [
+            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+84,
+                tower_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
+            new Text(this, container_rect.x+10, container_rect.y+100, description_string, {center:false}),
+            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
+                {text:"Buy - "+level_info.cost, width:104, height:40,
+                    press_command: ()=>this.make_tower(tower_type, "Down", level_info),
+                    release_command: ()=>this.make_tower(tower_type, "Up", level_info)
+                }),
+        ]
+    }
+    destroy_ui_list(ui_list) {
+        if (typeof(ui_list) !== 'undefined') {
+            for (let obj of ui_list) {
                 obj.destroy();
             }
         }
-        let tower_info = this.tower_data[tower_type]
-        this.tower_buy_ui_objects = [
-            new Text(this, container_rect.x+10, container_rect.y+80,
-                tower_info.title, {center:false, text_style:{fontFamily:"Tahoma",color:RGBtoHEX([30,30,30]),fontSize:25}}),
-        ]
     }
-
     button_pressed = (button) => {
         this.output_data({type:'Key_Input', Key: button, Direction: 'Down'});
     }
     button_released = (button) => {
         this.output_data({type:'Key_Input', Key: button, Direction: 'Up'});
     }
-    make_tower = (tower, direction) => {
-        this.output_data({type:'Create_Tower', Tower: tower, Direction: direction})
+    make_tower = (tower, direction, tower_stats) => {
+        this.output_data({type:'Create_Tower', Tower: tower, Direction: direction, Tower_Stats:tower_stats})
     }
     joystick_holding = (x,y) => {
         this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'})

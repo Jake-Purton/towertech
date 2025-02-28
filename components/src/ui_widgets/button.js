@@ -6,7 +6,7 @@ export default class Button extends Phaser.GameObjects.Container {
     // x and y are the center point of the object
     constructor(scene, x, y, {texture='button', text='Text',
             text_style={fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:25},
-            width=100, height=40, shrink_ratio=0.95, center=true,
+            width=100, height=40, shrink_ratio=0.95, center=true, select_tint=null, select_group=[],
             press_command=() => void 0, release_command=() => void 0} = {}) {
         if (!center) {
             x+=width/2;
@@ -41,6 +41,11 @@ export default class Button extends Phaser.GameObjects.Container {
         this.enabled = true;
         this.active_pointer_id = null;
         this.pointer_prev_pos = null;
+
+        this.selectable = (select_tint !== null);
+        this.select_tint = select_tint;
+        this.selected = false;
+        this.set_select_group(select_group);
     }
     mouse_down(pointer) {
         if (this.enabled && this.active_pointer_id === null) {
@@ -59,7 +64,9 @@ export default class Button extends Phaser.GameObjects.Container {
     }
     mouse_remove_hover(pointer) {
         if (this.enabled && (pointer.id === this.active_pointer_id || !this.button_pressed)) {
-            this.texture.clearTint();
+            if (!this.selected) {
+                this.texture.clearTint();
+            }
             if (this.button_pressed) {
                 this.button_up();
             }
@@ -80,6 +87,7 @@ export default class Button extends Phaser.GameObjects.Container {
             this.button_pressed = true;
             this.active_pointer_id = pointer.id;
             this.setScale(this.shrink_ratio);
+            this.set_selected(true);
             if (this.press_command !== null) {
                 this.press_command();
             }
@@ -91,6 +99,27 @@ export default class Button extends Phaser.GameObjects.Container {
         this.setScale(1);
         if (this.release_command !== null) {
             this.release_command();
+        }
+    }
+    set_selected(selected) {
+        if (this.selectable) {
+            this.selected = selected;
+            if (this.selected) {
+                this.texture.setTint(this.select_tint);
+                for (let item of this.select_group) {
+                    item.set_selected(false);
+                }
+            } else {
+                this.texture.clearTint();
+            }
+        }
+    }
+    set_select_group(select_group) {
+        this.select_group = []
+        for (let item of select_group) {
+            if (item !== this) {
+                this.select_group.push(item);
+            }
         }
     }
 }

@@ -108,6 +108,10 @@ class Tower extends ProjectileShooter {
         this.gun.setOrigin(0.5, 0.5);
         this.gun.setAngle(-45);
     }
+    destroy(fromScene) {
+        this.gun.destroy();
+        super.destroy(fromScene);
+    }
 }
 
 class CannonTower extends Tower{

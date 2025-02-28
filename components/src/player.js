@@ -124,9 +124,16 @@ export default class Player extends Phaser.GameObjects.Container{
         this.refresh_player_parts();
     }
     set_weapon(weapon) {
+        let prev_angle
+        if (typeof(this.weapon_object) !== "undefined") {
+            prev_angle = this.weapon_object.get_weapon_direction();
+        } else {
+            prev_angle = 40;
+        }
         this.remove(this.weapon_object,true);
         this.weapon_name = weapon;
         this.weapon_object = new part_converter[weapon](this.scene);
+        this.weapon_object.set_weapon_direction(prev_angle);
         this.add(this.weapon_object);
         this.refresh_player_parts();
     }

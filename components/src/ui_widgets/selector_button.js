@@ -48,4 +48,8 @@ export default class SelectorButton extends Button {
     update_displayed_object() {
         this.displayed_object.set_pos(this.x_pos-this.scroll_pos, this.y_pos);
     }
+    destroy(fromScene) {
+        this.displayed_object.destroy();
+        super.destroy(fromScene);
+    }
 }
