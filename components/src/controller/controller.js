@@ -23,6 +23,7 @@ export default class Controller extends Phaser.Scene{
         this.player_created = false;
 
         this.player_coins = 0;
+        this.player_inventory = {};
 
         // constants
         this.tower_data = {
@@ -126,6 +127,9 @@ export default class Controller extends Phaser.Scene{
         } else {
             this.create_ui();
         }
+        // setup keyboard inputs
+        this.input.keyboard.on('keydown', this.key_pressed, this);
+        this.input.keyboard.on('keyup', this.key_pressed, this);
     }
 
     update(time, delta) {
@@ -143,7 +147,10 @@ export default class Controller extends Phaser.Scene{
                 break;
             case 'Set_Coins':
                 this.player_coins = input.coins;
-                console.log('player has '+this.coins+' coins.')
+                this.coins_ui_text.setText('Coins: '+this.player_coins);
+                break;
+            case 'Set_Inventory':
+                this.player_inventory = input.inventory;
                 break;
             default:
                 console.log('unused input received: ',input)
@@ -182,6 +189,7 @@ export default class Controller extends Phaser.Scene{
             new Rectangle(this, this.sub_menu_container.x, this.sub_menu_container.y,
                 this.sub_menu_container.width, this.sub_menu_container.height, RGBtoHEX([49, 60, 74]), {rounded_corners:10}),
 
+
             // rects to hide selector buttons
             new Rectangle(this, 230, 0, 10, this.screen_height, this.background_color, {z_index:2}),
             new Rectangle(this, this.screen_width-240, 0, 10, this.screen_height, this.background_color, {z_index:2}),
@@ -196,7 +204,12 @@ export default class Controller extends Phaser.Scene{
             new Button(this, 240, 10, {text:'Main', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Main",this.sub_menu_container)}),
             new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Player",this.sub_menu_container)}),
             new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Tower",this.sub_menu_container)}),
+
         ]
+        this.coins_ui_text = new Text(this, 20, 20, 'Coins: '+this.player_coins, {center:false}).setDepth(4);
+        this.ui_objects.push(this.coins_ui_text);
+        console.log(this.coins_ui_text);
+
         this.prev_sub_menu = "None"
         this.move_sub_menu("Main",this.sub_menu_container);
     }
@@ -265,11 +278,40 @@ export default class Controller extends Phaser.Scene{
             }
         }
     }
-    button_pressed = (button) => {
-        this.output_data({type:'Key_Input', Key: button, Direction: 'Down'});
-    }
-    button_released = (button) => {
-        this.output_data({type:'Key_Input', Key: button, Direction: 'Up'});
+
+    key_pressed = (event) => {
+        const press = (button, type) => {
+            let direction = "Down";
+            if (type === 'keyup') {
+                direction = "Up"
+            }
+            this.output_data({type:'Key_Input', Key: button, Direction: direction});
+        }
+        switch (event.key) {
+            case "w" :
+            case "ArrowUp":
+                press("Up", event.type);
+                break;
+            case "s" :
+            case "ArrowDown":
+                press("Down", event.type);
+                break;
+            case "a" :
+            case "ArrowLeft":
+                press("Left", event.type);
+                break;
+            case "d" :
+            case "ArrowRight":
+                press("Right", event.type);
+                break;
+            case " ":
+                if (event.type === "keydown") {
+                    this.attack_pressed(true);
+                } else {
+                    this.attack_released();
+                }
+                break;
+        }
     }
     make_tower = (tower, direction, tower_stats) => {
         this.output_data({type:'Create_Tower', Tower: tower, Direction: direction, Tower_Stats:tower_stats})
