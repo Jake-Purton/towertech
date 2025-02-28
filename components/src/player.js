@@ -205,7 +205,10 @@ export default class Player extends Phaser.GameObjects.Container{
         if (!this.dead) {
             let new_tower = null;
             if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
-                new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id);
+                if (data.Tower_Stats.cost <= this.coins) {
+                    new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
+                    this.coins -= data.Tower_Stats.cost;
+                }
             }
             this.prev_tower_button_direction = data.Direction;
             if (new_tower != null) {

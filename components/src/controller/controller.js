@@ -208,7 +208,6 @@ export default class Controller extends Phaser.Scene{
         ]
         this.coins_ui_text = new Text(this, 20, 20, 'Coins: '+this.player_coins, {center:false}).setDepth(4);
         this.ui_objects.push(this.coins_ui_text);
-        console.log(this.coins_ui_text);
 
         this.prev_sub_menu = "None"
         this.move_sub_menu("Main",this.sub_menu_container);
