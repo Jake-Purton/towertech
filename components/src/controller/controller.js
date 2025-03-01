@@ -23,7 +23,7 @@ export default class Controller extends Phaser.Scene{
         this.player_created = false;
 
         this.player_coins = 0;
-        this.player_inventory = {};
+        this.player_inventory = {'default_body':{type:'body'}};
 
         // constants
         this.tower_data = {
@@ -62,7 +62,11 @@ export default class Controller extends Phaser.Scene{
                     {cost:5, damage:1, fire_rate:2, range:80},
                     {cost:5, damage:1, fire_rate:2, range:80},
                 ]},
-
+            "BuffingTower":{title:"Buffing", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
         };
 
     }
@@ -83,6 +87,10 @@ export default class Controller extends Phaser.Scene{
         this.load.image('button1','/game_images/UI/button.png');
         this.load.image('button2','/game_images/UI/button2.png');
         this.load.image('button','/game_images/UI/Basic button.png');
+        this.load.image('parts_button_50px','/game_images/UI/parts_button_50px.png');
+        this.load.image('parts_button_95px','/game_images/UI/parts_button_95px.png');
+        this.load.image('parts_button_70px','/game_images/UI/parts_button_70px.png');
+        this.load.image('parts_button_65px','/game_images/UI/parts_button_65px.png');
         this.load.image('selector_button','/game_images/UI/selector_button.png');
 
         this.load.image('joystick_base','/game_images/UI/joystick_base4.png');
@@ -199,13 +207,21 @@ export default class Controller extends Phaser.Scene{
             new AttackButton(this, this.screen_width-120, this.screen_height-120, {width:200, height:200,
                 joystick_base:'attack_button', joystick_head:'attack_button_head',
                 holding_command:this.attack_pressed, release_command:this.attack_released}).setDepth(4),
-
+            ]
+        let select_buttons = [
             // top tab buttons
-            new Button(this, 240, 10, {text:'Main', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Main",this.sub_menu_container)}),
-            new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Player",this.sub_menu_container)}),
-            new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40, press_command:()=>this.move_sub_menu("Tower",this.sub_menu_container)}),
-
+            new Button(this, 240, 10, {text:'Main', center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
+                press_command:()=>this.move_sub_menu("Main",this.sub_menu_container)}),
+            new Button(this, 350, 10, {text:'Player', center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
+                press_command:()=>this.move_sub_menu("Player",this.sub_menu_container)}),
+            new Button(this, 460, 10, {text:'Tower', center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
+                press_command:()=>this.move_sub_menu("Tower",this.sub_menu_container)}),
         ]
+        for (let item of select_buttons) {
+            item.set_select_group(select_buttons);
+            this.ui_objects.push(item);
+        }
+
         this.coins_ui_text = new Text(this, 20, 20, 'Coins: '+this.player_coins, {center:false}).setDepth(4);
         this.ui_objects.push(this.coins_ui_text);
 
@@ -218,8 +234,11 @@ export default class Controller extends Phaser.Scene{
             this.prev_sub_menu = menu;
             this.destroy_ui_list(this.sub_menu_ui_objects);
             this.destroy_ui_list(this.tower_buy_ui_objects);
+            this.destroy_ui_list(this.player_parts_ui_objects);
+            this.destroy_ui_list(this.browse_parts_ui_objects);
             switch (menu) {
                 case "Player":
+                    this.create_player_parts_menu(container_rect);
                     break;
                 case "Tower":
                     this.create_tower_menu(container_rect);
@@ -248,7 +267,7 @@ export default class Controller extends Phaser.Scene{
                 select_tint:RGBtoHEX([200,200,200])},
                 {sector_x:container_rect.x, sector_width:container_rect.width,
                 max_scroll:(towers.length*60+10)-container_rect.width,
-                displayed_class:towers[i]}));
+                displayed_item:towers[i]}));
         }
         for (let item of this.sub_menu_ui_objects) {
             item.set_select_group(this.sub_menu_ui_objects);
@@ -270,6 +289,55 @@ export default class Controller extends Phaser.Scene{
                 }),
         ]
     }
+    create_player_parts_menu(container_rect) {
+
+        this.player_parts_ui_objects = []
+        let parts = {
+            all:{name:'All', width:50}, weapon:{name:'Weapon', width:95},
+            body:{name:'Body', width:70}, leg:{name:'Legs', width:65}};
+        let x_pos = 10;
+        let item_w;
+        for (let i=0;i<4;i++) {
+            item_w = Object.values(parts)[i].width
+            this.player_parts_ui_objects.push(
+                new Button(this, container_rect.x+x_pos, container_rect.y+10, {
+                    texture:'parts_button_'+item_w+'px', text:Object.values(parts)[i].name,
+                    center:false, width:item_w, height:35,
+                    select_tint: RGBtoHEX([180,180,180]),
+                    text_style:{fontFamily: 'Tahoma', fontSize: 20, fontStyle: 'bold', color: '#222'},
+                    press_command: ()=>this.create_browse_parts_menu(container_rect, Object.keys(parts)[i])}))
+            x_pos += item_w+8;
+        }
+        for (let item of this.player_parts_ui_objects) {
+            item.set_select_group(this.player_parts_ui_objects);
+        }
+    }
+    create_browse_parts_menu(container_rect, filter=null) {
+        this.destroy_ui_list(this.browse_parts_ui_objects);
+        this.browse_parts_ui_objects = []
+        let items = Object.keys(this.player_inventory).filter(
+            (item) => (this.player_inventory[item].type === filter || filter === null || filter === 'all'));
+
+        for (let i=0;i<items.length;i++) {
+            this.browse_parts_ui_objects.push(new SelectorButton(this,
+                container_rect.x+i*60+10, container_rect.y+60,
+                {text:'',width:50, height:50, center:false, texture:'selector_button',
+                    // press_command:()=>this.create_tower_buy_menu(towers[i],container_rect),
+                    select_tint:RGBtoHEX([200,200,200])},
+                {sector_x:container_rect.x, sector_width:container_rect.width,
+                    max_scroll:(items.length*60+10)-container_rect.width,
+                    displayed_item:items[i], display_type:"part"}));
+        }
+        for (let item of this.browse_parts_ui_objects) {
+            item.set_select_group(this.browse_parts_ui_objects);
+        }
+
+
+
+        // console.log(this.player_inventory);
+    }
+
+
     destroy_ui_list(ui_list) {
         if (typeof(ui_list) !== 'undefined') {
             for (let obj of ui_list) {

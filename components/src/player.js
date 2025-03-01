@@ -207,7 +207,7 @@ export default class Player extends Phaser.GameObjects.Container{
             if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
                 if (data.Tower_Stats.cost <= this.coins) {
                     new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
-                    this.coins -= data.Tower_Stats.cost;
+                    this.set_coins(this.coins - data.Tower_Stats.cost);
                 }
             }
             this.prev_tower_button_direction = data.Direction;
@@ -217,15 +217,17 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     pickup_item(dropped_item) {
-        this.add_to_inventory(dropped_item.item_name)
-        if (dropped_item.item_name.split("_")[1] === "leg") {
-            this.set_leg(dropped_item.item_name);
-        } else if (dropped_item.item_name === "wheel") {
-            this.set_leg(dropped_item.item_name);
-        } else if (dropped_item.item_name.split("_")[1] === "body") {
-            this.set_body(dropped_item.item_name);
-        } else if (dropped_item.item_name.split("_")[1] === "weapon") {
-            this.set_weapon(dropped_item.item_name);
+        this.add_to_inventory(dropped_item);
+        switch (dropped_item.item_type) {
+            case 'leg':
+                this.set_leg(dropped_item.item_name);
+                break;
+            case 'body':
+                this.set_body(dropped_item.item_name);
+                break;
+            case 'weapon':
+                this.set_weapon(dropped_item.item_name);
+                break;
         }
     }
     set_coins(coins) {
@@ -233,10 +235,10 @@ export default class Player extends Phaser.GameObjects.Container{
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
     add_to_inventory(item) {
-        if (Object.keys(this.inventory).includes(item)) {
-            this.inventory[item].item_count += 1;
+        if (Object.keys(this.inventory).includes(item.item_name)) {
+            this.inventory[item.item_name].item_count += 1;
         } else {
-            this.inventory[item] = {item_count: 1, item_level:1, equipped: false};
+            this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
         this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
     }

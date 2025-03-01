@@ -12,6 +12,16 @@ export default class DroppedItem extends Entity {
 
         this.item_name = item;
         this.picked_up = false;
+
+        if (this.item_name.split("_")[1] === "leg" || this.item_name === "wheel") {
+            this.item_type = 'leg';
+        } else if (this.item_name.split("_")[1] === "body") {
+            this.item_type = 'body';
+        } else if (this.item_name.split("_")[1] === "weapon") {
+            this.item_type = 'weapon';
+        } else {
+            this.item_type = 'unknown'
+        }
     }
     game_tick(delta_time, players) {
         this.physics_tick(delta_time);
@@ -29,5 +39,14 @@ export default class DroppedItem extends Entity {
     }
     get_dead() {
         return this.picked_up
+    }
+    set_pos(x, y) {
+        this.setPosition(x, y);
+    }
+    set_as_ui_display() {
+
+    }
+    destroy(fromScene) {
+        super.destroy(fromScene);
     }
 }

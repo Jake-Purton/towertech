@@ -1,12 +1,13 @@
 import * as Phaser from 'phaser';
 import {RGBtoHEX, clamp, modulo} from "../utiles.js";
 import {create_tower } from '../tower.js';
+import DroppedItem from '../dropped_item.js';
 import Button from "./button.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class SelectorButton extends Button {
     constructor(scene, x, y, properties={},
-                {max_scroll=200, sector_width=300, sector_x=200, displayed_class=""}={}) {
+                {max_scroll=200, sector_width=300, sector_x=200, displayed_item="", display_type="tower"}={}) {
         super(scene, x, y, properties);
 
         this.scroll_pos = 0;
@@ -16,8 +17,12 @@ export default class SelectorButton extends Button {
         this.sector_width = sector_width;
         this.sector_x = sector_x;
         this.pressed_in_sector = false;
-        if (displayed_class !== "") {
-            this.displayed_object = create_tower(displayed_class, scene, x, y, 'UI_DISPLAY');
+        if (displayed_item !== "") {
+            if (display_type === "part") {
+                this.displayed_object = new DroppedItem(scene, x, y, displayed_item);
+            } else {
+                this.displayed_object = create_tower(displayed_item, scene, x, y, 'UI_DISPLAY');
+            }
             this.displayed_object.set_as_ui_display();
             this.update_displayed_object();
         }
@@ -49,7 +54,7 @@ export default class SelectorButton extends Button {
         this.displayed_object.set_pos(this.x_pos-this.scroll_pos, this.y_pos);
     }
     destroy(fromScene) {
-        this.displayed_object.destroy();
+        this.displayed_object.destroy(fromScene);
         super.destroy(fromScene);
     }
 }
