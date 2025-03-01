@@ -84,17 +84,15 @@ export default class Controller extends Phaser.Scene{
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
 
         // ui images
-        this.load.image('button1','/game_images/UI/button.png');
-        this.load.image('button2','/game_images/UI/button2.png');
-        this.load.image('button','/game_images/UI/Basic button.png');
+        this.load.image('button','/game_images/UI/tab_button.png');
         this.load.image('parts_button_50px','/game_images/UI/parts_button_50px.png');
         this.load.image('parts_button_95px','/game_images/UI/parts_button_95px.png');
         this.load.image('parts_button_70px','/game_images/UI/parts_button_70px.png');
         this.load.image('parts_button_65px','/game_images/UI/parts_button_65px.png');
         this.load.image('selector_button','/game_images/UI/selector_button.png');
 
-        this.load.image('joystick_base','/game_images/UI/joystick_base4.png');
-        this.load.image('joystick_head','/game_images/UI/joystick_head2.png');
+        this.load.image('joystick_base','/game_images/UI/joystick_base.png');
+        this.load.image('joystick_head','/game_images/UI/joystick_head.png');
 
         this.load.image('attack_button','/game_images/UI/attack_base.png');
         this.load.image('attack_button_head','/game_images/UI/attack_head.png');
