@@ -29,7 +29,10 @@ function random_range(min,max) {
 
 function clamp(value, min, max) {
     // returns the value, limited to within the given min and max
-    return Math.min(Math.max(value,min),max);
+    if (min < max) {
+        return Math.min(Math.max(value,min),max);
+    }
+    return value;
 }
 
 function modulo(x, n) {
