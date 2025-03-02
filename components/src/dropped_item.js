@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {get_distance, random_range } from './utiles.js';
+import {get_distance, random_range, get_item_type } from './utiles.js';
 import Entity from './entity.js';
 
 export default class DroppedItem extends Entity {
@@ -13,15 +13,7 @@ export default class DroppedItem extends Entity {
         this.item_name = item;
         this.picked_up = false;
 
-        if (this.item_name.split("_")[1] === "leg" || this.item_name === "wheel") {
-            this.item_type = 'leg';
-        } else if (this.item_name.split("_")[1] === "body") {
-            this.item_type = 'body';
-        } else if (this.item_name.split("_")[1] === "weapon") {
-            this.item_type = 'weapon';
-        } else {
-            this.item_type = 'unknown'
-        }
+        this.item_type = get_item_type(this.item_name);
     }
     game_tick(delta_time, players) {
         this.physics_tick(delta_time);

@@ -6,6 +6,7 @@ import {DefaultLeg, RobotLeg, StripedLeg } from './components/leg.js';
 import {DefaultWheel } from './components/wheel.js';
 import {DefaultWeapon, PistolWeapon } from './components/weapon.js';
 import Effects from './effects.js';
+import {get_item_type} from "./utiles.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -23,18 +24,30 @@ const part_converter = {
 }
 
 export default class Player extends Phaser.GameObjects.Container{
-    constructor(scene, x, y, player_id){
+    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='pistol_weapon'}={}){
 
         // create phaser stuff
         super(scene, x, y, []);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // assign body parts
-        this.set_body('robot_body');
-        this.set_weapon('pistol_weapon');
-        this.set_leg('robot_leg');
+        // game stats
+        this.coins = 0;
+        this.inventory = {};
 
+        // constants
+        this.speed = 0.4;
+        this.drag = 0.9;
+        this.player_id = player_id;
+        this.pickup_range = 20;
+
+        // assign body parts
+        this.set_body(body);
+        this.set_weapon(weapon);
+        this.set_leg(leg);
+        this.add_to_inventory(body);
+        this.add_to_inventory(weapon);
+        this.add_to_inventory(leg);
 
         // variables
         this.velocity = new Vec(0,0);
@@ -56,19 +69,10 @@ export default class Player extends Phaser.GameObjects.Container{
         this.health = 10;
         this.dead = false;
 
-        // constants
-        this.speed = 0.4;
-        this.drag = 0.9;
-        this.player_id = player_id;
-        this.pickup_range = 20;
 
         // effects info
         this.effects = new Effects(scene);
         this.last_damage_source = null;
-
-        // game stats
-        this.coins = 0;
-        this.inventory = {};
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
@@ -235,11 +239,17 @@ export default class Player extends Phaser.GameObjects.Container{
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
     add_to_inventory(item) {
+        // item can be DroppedItem object, or a string of the item name
+        if (typeof(item) === 'string') {
+            item = {item_name:item, item_type: get_item_type(item)}
+        }
         if (Object.keys(this.inventory).includes(item.item_name)) {
-            this.inventory[item.item_name].item_count += 1;
+            this.inventory[item.item_name].count += 1;
         } else {
             this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
-        this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
+        if (this.player_id !== 'UI_PLAYER_DISPLAY') {
+            this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
+        }
     }
 }
