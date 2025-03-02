@@ -59,6 +59,12 @@ const HostPage = () => {
   };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
+      <a
+        href="/"
+        className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+      >
+        Back to Home
+      </a>
       <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
 
       <div className="flex flex-col items-center gap-10 w-full max-w-lg mt-10 bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-700">
