@@ -67,8 +67,13 @@ export default class Controller extends Phaser.Scene{
                     {cost:5, damage:1, fire_rate:2, range:80},
                     {cost:5, damage:1, fire_rate:2, range:80},
                 ]},
-        };
+            }
+        this.parts_data = {
+            "default_body":{title:"Default Body", description:"this is some text", level_stats:[
+                    {}
 
+                ]},
+            }
     }
     preload() {
         // player images
@@ -320,7 +325,7 @@ export default class Controller extends Phaser.Scene{
             this.browse_parts_ui_objects.push(new SelectorButton(this,
                 container_rect.x+i*60+10, container_rect.y+60,
                 {text:'',width:50, height:50, center:false, texture:'selector_button',
-                    // press_command:()=>this.create_tower_buy_menu(towers[i],container_rect),
+                    press_command:()=>this.create_specific_part_menu(items[i], container_rect),
                     select_tint:RGBtoHEX([200,200,200])},
                 {sector_x:container_rect.x, sector_width:container_rect.width,
                     max_scroll:(items.length*60+10)-container_rect.width,
@@ -329,10 +334,22 @@ export default class Controller extends Phaser.Scene{
         for (let item of this.browse_parts_ui_objects) {
             item.set_select_group(this.browse_parts_ui_objects);
         }
-
-
-
-        // console.log(this.player_inventory);
+    }
+    create_specific_part_menu(item_name, container_rect) {
+        this.destroy_ui_list(this.specific_part_ui_objects);
+        // let tower_info = this.tower_data[tower_type];
+        // let level_info = tower_info.level_stats[0];
+        // let description_string = tower_info.description+"\nDamage: "+level_info.damage+"\nFire Rate: "+level_info.fire_rate+"\nRange: "+level_info.range;
+        this.specific_part_ui_objects = [
+            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+84,
+                item_name, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
+            new Text(this, container_rect.x+10, container_rect.y+100, description_string, {center:false}),
+            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
+                {text:"Buy - "+level_info.cost, width:104, height:40,
+                    press_command: ()=>this.make_tower(tower_type, "Down", level_info),
+                    release_command: ()=>this.make_tower(tower_type, "Up", level_info)
+                }),
+        ]
     }
 
 
