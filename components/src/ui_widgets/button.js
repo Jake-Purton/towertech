@@ -122,4 +122,8 @@ export default class Button extends Phaser.GameObjects.Container {
             }
         }
     }
+    force_button_press() {
+        this.button_down({id:1});
+        this.button_up({id:1});
+    }
 }

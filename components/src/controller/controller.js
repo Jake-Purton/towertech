@@ -23,7 +23,7 @@ export default class Controller extends Phaser.Scene{
         this.player_created = false;
 
         this.player_coins = 0;
-        this.player_inventory = {'default_body':{type:'body'}};
+        this.player_inventory = {'robot_body':{type:'body'}};
 
         // constants
         this.tower_data = {
@@ -71,7 +71,27 @@ export default class Controller extends Phaser.Scene{
         this.parts_data = {
             "default_body":{title:"Default Body", description:"this is some text", level_stats:[
                     {}
-
+                ]},
+            "robot_body":{title:"Robot Body", description:"this is some text", level_stats:[
+                    {}
+                ]},
+            "default_leg":{title:"Default Leg", description:"this is some text", level_stats:[
+                    {}
+                ]},
+            "robot_leg":{title:"Robot Leg", description:"this is some text", level_stats:[
+                    {}
+                ]},
+            "striped_leg":{title:"Striped Leg", description:"this is some text", level_stats:[
+                    {}
+                ]},
+            "wheel":{title:"Wheel", description:"this is some text", level_stats:[
+                    {}
+                ]},
+            "default_weapon":{title:"Arm Gun", description:"this is some text", level_stats:[
+                    {}
+                ]},
+            "pistol_weapon":{title:"Pistol", description:"this is some text", level_stats:[
+                    {}
                 ]},
             }
     }
@@ -239,14 +259,14 @@ export default class Controller extends Phaser.Scene{
             this.destroy_ui_list(this.tower_buy_ui_objects);
             this.destroy_ui_list(this.player_parts_ui_objects);
             this.destroy_ui_list(this.browse_parts_ui_objects);
+            this.destroy_ui_list(this.specific_part_ui_objects);
             switch (menu) {
                 case "Player":
                     this.create_player_parts_menu(container_rect);
                     break;
                 case "Tower":
                     this.create_tower_menu(container_rect);
-                    this.sub_menu_ui_objects[0].button_down({id:1});
-                    this.sub_menu_ui_objects[0].button_up({id:1});
+                    this.sub_menu_ui_objects[0].force_button_press();
                     break;
                 default:
                     this.create_main_menu(container_rect);
@@ -314,6 +334,7 @@ export default class Controller extends Phaser.Scene{
         for (let item of this.player_parts_ui_objects) {
             item.set_select_group(this.player_parts_ui_objects);
         }
+        this.player_parts_ui_objects[0].force_button_press();
     }
     create_browse_parts_menu(container_rect, filter=null) {
         this.destroy_ui_list(this.browse_parts_ui_objects);
@@ -334,21 +355,30 @@ export default class Controller extends Phaser.Scene{
         for (let item of this.browse_parts_ui_objects) {
             item.set_select_group(this.browse_parts_ui_objects);
         }
+        if (this.browse_parts_ui_objects.length !== 0) {
+            this.browse_parts_ui_objects[0].force_button_press();
+        } else {
+            this.destroy_ui_list(this.specific_part_ui_objects);
+            this.specific_part_ui_objects = [
+                new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
+                    "You have no parts\nof this type.")
+            ]
+        }
+
     }
     create_specific_part_menu(item_name, container_rect) {
         this.destroy_ui_list(this.specific_part_ui_objects);
-        // let tower_info = this.tower_data[tower_type];
-        // let level_info = tower_info.level_stats[0];
-        // let description_string = tower_info.description+"\nDamage: "+level_info.damage+"\nFire Rate: "+level_info.fire_rate+"\nRange: "+level_info.range;
+        let part_info = this.parts_data[item_name];
+        // let level_info = part_info.level_stats[0];
+        let description_string = part_info.description;
         this.specific_part_ui_objects = [
-            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+84,
-                item_name, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
-            new Text(this, container_rect.x+10, container_rect.y+100, description_string, {center:false}),
-            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
-                {text:"Buy - "+level_info.cost, width:104, height:40,
-                    press_command: ()=>this.make_tower(tower_type, "Down", level_info),
-                    release_command: ()=>this.make_tower(tower_type, "Up", level_info)
-                }),
+            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
+                part_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
+            new Text(this, container_rect.x+10, container_rect.y+160, description_string, {center:false}),
+            // new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
+            //     {text:"Buy - "+level_info.cost, width:104, height:40,
+            //         press_command: ()=>this.make_tower(tower_type, "Down", level_info),
+            //         release_command: ()=>this.make_tower(tower_type, "Up", level_info))},
         ]
     }
 
