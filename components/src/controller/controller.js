@@ -375,10 +375,9 @@ export default class Controller extends Phaser.Scene{
             new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
                 part_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
             new Text(this, container_rect.x+10, container_rect.y+160, description_string, {center:false}),
-            // new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
-            //     {text:"Buy - "+level_info.cost, width:104, height:40,
-            //         press_command: ()=>this.make_tower(tower_type, "Down", level_info),
-            //         release_command: ()=>this.make_tower(tower_type, "Up", level_info))},
+            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
+                {text:"Equip", width:104, height:40,
+                    press_command: ()=>this.equip_part(item_name)}),
         ]
     }
 
@@ -428,11 +427,14 @@ export default class Controller extends Phaser.Scene{
     make_tower = (tower, direction, tower_stats) => {
         this.output_data({type:'Create_Tower', Tower: tower, Direction: direction, Tower_Stats:tower_stats})
     }
+    equip_part = (item_name) => {
+        this.output_data({type:'Equip_Part', item_name: item_name});
+    }
     joystick_holding = (x,y) => {
-        this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'})
+        this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'});
     }
     joystick_release = () => {
-        this.output_data({type:'Joystick_Input', Direction: 'Up'})
+        this.output_data({type:'Joystick_Input', Direction: 'Up'});
     }
     print = (text) => {
         this.output_data({type:'Print', text: text});

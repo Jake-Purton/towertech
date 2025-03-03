@@ -272,6 +272,9 @@ export default class Game extends Phaser.Scene{
             case 'Create_Tower':
                 this.players[input.PlayerID].new_tower_input(input);
                 break;
+            case 'Equip_Part':
+                this.players[input.PlayerID].equip_part(input.item_name);
+                break;
             case 'Print':
                 console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);
                 break;

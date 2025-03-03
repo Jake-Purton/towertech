@@ -222,15 +222,18 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     pickup_item(dropped_item) {
         this.add_to_inventory(dropped_item);
-        switch (dropped_item.item_type) {
+        // this.set_part(dropped_item.item_name, dropped_item.item_type);
+    }
+    set_part(item_name, item_type) {
+        switch (item_type) {
             case 'leg':
-                this.set_leg(dropped_item.item_name);
+                this.set_leg(item_name);
                 break;
             case 'body':
-                this.set_body(dropped_item.item_name);
+                this.set_body(item_name);
                 break;
             case 'weapon':
-                this.set_weapon(dropped_item.item_name);
+                this.set_weapon(item_name);
                 break;
         }
     }
@@ -250,6 +253,11 @@ export default class Player extends Phaser.GameObjects.Container{
         }
         if (this.player_id !== 'UI_PLAYER_DISPLAY') {
             this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
+        }
+    }
+    equip_part(item_name) {
+        if (Object.keys(this.inventory).includes(item_name)) {
+            this.set_part(item_name, this.inventory[item_name].type);
         }
     }
 }
