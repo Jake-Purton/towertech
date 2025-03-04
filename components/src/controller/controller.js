@@ -172,7 +172,7 @@ export default class Controller extends Phaser.Scene{
     update(time, delta) {
         if (!this.player_created) {
             // tell server to create a player
-            this.output_data({type: 'Constructor'});
+            this.output_data({type: 'Constructor', username: localStorage.getItem('player_username')});
             this.player_created = true;
         }
     }

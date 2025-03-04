@@ -96,6 +96,8 @@ const JoinPage: React.FC = () => {
 
         console.log("Joining room with code:", number, username, isLoggedIn);
         
+        localStorage.setItem('player_username', username)
+
         if (!isLoggedIn) {
             dataSender(number, username);
         } else {
