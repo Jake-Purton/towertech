@@ -72,7 +72,7 @@ const PhaserGame = () => {
 
               if (result.success) {
                 console.log('Game data successfully sent to the server');
-                router.push("/end_game");
+                router.push("/end_game?gameID=" + result.gameid);
               } else {
                 console.log('Failed to send game data to the server:', result.error);
               }
