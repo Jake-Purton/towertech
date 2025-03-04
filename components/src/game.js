@@ -295,8 +295,8 @@ export default class Game extends Phaser.Scene{
         switch (input.type) {
             case 'Constructor':
                 if (!(input.PlayerID in this.players)){
-                    this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
-                    // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
+                    this.players[input.PlayerID] = new Player(
+                        this, 100*Object.keys(this.players).length, 100, input.PlayerID, {username:input.username});
                 }
                 break;
             case 'Key_Input':

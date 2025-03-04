@@ -24,12 +24,17 @@ const part_converter = {
 }
 
 export default class Player extends Phaser.GameObjects.Container{
-    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='pistol_weapon'}={}){
+    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='pistol_weapon', username='Player'}={}){
 
         // create phaser stuff
         super(scene, x, y, []);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+
+        // create username
+        this.username = username;
+        this.name_text = new Phaser.GameObjects.Text(scene, 0, -20, this.username, {fontFamily:'Tahoma',color:'#000000', fontSize:18, align:"center"}).setOrigin(0.5, 0.5);
+        this.add(this.name_text);
 
         // game stats
         this.coins = 0;
@@ -144,9 +149,11 @@ export default class Player extends Phaser.GameObjects.Container{
         if (typeof(this.body_object) !== 'undefined' && typeof(this.weapon_object) !== 'undefined' && typeof(this.leg_object) !== 'undefined') {
             this.bringToTop(this.weapon_object);
             this.sendToBack(this.leg_object);
+            this.bringToTop(this.name_text);
             this.weapon_object.set_scale(this.body_object.get_scale_multiplier());
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
+
         }
     }
 

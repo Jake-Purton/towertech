@@ -172,7 +172,8 @@ export default class Controller extends Phaser.Scene{
     update(time, delta) {
         if (!this.player_created) {
             // tell server to create a player
-            this.output_data({type: 'Constructor', username: localStorage.getItem('player_username')});
+            this.player_username = localStorage.getItem('player_username')
+            this.output_data({type: 'Constructor', username: this.player_username});
             this.player_created = true;
         }
     }
@@ -285,7 +286,19 @@ export default class Controller extends Phaser.Scene{
         }
     }
     create_main_menu(container_rect) {
-        this.sub_menu_ui_objects = [new Player(this, container_rect.x+container_rect.width/2, container_rect.y+60, 'UI_PLAYER_DISPLAY')];
+        let get_part = (inventory, type) => {
+            for (let i=0;i<Object.keys(inventory).length;i++) {
+                if (Object.values(inventory)[i].type === type && Object.values(inventory)[i].equipped) {
+                    return Object.keys(inventory)[i];
+                }
+            }
+        }
+        this.sub_menu_ui_objects = [
+            new Player(this, container_rect.x+container_rect.width/2, container_rect.y+140, 'UI_PLAYER_DISPLAY',
+                {username: this.player_username, body: get_part(this.player_inventory, 'body'),
+                 leg: get_part(this.player_inventory, 'leg'), weapon: get_part(this.player_inventory, 'weapon')}
+            )
+        ];
 
         this.sub_menu_ui_objects[0].setScale(3);
     }
@@ -385,7 +398,7 @@ export default class Controller extends Phaser.Scene{
             this.destroy_ui_list(this.specific_part_ui_objects);
             this.specific_part_ui_objects = [
                 new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
-                    "You have no parts\nof this type.")]
+                    "You have no parts\nof this type.", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}})]
         } else if (!menu_preloaded) {
             this.browse_parts_ui_objects[0].force_button_press();
         }
