@@ -62,9 +62,11 @@ class Projectile extends Entity {
             iterable = Object.values(iterable);
         }
         for (let entity of iterable) {
-            if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
-                this.deal_damage(entity);
-                return true;
+            if (!entity.dead) {
+                if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
+                    this.deal_damage(entity);
+                    return true;
+                }
             }
         }
         return false;
@@ -132,19 +134,47 @@ class EffectAOE extends Projectile {
 }
 
 class GoosniperProjectile extends Projectile {
-    constructor(scene, x, y, angle, target=null, speed_multiplier=1) {
-        let base_speed = 20;
-        super(scene, x, y, 'goosniper_projectile', base_speed*speed_multiplier, angle, 'Enemy',
-            {target:target, auto_aim_strength:0});
+    constructor(scene, x, y, angle, target=null, {speed=20, damage=4} = {}) {
+        super(scene, x, y, 'goosniper_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:0, damage:damage},{target_distance:1000});
     }
 }
 class GooslingerProjectile extends Projectile {
-    constructor(scene, x, y, angle, target=null, speed_multiplier=1) {
-        let base_speed = 10;
-        super(scene, x, y, 'gooslinger_projectile', base_speed*speed_multiplier, angle, 'Enemy',
-            {target:target, auto_aim_strength:0});
+    constructor(scene, x, y, angle, target=null, {speed=10, damage=2} = {}) {
+        super(scene, x, y, 'gooslinger_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:0, damage:damage},{target_distance:300});
+    }
+}
+class GoocasterProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, {speed=8, damage=5, auto_aim_strength=1} = {}) {
+        super(scene, x, y, 'goocaster_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:500});
+    }
+}
+class GoobouncerProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, {speed=10, damage=1, auto_aim_strength=0} = {}) {
+        super(scene, x, y, 'goobouncer_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:200});
+    }
+}
+class GootowerProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, {speed=10, damage=1, auto_aim_strength=0} = {}) {
+        super(scene, x, y, 'gootower_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:300});
+    }
+}
+class GoobulletProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, {speed=5, damage=1, auto_aim_strength=0} = {}) {
+        super(scene, x, y, 'goobullet_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
+    }
+}
+class GooMeleeDamage extends Projectile {
+    constructor(scene, x, y, target=null, damage=1) {
+        super(scene, x, y, 'goo_melee', 0, 0, 'Enemy',
+            {target:target, auto_aim_strength:0, damage:damage},{initial_alpha:0, target_distance:5, time_to_live:0.1});
     }
 }
 
-
-export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile };
+export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile, 
+        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile};

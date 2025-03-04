@@ -39,6 +39,10 @@ class Tower extends ProjectileShooter {
         this.tower_type = tower_type;
         this.playerid = player_id;
 
+        this.enabled = true;
+        this.health = health;
+        this.max_health = health;
+
         // effects info
         this.effects = new Effects(scene);
 
@@ -48,16 +52,20 @@ class Tower extends ProjectileShooter {
     }
     game_tick(delta_time, enemies, players) {
         super.game_tick(delta_time);
+        if (this.enabled){
+            this.shoot_cooldown -= delta_time/this.scene.target_fps;
+            this.time_since_attacking += delta_time/this.scene.target_fps;
 
-        if (get_removed(this.target)) {
-            this.check_target(enemies);
+            if (get_removed(this.target)) {
+                this.check_target(enemies);
+            }
+            this.rotate_gun(delta_time);
+            this.attack_enemies(enemies, this.effects);
+
+            this.check_nearby_player(players);
+
+            this.effects.game_tick(delta_time, this);
         }
-        this.rotate_gun(delta_time);
-        this.attack_enemies(enemies, this.effects);
-
-        this.check_nearby_player(players);
-
-        this.effects.game_tick(delta_time, this);
     }
     set_weapon_direction(angle) {
         this.gun.setAngle(angle);
@@ -114,6 +122,11 @@ class Tower extends ProjectileShooter {
     destroy(fromScene) {
         this.gun.destroy();
         super.destroy(fromScene);
+    disable_tower(){
+        this.enabled = false;
+    }
+    enable_tower(){
+        this.enabled = true;
     }
 }
 
@@ -129,7 +142,7 @@ class LaserTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, Bullet, tower_stats,
             {gun_scale:1}, {range:150, fire_distance:150, projectile_no_drag_distance:120,
-            damage:0.5, fire_rate:10, pierce_count:100, projectile_auto_aim_strength:0,
+            damage:0.1, fire_rate:10, pierce_count:100, projectile_auto_aim_strength:0,
             projectile_min_speed:1, fire_velocity:20});
         this.recent_laser = null;
         this.animation_position_tracker = 0;
@@ -146,7 +159,7 @@ class LaserTower extends Tower{
             let damage = this.damage * effects.get_damage_multiplier();
             let laser = new LineAttack(this.scene, this, this.target,
                 this.tower_type.concat('_projectile'), damage, 0.11, this.animation_speed, this.animation_position_tracker)
-            this.recent_laser = laser
+            this.recent_laser = laser;
             this.scene.projectiles.push(laser);
         }
     }

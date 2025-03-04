@@ -4,7 +4,7 @@ import {random_choice } from './utiles.js';
 import Level from "./level.js";
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func, init_server_func){
+    constructor(output_data_func, init_server_func, end_game_output){
         super('GameScene');
 
         // game object containers
@@ -19,8 +19,10 @@ export default class Game extends Phaser.Scene{
         this.target_fps = 60;
         this.output_data = output_data_func;
         this.init_server = init_server_func;
+        this.end_game_output = end_game_output;
 
         // gameplay info
+        this.game_over = false;
         this.score = 0;
         this.health = 1;
 
@@ -85,14 +87,21 @@ export default class Game extends Phaser.Scene{
         // enemies
         this.load.image('goosniper_projectile','/game_images/projectiles/goosniper_projectile.png');
         this.load.image('gooslinger_projectile','/game_images/projectiles/gooslinger_projectile.png');
+        this.load.image('goocaster_projectile','/game_images/projectiles/goocaster_projectile.png');
+        this.load.image('goobouncer_projectile','/game_images/projectiles/goobouncer_projectile.png');
+        this.load.image('gootower_projectile','/game_images/projectiles/gootower_projectile.png');
+        this.load.image('goobullet_projectile','/game_images/projectiles/goobullet_projectile.png');
+        this.load.image('goo_melee','/game_images/projectiles/goo_melee.png');
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goocrab','/game_images/enemy_sprites/enemy/goocrab.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goober','/game_images/enemy_sprites/enemy/goober.png', {frameWidth:32, frameHeight:48});
         this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:32, frameHeight:48});
         this.load.spritesheet('gooshifter','/game_images/enemy_sprites/enemy/gooshifter.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('goobomber','/game_images/enemy_sprites/enemy/goobomber.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:32, frameHeight:48});
         this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goocaster','/game_images/enemy_sprites/enemy/goocaster.png', {frameWidth:32, frameHeight:48});
     }
     create() {
         this.init_server();
@@ -101,6 +110,12 @@ export default class Game extends Phaser.Scene{
         this.anims.create({
             key: 'goolime_walk',
             frames: this.anims.generateFrameNumbers('goolime', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'goocrab_walk',
+            frames: this.anims.generateFrameNumbers('goocrab', { start: 0, end: 2 }),
             frameRate: 8,
             repeat: -1
         });
@@ -135,8 +150,8 @@ export default class Game extends Phaser.Scene{
             repeat: -1
         });
         this.anims.create({
-            key: 'goobomber_walk',
-            frames: this.anims.generateFrameNumbers('goobomber', { start: 0, end: 2 }),
+            key: 'goobouncer_walk',
+            frames: this.anims.generateFrameNumbers('goobouncer', { start: 0, end: 2 }),
             frameRate: 8,
             repeat: -1
         });
@@ -146,9 +161,15 @@ export default class Game extends Phaser.Scene{
             frameRate: 8,
             repeat: -1
         });
+        this.anims.create({
+            key: 'goocaster_walk',
+            frames: this.anims.generateFrameNumbers('goocaster', { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1
+        });
 
         // game objects
-        this.players['TempPlayerId'] =  new Player(this, 100, 100, 'TempPlayerId');
+        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // create Level (map info and enemy path)
         this.level = new Level(this, 'main', this.scale.width, this.scale.height);
@@ -159,6 +180,8 @@ export default class Game extends Phaser.Scene{
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
+        if (this.game_over) { return }
+
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
         delta = (delta*this.target_fps)/1000;
@@ -249,7 +272,23 @@ export default class Game extends Phaser.Scene{
         }
     }
     end_game() {
-        console.log('GAME OVER');
+        // need to output
+        // gamescore
+        // player ids in the game
+        // player scores
+        // player kills
+
+        // end the game
+        let player_data = [];
+        for (let player_id of Object.keys(this.players)) {
+            player_data.push({player_id: player_id, score: this.players[player_id].player_score, kills: this.players[player_id].kill_count})
+        }
+        let game_data = {game_score: this.score, player_data: player_data}
+        this.end_game_output(game_data);
+
+        this.game_over = true;
+        console.log('GAME OVER', game_data);
+
     }
 
     take_input(input){
@@ -284,40 +323,40 @@ export default class Game extends Phaser.Scene{
     dummy_input(){
         // dummy method that attempts to recreate how inputs would be taken
         if (this.kprs.up.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Up', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Up', Direction:'Down'});
         }
         if (this.kprs.down.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Down', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Down', Direction:'Down'});
         }
         if (this.kprs.right.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Right', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Right', Direction:'Down'});
         }
         if (this.kprs.left.isDown){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Left', Direction:'Down'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Left', Direction:'Down'});
         }
         if (this.kprs.up.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Up', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Up', Direction:'Up'});
         }
         if (this.kprs.down.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Down', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Down', Direction:'Up'});
         }
         if (this.kprs.right.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Right', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Right', Direction:'Up'});
         }
         if (this.kprs.left.isUp){
-            this.take_input({PlayerID: 'TempPlayerId', type:'Key_Input', Key: 'Left', Direction:'Up'});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Left', Direction:'Up'});
         }
         if (this.kprs.space.isDown) {
             this.take_input({PlayerID: 'TempPlayerId', type:'Create_Tower', Direction: 'Down', Tower: 'LaserTower', Tower_Stats:{cost:0}})
         }
         if (this.kprs.space.isUp) {
-            this.take_input({PlayerID: 'TempPlayerId', type:'Create_Tower', Direction: 'Up', Tower: 'LaserTower'})
+            this.take_input({PlayerID: 'TempPlayerID', type:'Create_Tower', Direction: 'Up', Tower: 'LaserTower'})
         }
         if (this.kprs.shift.isDown) {
-            this.take_input({PlayerID: 'TempPlayerId', type:'Attack_Input', Direction:'Down', Auto_Target:true, Angle:140});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Attack_Input', Direction:'Down', Auto_Target:true, Angle:140});
         }
         if (this.kprs.shift.isUp) {
-            this.take_input({PlayerID: 'TempPlayerId', type:'Attack_Input', Direction:'Up', Auto_Target:true});
+            this.take_input({PlayerID: 'TempPlayerID', type:'Attack_Input', Direction:'Up', Auto_Target:true});
         }
     }
 }

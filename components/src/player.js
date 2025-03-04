@@ -33,8 +33,10 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // game stats
         this.coins = 0;
+        this.kill_count = 0;
+        this.player_score = 0;
         this.inventory = {};
-
+      
         // constants
         this.speed = 0.4;
         this.drag = 0.9;
@@ -46,7 +48,7 @@ export default class Player extends Phaser.GameObjects.Container{
             this.add_to_inventory(item);
             this.equip_part(item);
         }
-
+      
         // variables
         this.velocity = new Vec(0,0);
         this.key_inputs = {
@@ -64,7 +66,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.has_nearby_tower = false;
 
         // aliveness
-        this.health = 10;
+        this.health = 1000;
         this.dead = false;
 
 
@@ -79,7 +81,6 @@ export default class Player extends Phaser.GameObjects.Container{
             this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
             this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
             this.effects.game_tick(delta_time, this);
-
 
             // physics + movement
             if (this.joystick_down) {
@@ -145,6 +146,7 @@ export default class Player extends Phaser.GameObjects.Container{
             this.sendToBack(this.leg_object);
             this.weapon_object.set_scale(this.body_object.get_scale_multiplier());
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
+            this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
         }
     }
 
@@ -171,6 +173,8 @@ export default class Player extends Phaser.GameObjects.Container{
     get_kill_credit(enemy) {
         if (!this.dead) {
             this.scene.score += enemy.coin_value;
+            this.kill_count += 1;
+            this.player_score += enemy.coin_value;
             this.set_coins(this.coins+enemy.coin_value);
         }
     }
