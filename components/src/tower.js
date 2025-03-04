@@ -10,7 +10,7 @@ class Tower extends ProjectileShooter {
     // range is in pixels
     // fire_rate is shots per seconds
     constructor(scene, x, y, tower_type, player_id, projectile_class, tower_stats={},
-                {base_scale=1, gun_scale=1, gun_center=[0.2, 0.5],} = {}, properties = {}) {
+                {base_scale=1, gun_scale=1, gun_center=[0.2, 0.5], health=100} = {}, properties = {}) {
         for (let stat in tower_stats) {
             properties[stat] = tower_stats[stat];
         }
@@ -122,6 +122,7 @@ class Tower extends ProjectileShooter {
     destroy(fromScene) {
         this.gun.destroy();
         super.destroy(fromScene);
+    }
     disable_tower(){
         this.enabled = false;
     }

@@ -80,7 +80,7 @@ class DefaultWeapon extends Weapon{
 }
 class PistolWeapon extends Weapon{
     constructor(scene) {
-        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true}, {range:1000, projectile_auto_aim_strength:0});
+        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
     }
 }
 

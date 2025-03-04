@@ -347,7 +347,7 @@ export default class Game extends Phaser.Scene{
             this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Left', Direction:'Up'});
         }
         if (this.kprs.space.isDown) {
-            this.take_input({PlayerID: 'TempPlayerId', type:'Create_Tower', Direction: 'Down', Tower: 'LaserTower', Tower_Stats:{cost:0}})
+            this.take_input({PlayerID: 'TempPlayerID', type:'Create_Tower', Direction: 'Down', Tower: 'LaserTower', Tower_Stats:{cost:0}})
         }
         if (this.kprs.space.isUp) {
             this.take_input({PlayerID: 'TempPlayerID', type:'Create_Tower', Direction: 'Up', Tower: 'LaserTower'})

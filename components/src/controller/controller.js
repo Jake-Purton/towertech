@@ -120,6 +120,7 @@ export default class Controller extends Phaser.Scene{
         this.load.image('parts_button_70px','/game_images/UI/parts_button_70px.png');
         this.load.image('parts_button_65px','/game_images/UI/parts_button_65px.png');
         this.load.image('selector_button','/game_images/UI/selector_button.png');
+        this.load.image('equip_button','/game_images/UI/equip_button.png');
 
         this.load.image('joystick_base','/game_images/UI/joystick_base.png');
         this.load.image('joystick_head','/game_images/UI/joystick_head.png');
@@ -209,7 +210,6 @@ export default class Controller extends Phaser.Scene{
 
     }
     create_ui = () => {
-        console.log('making ui', this.player_inventory);
         this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
         this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
         // this.print(this.screen_width+"-"+this.screen_height);
@@ -221,14 +221,13 @@ export default class Controller extends Phaser.Scene{
 
         this.ui_objects = [
             // background and segmentation
-            new Rectangle(this, 0, 0, this.screen_width, this.screen_height, RGBtoHEX([32, 44, 49])),
+            new Rectangle(this, 0, 0, this.screen_width, this.screen_height, RGBtoHEX([32, 44, 49]), {z_index:-10}),
 
             // 3 main tab rects
             new Rectangle(this, 10, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:3}),
             new Rectangle(this, this.screen_width-230, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:3}),
             new Rectangle(this, this.sub_menu_container.x, this.sub_menu_container.y,
-                this.sub_menu_container.width, this.sub_menu_container.height, RGBtoHEX([49, 60, 74]), {rounded_corners:10}),
-
+                this.sub_menu_container.width, this.sub_menu_container.height, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:-1}),
 
             // rects to hide selector buttons
             new Rectangle(this, 230, 0, 10, this.screen_height, this.background_color, {z_index:2}),
@@ -249,9 +248,9 @@ export default class Controller extends Phaser.Scene{
         let tab_buttons = ['Main', 'Player', 'Tower'];
         let select_buttons = [];
         for (let i=0;i<tab_buttons.length;i++) {
-            select_buttons.push(new Button(this, 240+110*i, 10, {
+            select_buttons.push(new Button(this, this.sub_menu_container.x+this.sub_menu_container.width/2-162+110*i, 10, {
                 text:tab_buttons[i], center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
-                press_command:()=>this.move_sub_menu(tab_buttons[i],this.sub_menu_container)}))
+                press_command:()=>this.move_sub_menu(tab_buttons[i],this.sub_menu_container)}).setDepth(4))
             if (tab_buttons[i] === this.current_selected_sub_menu) {
                 select_buttons[select_buttons.length-1].force_button_press();
             }
@@ -409,7 +408,7 @@ export default class Controller extends Phaser.Scene{
                 part_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
             new Text(this, container_rect.x+10, container_rect.y+160, description_string, {center:false}),
             new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
-                {text:button_text, width:104, height:40,
+                {text:button_text, width:140, height:40, texture:'equip_button',
                     press_command: ()=>this.equip_part(item_name)}),
         ]
     }

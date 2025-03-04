@@ -38,6 +38,7 @@ export default class Button extends Phaser.GameObjects.Container {
         this.release_command = release_command;
 
         this.button_pressed = false;
+        this.mouse_hovering = false;
         this.enabled = true;
         this.active_pointer_id = null;
         this.pointer_prev_pos = null;
@@ -58,15 +59,13 @@ export default class Button extends Phaser.GameObjects.Container {
         }
     }
     mouse_hovered(pointer) {
-        if (this.enabled) {
-            this.texture.setTint(RGBtoHEX([200, 200, 200]))
-        }
+        this.mouse_hovering = true;
+        this.refresh_tint()
     }
     mouse_remove_hover(pointer) {
+        this.mouse_hovering = false;
+        this.refresh_tint();
         if (this.enabled && (pointer.id === this.active_pointer_id || !this.button_pressed)) {
-            if (!this.selected) {
-                this.texture.clearTint();
-            }
             if (this.button_pressed) {
                 this.button_up();
             }
@@ -75,11 +74,11 @@ export default class Button extends Phaser.GameObjects.Container {
 
     disable_button() {
         this.enabled = false;
-        this.texture.setTint(RGBtoHEX([150,150,150]));
+        this.refresh_tint();
     }
     enable_button() {
         this.enabled = true;
-        this.texture.clearTint();
+        this.refresh_tint()
     }
 
     button_down(pointer) {
@@ -105,10 +104,10 @@ export default class Button extends Phaser.GameObjects.Container {
         if (this.selectable) {
             this.selected = selected;
             if (this.selected) {
-                this.texture.setTint(this.select_tint);
                 for (let item of this.select_group) {
                     item.set_selected(false);
                 }
+                this.refresh_tint();
             } else {
                 this.texture.clearTint();
             }
@@ -125,5 +124,17 @@ export default class Button extends Phaser.GameObjects.Container {
     force_button_press() {
         this.button_down({id:1});
         this.button_up({id:1});
+    }
+
+    refresh_tint() {
+        if (!this.enabled) {
+            this.texture.setTint(RGBtoHEX([150,150,150]));
+        } else if (this.mouse_hovering) {
+            this.texture.setTint(RGBtoHEX([200, 200, 200]))
+        } else if (this.selected) {
+            this.texture.setTint(this.select_tint);
+        } else {
+            this.texture.clearTint();
+        }
     }
 }
