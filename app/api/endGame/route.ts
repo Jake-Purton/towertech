@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       console.log("✅ Token is valid");
 
       // Insert game data into the database
-      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${data.gameData.gamescore}) RETURNING gameid`;
+      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${data.gameData.game_score}) RETURNING gameid`;
       const gameid = result.rows[0].gameid;
       console.log(gameid);
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
       console.log("✅ Game data inserted");
 
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, gameid: gameid });
     } catch (error) {
       return NextResponse.json({ valid: false, error: "Invalid token" }, { status: 401 });
     }
