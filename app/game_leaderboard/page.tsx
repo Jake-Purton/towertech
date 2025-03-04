@@ -47,7 +47,13 @@ export default function GameLeaderboard() {
   }, [filteredGames, currentPage]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-orange-400 font-poppins">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-orange-400 font-poppins pt-16">
+      <a
+        href="/"
+        className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+      >
+        Back to Home
+      </a>
       <motion.h1
         className="text-4xl font-bold mb-6"
         initial={{ opacity: 0, y: -20 }}
