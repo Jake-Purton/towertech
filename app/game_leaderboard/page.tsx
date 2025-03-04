@@ -2,10 +2,19 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import React from "react";
+
+interface Player {
+  userid: string;
+  name: string;
+  kills: number;
+  playerscore: number;
+}
 
 interface Game {
   gameid: number;
   score: number;
+  players: Player[];
 }
 
 export default function GameLeaderboard() {
@@ -13,6 +22,7 @@ export default function GameLeaderboard() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -45,6 +55,10 @@ export default function GameLeaderboard() {
       currentPage * itemsPerPage
     );
   }, [filteredGames, currentPage]);
+
+  const toggleExpand = (gameid: number) => {
+    setExpandedGameId(expandedGameId === gameid ? null : gameid);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-orange-400 font-poppins pt-16">
@@ -79,18 +93,54 @@ export default function GameLeaderboard() {
             <thead>
               <tr className="bg-orange-500 text-white">
                 <th className="px-6 py-3 rounded-tl-lg">Game ID</th>
-                <th className="px-6 py-3 rounded-tr-lg">Score</th>
+                <th className="px-6 py-3">Score</th>
+                <th className="px-6 py-3 rounded-tr-lg">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedGames.map((game) => (
-                <tr
-                  key={game.gameid}
-                  className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none"
-                >
-                  <td className="px-6 py-4 text-lg font-medium">{game.gameid}</td>
-                  <td className="px-6 py-4 text-lg">{game.score}</td>
-                </tr>
+                <React.Fragment key={game.gameid}>
+                  <tr
+                    className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none cursor-pointer"
+                    onClick={() => toggleExpand(game.gameid)}
+                  >
+                    <td className="px-6 py-4 text-lg font-medium">{game.gameid}</td>
+                    <td className="px-6 py-4 text-lg">{game.score}</td>
+                    <td className="px-6 py-4 text-lg">{expandedGameId === game.gameid ? "-" : "+"}</td>
+                  </tr>
+                  {expandedGameId === game.gameid && (
+                    <tr>
+                      <td colSpan={3} className="bg-gray-800">
+                        <div className="p-4">
+                          <h3 className="text-xl font-bold mb-2">Players</h3>
+                          <table className="w-full text-center border-collapse">
+                            <thead>
+                              <tr className="bg-orange-500 text-white">
+                                <th className="px-6 py-3">User ID</th>
+                                <th className="px-6 py-3">Name</th>
+                                <th className="px-6 py-3">Kills</th>
+                                <th className="px-6 py-3">Score</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {game.players.map((player, index) => (
+                                <tr
+                                  key={player.userid === "0" ? `guest-${index}` : player.userid}
+                                  className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none"
+                                >
+                                  <td className="px-6 py-4 text-lg font-medium">{player.userid}</td>
+                                  <td className="px-6 py-4 text-lg">{player.name}</td>
+                                  <td className="px-6 py-4 text-lg">{player.kills}</td>
+                                  <td className="px-6 py-4 text-lg">{player.playerscore}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -122,5 +172,3 @@ export default function GameLeaderboard() {
     </div>
   );
 }
-
-
