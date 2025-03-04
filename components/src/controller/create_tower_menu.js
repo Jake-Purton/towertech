@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import Button from '../button.js';
+import Button from '../ui_widgets/button.js';
 
 
 export default class CreateTowerMenu extends Phaser.Scene {

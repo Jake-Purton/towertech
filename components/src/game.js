@@ -292,28 +292,31 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        console.log(this.players,input);
-        if (Object.keys(this.players).includes(input.PlayerID)) {
-            switch (input.type) {
-                case 'Key_Input':
-                    this.players[input.PlayerID].key_input(input);
-                    break;
-                case 'Attack_Input':
-                    this.players[input.PlayerID].attack_input(input);
-                    break;
-                case 'Joystick_Input':
-                    this.players[input.PlayerID].joystick_input(input);
-                    break;
-                case 'Create_Tower':
-                    this.players[input.PlayerID].new_tower_input(input);
-                    break;
-                case 'Print':
-                    console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);
-                    break;
-            }
-        }
-        else {
-            this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+        switch (input.type) {
+            case 'Constructor':
+                if (!(input.PlayerID in this.players)){
+                    this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
+                    // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
+                }
+                break;
+            case 'Key_Input':
+                this.players[input.PlayerID].key_input(input);
+                break;
+            case 'Attack_Input':
+                this.players[input.PlayerID].attack_input(input);
+                break;
+            case 'Joystick_Input':
+                this.players[input.PlayerID].joystick_input(input);
+                break;
+            case 'Create_Tower':
+                this.players[input.PlayerID].new_tower_input(input);
+                break;
+            case 'Equip_Part':
+                this.players[input.PlayerID].equip_part(input.item_name);
+                break;
+            case 'Print':
+                console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);
+                break;
         }
     }
 
@@ -344,7 +347,7 @@ export default class Game extends Phaser.Scene{
             this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Left', Direction:'Up'});
         }
         if (this.kprs.space.isDown) {
-            this.take_input({PlayerID: 'TempPlayerID', type:'Create_Tower', Direction: 'Down', Tower: 'LaserTower'})
+            this.take_input({PlayerID: 'TempPlayerID', type:'Create_Tower', Direction: 'Down', Tower: 'LaserTower', Tower_Stats:{cost:0}})
         }
         if (this.kprs.space.isUp) {
             this.take_input({PlayerID: 'TempPlayerID', type:'Create_Tower', Direction: 'Up', Tower: 'LaserTower'})

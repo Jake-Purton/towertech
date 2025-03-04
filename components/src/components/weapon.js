@@ -27,7 +27,7 @@ class Weapon extends ProjectileShooter {
     }
     set_scale(scale) {
         this.setScale(scale*this.weapon_length/this.width);
-        this.set_weapon_direction(40);
+        this.set_weapon_direction(this.get_weapon_direction());
     }
     attack_button_down(delta_time, enemies, effects) {
         if (this.auto_target) {
@@ -80,7 +80,7 @@ class DefaultWeapon extends Weapon{
 }
 class PistolWeapon extends Weapon{
     constructor(scene) {
-        super(scene, 'pistol_weapon', CannonBall, {auto_fire:false}, {range:1000, projectile_auto_aim_strength:0});
+        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
     }
 }
 
