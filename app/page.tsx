@@ -9,6 +9,9 @@ export default function Home() {
   const [user, setUser] = useState({ name: "", email: "" });
 
   useEffect(() => {
+    document.body.style.backgroundColor = "black";
+    document.body.style.color = "white";
+
     const checkToken = async () => {
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
@@ -31,7 +34,7 @@ export default function Home() {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
       {!isLoading && (
         <div className="absolute top-4 left-4 flex gap-4">
           {isLoggedIn ? (
@@ -60,7 +63,7 @@ export default function Home() {
           )}
         </div>
       )}
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+      <main className="flex flex-col gap-8 items-center">
         <Image
           src="/towertech_logo.png"
           alt="Tower Tech logo"
@@ -68,15 +71,15 @@ export default function Home() {
           height={175}
           priority
         />
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        <div className="flex gap-4">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#FF5900] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-white text-black gap-2 hover:bg-gray-300 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
             href="/host"
           >
             Host
           </a>
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#FF5900] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-white text-black gap-2 hover:bg-gray-300 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
             href="/join"
           >
             Join
