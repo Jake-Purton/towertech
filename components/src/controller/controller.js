@@ -187,7 +187,6 @@ export default class Controller extends Phaser.Scene{
                 break;
             case 'Set_Inventory':
                 this.player_inventory = input.inventory;
-                console.log(this.current_selected_sub_menu);
                 if (this.current_selected_sub_menu === "Player") {
                     this.create_ui();
                 }
@@ -210,9 +209,10 @@ export default class Controller extends Phaser.Scene{
 
     }
     create_ui = () => {
+        console.log('making ui', this.player_inventory);
         this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
         this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
-        this.print(this.screen_width+"-"+this.screen_height);
+        // this.print(this.screen_width+"-"+this.screen_height);
         this.destroy_ui_list(this.ui_objects);
 
         this.sub_menu_ui_objects = [];
@@ -398,12 +398,18 @@ export default class Controller extends Phaser.Scene{
         let part_info = this.parts_data[item_name];
         // let level_info = part_info.level_stats[0];
         let description_string = part_info.description;
+        let button_text;
+        if (this.player_inventory[item_name].equipped) {
+            button_text = "Equipped";
+        } else {
+            button_text = "Equip";
+        }
         this.specific_part_ui_objects = [
             new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
                 part_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
             new Text(this, container_rect.x+10, container_rect.y+160, description_string, {center:false}),
             new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
-                {text:"Equip", width:104, height:40,
+                {text:button_text, width:104, height:40,
                     press_command: ()=>this.equip_part(item_name)}),
         ]
     }

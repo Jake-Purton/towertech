@@ -48,7 +48,6 @@ const PhaserGame = () => {
           game.scene.getScene('GameScene').take_input(data);
         }
         function output_data(player_id, data) {
-          console.log(player_id, data);
           // the function to send data to a specific client
           data.PlayerID = player_id;
           // console.log('Data sent to players:', data);

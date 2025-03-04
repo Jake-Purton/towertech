@@ -42,12 +42,10 @@ export default class Player extends Phaser.GameObjects.Container{
         this.pickup_range = 20;
 
         // assign body parts
-        this.set_body(body);
-        this.set_weapon(weapon);
-        this.set_leg(leg);
-        this.add_to_inventory(body);
-        this.add_to_inventory(weapon);
-        this.add_to_inventory(leg);
+        for (let item of [body, weapon, leg]) {
+            this.add_to_inventory(item);
+            this.equip_part(item);
+        }
 
         // variables
         this.velocity = new Vec(0,0);
@@ -241,6 +239,11 @@ export default class Player extends Phaser.GameObjects.Container{
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
+    save_inventory() {
+        if (this.player_id !== 'UI_PLAYER_DISPLAY') {
+            this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
+        }
+    }
     add_to_inventory(item) {
         // item can be DroppedItem object, or a string of the item name
         if (typeof(item) === 'string') {
@@ -251,13 +254,18 @@ export default class Player extends Phaser.GameObjects.Container{
         } else {
             this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
-        if (this.player_id !== 'UI_PLAYER_DISPLAY') {
-            this.scene.output_data(this.player_id, {type: 'Set_Inventory', inventory: this.inventory});
-        }
+        this.save_inventory()
     }
     equip_part(item_name) {
         if (Object.keys(this.inventory).includes(item_name)) {
             this.set_part(item_name, this.inventory[item_name].type);
+            for (let key of Object.keys(this.inventory)) {
+                if (this.inventory[key].type === this.inventory[item_name].type) {
+                    this.inventory[key].equipped = false;
+                }
+            }
+            this.inventory[item_name].equipped = true;
+            this.save_inventory();
         }
     }
 }
