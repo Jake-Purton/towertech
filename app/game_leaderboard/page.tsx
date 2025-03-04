@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 interface Player {
   userid: string;
@@ -24,6 +25,7 @@ export default function GameLeaderboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
   const itemsPerPage = 10;
+  const router = useRouter();
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -58,6 +60,10 @@ export default function GameLeaderboard() {
 
   const toggleExpand = (gameid: number) => {
     setExpandedGameId(expandedGameId === gameid ? null : gameid);
+  };
+
+  const handlePlayerClick = (userid: string) => {
+    router.push(`/player_leaderboard?userid=${userid}`);
   };
 
   return (
@@ -126,7 +132,8 @@ export default function GameLeaderboard() {
                               {game.players.map((player, index) => (
                                 <tr
                                   key={player.userid === "0" ? `guest-${index}` : player.userid}
-                                  className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none"
+                                  className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none cursor-pointer"
+                                  onClick={() => handlePlayerClick(player.userid)}
                                 >
                                   <td className="px-6 py-4 text-lg font-medium">{player.userid}</td>
                                   <td className="px-6 py-4 text-lg">{player.name}</td>
