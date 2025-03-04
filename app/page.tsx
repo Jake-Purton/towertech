@@ -92,6 +92,12 @@ export default function Home() {
         >
           Game Leaderboard
         </a>
+        <a
+          className="w-full rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#FF5900] text-sm sm:text-base h-10 sm:h-12 px-8 sm:px-10"
+          href="/player_leaderboard"
+        >
+          Player Leaderboard
+        </a>
       </div>
     </div>
   );
