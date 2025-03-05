@@ -72,16 +72,16 @@ export default class Game extends Phaser.Scene{
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
         this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
 
-        this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('HealingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
         this.load.image('HealingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
-        this.load.image('BuffingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('BuffingTower_base','/game_images/towers/EffectTower_base.png');
+        this.load.image('BuffingTower_gun','/game_images/towers/BuffingTower_gun.png');
         this.load.image('BuffingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
-        this.load.image('SlowingTower_gun','/game_images/towers/HealingTower_gun.png');
+        this.load.image('SlowingTower_base','/game_images/towers/EffectTower_base.png');
+        this.load.image('SlowingTower_gun','/game_images/towers/SlowingTower_gun.png');
         this.load.image('SlowingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
         // enemies
@@ -295,8 +295,8 @@ export default class Game extends Phaser.Scene{
         switch (input.type) {
             case 'Constructor':
                 if (!(input.PlayerID in this.players)){
-                    this.players[input.PlayerID] = new Player(this, 100*Object.keys(this.players).length, 100, input.PlayerID);
-                    // this.output_data(input.PlayerID, {type:'Player_Constructor_Acknowledgement'});
+                    this.players[input.PlayerID] = new Player(
+                        this, 100*Object.keys(this.players).length, 100, input.PlayerID, {username:input.username});
                 }
                 break;
             case 'Key_Input':

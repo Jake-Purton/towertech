@@ -104,7 +104,7 @@ class Tower extends ProjectileShooter {
     get_dead() {
         return (this.health<=0)
     }
-    take_damage(damage, speed, angle, source) {
+    take_damage(damage, speed, angle, knockback, source) {
         this.health -= damage;
     }
     get_kill_credit(enemy) {

@@ -57,6 +57,11 @@ export default class Controller extends Phaser.Scene{
                     {cost:5, damage:1, fire_rate:2, range:80},
                     {cost:5, damage:1, fire_rate:2, range:80},
                 ]},
+            "HealingTower":{title:"Healer", description:"its not a cannon", level_stats:[
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:80},
+                ]},
             "WeakeningTower":{title:"Weakener", description:"its not a cannon", level_stats:[
                     {cost:5, damage:1, fire_rate:2, range:80},
                     {cost:5, damage:1, fire_rate:2, range:80},
@@ -129,29 +134,29 @@ export default class Controller extends Phaser.Scene{
         this.load.image('attack_button_head','/game_images/UI/attack_head.png');
 
         //// Load tower images
-        this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
+        // this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
 
-        this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
+        // this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
 
-        this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
+        // this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
 
-        this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
+        // this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
 
-        this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
+        // this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
 
-        this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
+        // this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
 
-        this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
-        this.load.image('BuffingTower_gun','/game_images/towers/HealingTower_gun.png');
+        // this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BuffingTower_gun','/game_images/towers/BuffingTower_gun.png');
 
-        this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
-        this.load.image('SlowingTower_gun','/game_images/towers/HealingTower_gun.png');
+        // this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SlowingTower_gun','/game_images/towers/SlowingTower_gun.png');
 
     }
     create() {
@@ -172,7 +177,8 @@ export default class Controller extends Phaser.Scene{
     update(time, delta) {
         if (!this.player_created) {
             // tell server to create a player
-            this.output_data({type: 'Constructor', username: localStorage.getItem('player_username')});
+            this.player_username = localStorage.getItem('player_username')
+            this.output_data({type: 'Constructor', username: this.player_username});
             this.player_created = true;
         }
     }
@@ -285,13 +291,25 @@ export default class Controller extends Phaser.Scene{
         }
     }
     create_main_menu(container_rect) {
-        this.sub_menu_ui_objects = [new Player(this, container_rect.x+container_rect.width/2, container_rect.y+60, 'UI_PLAYER_DISPLAY')];
+        let get_part = (inventory, type) => {
+            for (let i=0;i<Object.keys(inventory).length;i++) {
+                if (Object.values(inventory)[i].type === type && Object.values(inventory)[i].equipped) {
+                    return Object.keys(inventory)[i];
+                }
+            }
+        }
+        this.sub_menu_ui_objects = [
+            new Player(this, container_rect.x+container_rect.width/2, container_rect.y+140, 'UI_PLAYER_DISPLAY',
+                {username: this.player_username, body: get_part(this.player_inventory, 'body'),
+                 leg: get_part(this.player_inventory, 'leg'), weapon: get_part(this.player_inventory, 'weapon')}
+            )
+        ];
 
         this.sub_menu_ui_objects[0].setScale(3);
     }
     create_tower_menu(container_rect) {
         this.sub_menu_ui_objects = [];
-        let towers = ["CannonTower", "LaserTower", "SniperTower", "FlamethrowerTower", "BallistaTower", "WeakeningTower", "SlowingTower", "BuffingTower"];
+        let towers = ["CannonTower", "LaserTower", "SniperTower", "FlamethrowerTower", "BallistaTower", "HealingTower", "SlowingTower", "BuffingTower"];
         for (let i=0;i<towers.length;i++) {
             this.sub_menu_ui_objects.push(new SelectorButton(this,
                 container_rect.x+i*60+10, container_rect.y+10,
@@ -385,7 +403,7 @@ export default class Controller extends Phaser.Scene{
             this.destroy_ui_list(this.specific_part_ui_objects);
             this.specific_part_ui_objects = [
                 new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
-                    "You have no parts\nof this type.")]
+                    "You have no parts\nof this type.", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}})]
         } else if (!menu_preloaded) {
             this.browse_parts_ui_objects[0].force_button_press();
         }

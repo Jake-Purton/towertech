@@ -9,7 +9,7 @@ class Projectile extends Entity {
     // source and target are game objects
     constructor(scene, x, y, texture, speed, angle, team,
                 {target=null, source=null, auto_aim_strength=1, auto_aim_range=100,
-                    pierce_count=0, damage=1, inflict_effect=null,
+                    pierce_count=0, damage=1, knockback=1, inflict_effect=null,
                 } = {}, entity_properties={}) {
         super(scene, x, y, texture, speed, angle, entity_properties);
 
@@ -18,6 +18,7 @@ class Projectile extends Entity {
 
         // attack info
         this.damage = damage;
+        this.knockback = knockback;
         this.target = target;
         this.source = source;
         this.inflict_effect = inflict_effect; // in the form {name:"Burning",amplifier:2,duration:3}
@@ -74,7 +75,7 @@ class Projectile extends Entity {
     deal_damage(entity) {
         this.pierced_enemies.push(entity);
         this.pierce_count -= 1;
-        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.source);
+        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.knockback, this.source);
         this.apply_inflict_effect(entity);
     }
     make_hit_particles(entity) {
