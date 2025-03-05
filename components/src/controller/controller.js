@@ -33,20 +33,17 @@ export default class Controller extends Phaser.Scene{
         this.load.image('joystick_head','/game_images/UI/joystick_head.png');
     }
     create() {
-
         window.addEventListener('resize', () => {this.resized()});
-        // this.input.on('resize', this.resized, this);
-
-        // this.print('portrait: '+this.portrait+' w:'+this.screen_width+' h:'+this.screen_height);
 
         if (this.mobile_device) {
-            this.prompt_tap_text = this.add.text(this.screen_width/2, this.screen_height/2, 'Tap to Start');
-            this.input.once('pointerup',function() {this.init_fullscreen()},this);
+            this.prompt_tap_text = this.add.text(this.screen_width/2, this.screen_height/2, 'Tap to Start', {
+                fontSize: '32px',
+                color: '#ffffff'
+            }).setOrigin(0.5);
+            this.input.once('pointerup', this.init_fullscreen, this);
         } else {
             this.create_ui();
         }
-
-
 
         // make ui
         // let f1 = () => console.log('press');
@@ -108,21 +105,146 @@ export default class Controller extends Phaser.Scene{
     }
     init_fullscreen = () => {
         this.prompt_tap_text.destroy();
-        this.scale.startFullscreen();
-        // the function screen.orientation.lock doesnt exist sometimes
-        // change this so that it works on those devices
-        screen.orientation.lock('landscape').then(
-            () => {
-                this.resized();
-                this.create_ui();
-            }
-        )
-        this.print('game started!')
+        
+        // Try to enter full screen mode
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen()
+                .catch(err => console.warn('Request Fullscreen Failed:', err));
+        }
 
+        // Check device type
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isAndroid = /Android/.test(navigator.userAgent);
+
+        if (isIOS) {
+            // iOS
+            this.orientation_text = this.add.text(this.screen_width/2, this.screen_height/2, 
+                'LANDSCAPE', {
+                fontSize: '32px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: { x: 15, y: 8 },
+                align: 'center',
+            }).setOrigin(0.5);
+            this.orientation_text.setVisible(false);
+
+            this.ui_container = this.add.container(0, 0);
+            
+            window.addEventListener('orientationchange', this.handleIOSOrientation.bind(this));
+            window.addEventListener('resize', this.handleIOSOrientation.bind(this));
+
+            this.handleIOSOrientation();
+        } else if (isAndroid) {
+            // Android
+            this.orientation_text = this.add.text(this.screen_width/2, this.screen_height/2, 
+                'LANDSCAPE', {
+                fontSize: '32px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: { x: 15, y: 8 },
+                align: 'center',
+            }).setOrigin(0.5);
+            this.orientation_text.setVisible(false);
+
+            // Create UI container
+            this.ui_container = this.add.container(0, 0);
+
+            const lockAndroidOrientation = async () => {
+                try {
+                    //Landscape
+                    await screen.orientation.lock('landscape');
+                    
+                    // Force the game view to be landscape size
+                    this.scale.setGameSize(Math.max(window.innerWidth, window.innerHeight),
+                                        Math.min(window.innerWidth, window.innerHeight));
+                    
+                    // Create UI and add orientation listener
+                    this.create_ui_for_android();
+                    window.addEventListener('orientationchange', this.handleAndroidOrientation.bind(this));
+                    window.addEventListener('resize', this.handleAndroidOrientation.bind(this));
+                    
+                    // Initial check orientation
+                    this.handleAndroidOrientation();
+                } catch (error) {
+                    console.warn('Failed to lock screen orientation:', error);
+                    // Froce landscape
+                    this.create_ui_for_android();
+                    window.addEventListener('orientationchange', this.handleAndroidOrientation.bind(this));
+                    window.addEventListener('resize', this.handleAndroidOrientation.bind(this));
+                    this.handleAndroidOrientation();
+                }
+            };
+            lockAndroidOrientation();
+        } else {
+            // Other devices (PC)
+            this.create_ui();
+        }
     }
+
+    handleIOSOrientation = () => {
+        // Update size
+        setTimeout(() => {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            if (isPortrait) {
+                // Portrait
+                if (this.ui_container) {
+                    this.ui_container.setVisible(false);
+                }
+                this.orientation_text.setVisible(true);
+                this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
+            } else {
+                // Landscape
+                this.orientation_text.setVisible(false);
+                
+                if (this.ui_container) {
+                    this.ui_container.setVisible(true);
+                    // If UI is not created, create UI
+                    if (this.ui_container.list.length === 0) {
+                        this.create_ui_for_ios();
+                    }
+                }
+            }
+            
+            // Update screen size
+            this.resized();
+        }, 100);
+    }
+
+    create_ui_for_ios = () => {
+        const joystick = new Joystick(this, this.screen_width-130, this.screen_height-130, 
+            {holding_command:this.joystick_holding, release_command:this.joystick_release});
+        
+        const attackButton = new Button(this, 130, this.screen_height-130, 
+            {width: 200, height:200, text:'Attack',
+            texture:'joystick_base', press_command:this.attack_pressed, 
+            release_command:this.attack_released});
+        
+        const towerButton = new Button(this, 200, 100, 
+            {text:'make tower', width:300, height:100,
+            press_command:() => this.make_tower('LaserTower','Down'),
+            release_command:() => this.make_tower('LaserTower','Up')});
+
+        this.ui_container.add([joystick, attackButton, towerButton]);
+    }
+
     resized = () => {
-        this.screen_width = window.innerWidth;
-        this.screen_height = window.innerHeight;
+        const computeScreenSize = () => {
+            if (window.innerHeight > window.innerWidth) {
+                return {
+                    width: window.innerHeight,
+                    height: window.innerWidth
+                };
+            }
+            return {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        };
+
+        const screenSize = computeScreenSize();
+        this.screen_width = screenSize.width;
+        this.screen_height = screenSize.height;
     }
     create_ui = () => {
         new Joystick(this, this.screen_width-130, this.screen_height-130, {holding_command:this.joystick_holding, release_command:this.joystick_release});
@@ -159,6 +281,50 @@ export default class Controller extends Phaser.Scene{
     }
     attack_released = () => {
         this.output_data({type:'Attack_Input', Direction:'Up'});
+    }
+
+    create_ui_for_android = () => {
+        const width = Math.max(window.innerWidth, window.innerHeight);
+        const height = Math.min(window.innerWidth, window.innerHeight);
+        
+        const joystick = new Joystick(this, width-130, height-130, 
+            {holding_command:this.joystick_holding, release_command:this.joystick_release});
+        
+        const attackButton = new Button(this, 130, height-130, 
+            {width: 200, height:200, text:'Attack',
+            texture:'joystick_base', press_command:this.attack_pressed, 
+            release_command:this.attack_released});
+        
+        const towerButton = new Button(this, 200, 100, 
+            {text:'make tower', width:300, height:100,
+            press_command:() => this.make_tower('LaserTower','Down'),
+            release_command:() => this.make_tower('LaserTower','Up')});
+
+        this.ui_container.add([joystick, attackButton, towerButton]);
+    }
+
+    handleAndroidOrientation = () => {
+        setTimeout(() => {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            if (isPortrait) {
+                // Portrait
+                if (this.ui_container) {
+                    this.ui_container.setVisible(false);
+                }
+                this.orientation_text.setVisible(true);
+                this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
+            } else {
+                // Landscape
+                this.orientation_text.setVisible(false);
+                if (this.ui_container) {
+                    this.ui_container.setVisible(true);
+                }
+            }
+            
+            // Update screen size
+            this.resized();
+        }, 100);
     }
 
 }
