@@ -25,6 +25,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         // stats and info
         this.move_speed = move_speed;
+        this.velocity = new Vec(0,0);
         this.health = health;
         this.coin_value = coin_value;
         this.melee_damage = melee_damage;
@@ -83,9 +84,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.last_damage_source.get_kill_credit(this);
         }
     }
-    take_damage = (damage, speed=3, angle=null, source=null) => {
+    take_damage = (damage, speed=3, angle=null, knockback=0, source=null) => {
         this.health -= damage;
         this.make_hit_particles(damage, speed, angle);
+        this.velocity.add(new Vec().setToPolar(angle, knockback));
         if (source !== null) {
             this.last_damage_source = source;
         }

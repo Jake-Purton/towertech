@@ -44,9 +44,16 @@ export default class Player extends Phaser.GameObjects.Container{
       
         // constants
         this.speed = 0.4;
+        this.knockback_resistance = 0.5;
         this.drag = 0.9;
         this.player_id = player_id;
         this.pickup_range = 20;
+
+        // aliveness
+        this.max_health = 1000
+        this.health = this.max_health;
+        this.dead = false;
+
 
         // assign body parts
         for (let item of [body, weapon, leg]) {
@@ -69,11 +76,6 @@ export default class Player extends Phaser.GameObjects.Container{
         this.joystick_direction = new Vec(0,0);
 
         this.has_nearby_tower = false;
-
-        // aliveness
-        this.health = 1000;
-        this.dead = false;
-
 
         // effects info
         this.effects = new Effects(scene);
@@ -169,9 +171,10 @@ export default class Player extends Phaser.GameObjects.Container{
         this.dead = false;
         this.visible = true;
     }
-    take_damage(damage, speed, angle, source) {
+    take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
             this.health -= damage;
+            this.velocity.add(new Vec().setToPolar(angle, knockback));
             if (source !== null) {
                 this.last_damage_source = source;
             }
