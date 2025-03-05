@@ -10,7 +10,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
-                    melee_attack_speed=1, leave_path=1, target=null, damage=1,
+                    melee_attack_speed=1, leave_path=1, target=null, damage=1, knockback_resistance=1,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:3, drops:{
                         'default_body':1, 'default_leg':1, 'default_weapon':1,
@@ -29,6 +29,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.health = health;
         this.coin_value = coin_value;
         this.melee_damage = melee_damage;
+        this.knockback_resistance = knockback_resistance;
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
         this.on_path = true;
@@ -57,6 +58,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         this.melee_hit(delta_time);
 
+        this.velocity.scale(0.95);
 
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path
@@ -87,7 +89,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     take_damage = (damage, speed=3, angle=null, knockback=0, source=null) => {
         this.health -= damage;
         this.make_hit_particles(damage, speed, angle);
-        this.velocity.add(new Vec().setToPolar(angle, knockback));
+        this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
         if (source !== null) {
             this.last_damage_source = source;
         }

@@ -174,7 +174,7 @@ export default class Player extends Phaser.GameObjects.Container{
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
             this.health -= damage;
-            this.velocity.add(new Vec().setToPolar(angle, knockback));
+            this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
             if (source !== null) {
                 this.last_damage_source = source;
             }
