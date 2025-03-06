@@ -56,11 +56,6 @@ class Leg extends Phaser.GameObjects.Container{
 }
 
 
-class DefaultLeg extends Leg {
-    constructor(scene) {
-        super(scene, 'default_leg', {height:15});
-    }
-}
 class StripedLeg extends Leg {
     constructor(scene) {
         super(scene, 'striped_leg', {height:25});
@@ -71,5 +66,20 @@ class RobotLeg extends Leg {
         super(scene, 'robot_leg', {height:23});
     }
 }
+class LightLeg extends Leg {
+    constructor(scene) {
+        super(scene, 'light_leg', {height:23});
+    }
+}
+class ArmoredWalker extends Leg {
+    constructor(scene) {
+        super(scene, 'armored_walker', {height:23});
+    }
+}
+class SpiderLeg extends Leg {
+    constructor(scene) {
+        super(scene, 'spider_leg', {height:23});
+    }
+}
 
-export {DefaultLeg, RobotLeg, StripedLeg };
+export {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg };

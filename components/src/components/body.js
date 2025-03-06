@@ -19,15 +19,26 @@ class Body extends Phaser.Physics.Arcade.Sprite{
     }
 }
 
-class DefaultBody extends Body{
-    constructor(scene) {
-        super(scene, 'default_body', {height: 20});
-    }
-}
 class RobotBody extends Body{
     constructor(scene) {
         super(scene, 'robot_body', {height: 25});
     }
 }
+class LightweightFrame extends Body{
+    constructor(scene) {
+        super(scene, 'lightweight_frame', {height: 25});
+    }
+}
+class TankFrame extends Body{
+    constructor(scene) {
+        super(scene, 'tank_frame', {height: 25});
+    }
+}
+class EnergyCoreFrame extends Body{
+    constructor(scene) {
+        super(scene, 'energy_core_frame', {height: 25});
+    }
+}
 
-export {DefaultBody, RobotBody };
+
+export {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame };

@@ -94,11 +94,11 @@ function get_item_type(item_name) {
     // takes as input a string, being the name of a player part
     // returns one of "body", "leg" or "weapon" depending on its type
     let item_type;
-    if (item_name.split("_")[1] === "leg" || item_name === "wheel") {
+    if (["leg", "wheel", "treads", "walker"].includes(item_name.split("_").pop())) {
         item_type = 'leg';
-    } else if (item_name.split("_")[1] === "body") {
+    } else if (item_name.split("_").pop() === "body" || item_name.split("_").pop() === "frame") {
         item_type = 'body';
-    } else if (item_name.split("_")[1] === "weapon") {
+    } else if (["weapon", "launcher", "blaster", "rifle", "cannon"].includes(item_name.split("_").pop())) {
         item_type = 'weapon';
     } else {
         item_type = 'unknown'

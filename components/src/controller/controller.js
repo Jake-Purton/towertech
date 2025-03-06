@@ -79,44 +79,128 @@ export default class Controller extends Phaser.Scene{
                 ]},
             }
         this.parts_data = {
-            "default_body":{title:"Default Body", description:"this is some text", level_stats:[
-                    {}
+            "robot_body":{title:"Robot Body", description:"A standard robotic frame that gets the job done without extras.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "robot_body":{title:"Robot Body", description:"this is some text", level_stats:[
-                    {}
+            "lightweight_frame":{title:"Lightweight Frame", description:"A lightweight frame built for speed at the cost of durability.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "default_leg":{title:"Default Leg", description:"this is some text", level_stats:[
-                    {}
+            "tank_frame":{title:"Tank Frame", description:"A heavily armored frame designed to absorb damage and protect the player.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "robot_leg":{title:"Robot Leg", description:"this is some text", level_stats:[
-                    {}
+            "energy_core_frame":{title:"Energy Core Frame", description:"A futuristic frame that enhances buff durations but leaves the user vulnerable to burst attacks.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "striped_leg":{title:"Striped Leg", description:"this is some text", level_stats:[
-                    {}
+
+            "robot_leg":{title:"Robot Legs", description:"A basic set of robotic legs, simple and reliable.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "wheel":{title:"Wheel", description:"this is some text", level_stats:[
-                    {}
+            "striped_leg":{title:"Striped Legs", description:"icl i think we should remove these i dont like em", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "default_weapon":{title:"Arm Gun", description:"this is some text", level_stats:[
-                    {}
+            "armorer_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
-            "pistol_weapon":{title:"Pistol", description:"this is some text", level_stats:[
-                    {}
+            "light_leg":{title:"Light Legs", description:"robotic legs for quick movement but limited durability.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "spider_leg":{title:"Spider Legs", description:"abdullah u didnt do a description for this one", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+
+            "basic_wheel":{title:"Basic Wheel", description:"A balanced, no-frills wheel option for stable performance.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "speedster_wheel":{title:"Speedster Wheel", description:"High-speed wheels for those who want to outrun enemies but risk losing control.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "floating_wheel":{title:"Floating Wheel", description:"Hovering movement lets you glide over obstacles but makes you an easy airborne target.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "tank_treads":{title:"Tank Treads", description:"Heavy-duty treads that offer durability at the cost of speed.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+
+            "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay but lacks power against tougher foes.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "tesla_rifle":{title:"Tesla Rifle", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak against lone threats.", level_stats:[
+                    {},
+                    {},
+                    {},
+                ]},
+            "laser_cannon":{title:"Laser Cannon", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
+                    {},
+                    {},
+                    {},
                 ]},
             }
     }
     preload() {
         // player images
-        this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
+        // body
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('lightweight_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('tank_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
 
-        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
-        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png')
-        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png')
-        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+        // legs
+        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('armored_walker','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('spider_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
-        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        // wheels
+        this.load.image('basic_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('floating_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
+
+        // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('laser_cannon','/game_images/player_sprites/weapons/pistol.png');
 
         // ui images
         this.load.image('button','/game_images/UI/tab_button.png');
@@ -221,7 +305,6 @@ export default class Controller extends Phaser.Scene{
         // this.print(this.screen_width+"-"+this.screen_height);
         this.destroy_ui_list(this.ui_objects);
 
-        this.sub_menu_ui_objects = [];
         this.sub_menu_container = {x:240, y:56, width:this.screen_width-480, height:this.screen_height-66}
         this.background_color = RGBtoHEX([32, 44, 49]);
 
@@ -308,7 +391,6 @@ export default class Controller extends Phaser.Scene{
         this.sub_menu_ui_objects[0].setScale(3);
     }
     create_tower_menu(container_rect) {
-        this.sub_menu_ui_objects = [];
         let towers = ["CannonTower", "LaserTower", "SniperTower", "FlamethrowerTower", "BallistaTower", "HealingTower", "SlowingTower", "BuffingTower"];
         for (let i=0;i<towers.length;i++) {
             this.sub_menu_ui_objects.push(new SelectorButton(this,
@@ -384,7 +466,7 @@ export default class Controller extends Phaser.Scene{
             (item) => (this.player_inventory[item].type === filter || filter === null || filter === 'all'));
         for (let i=0;i<items.length;i++) {
             this.browse_parts_ui_objects.push(new SelectorButton(this,
-                container_rect.x+i*60+10, container_rect.y+60,
+                container_rect.x+i*60+10, container_rect.y+55,
                 {text:'',width:50, height:50, center:false, texture:'selector_button',
                     press_command:()=>this.create_specific_part_menu(items[i], container_rect),
                     select_tint:RGBtoHEX([200,200,200])},
@@ -422,10 +504,14 @@ export default class Controller extends Phaser.Scene{
             button_text = "Equip";
         }
         this.specific_part_ui_objects = [
-            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
-                part_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
-            new Text(this, container_rect.x+10, container_rect.y+160, description_string, {center:false}),
-            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
+            new Rectangle(this, container_rect.x+10, container_rect.y+115, container_rect.width-20, container_rect.height-125, RGBtoHEX([96,103,109]),{rounded_corners:5}),
+            new Rectangle(this, container_rect.x+15, container_rect.y+120, container_rect.width-30, container_rect.height-135, RGBtoHEX([78,87,97]),{rounded_corners:5}),
+
+            new Text(this, container_rect.x+20, container_rect.y+120,
+                part_info.title, {center:false, text_style: {fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
+            new Text(this, container_rect.x+20, container_rect.y+155, description_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:25,wordWrap:{width:container_rect.width-40}}}),
+            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-40,
                 {text:button_text, width:140, height:40, texture:'equip_button',
                     press_command: ()=>this.equip_part(item_name)}),
         ]

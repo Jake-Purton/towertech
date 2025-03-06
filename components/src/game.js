@@ -29,16 +29,31 @@ export default class Game extends Phaser.Scene{
     }
     preload() {
         //// player part images
-        this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
+        // body
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('lightweight_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('tank_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
 
-        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
-        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png')
-        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png')
-        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+        // legs
+        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('armored_walker','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('spider_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
-        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        // wheels
+        this.load.image('basic_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('floating_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
+
+        // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('laser_cannon','/game_images/player_sprites/weapons/pistol.png');
 
         //// background
         this.load.image('background','/game_images/background.png');

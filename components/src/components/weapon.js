@@ -73,15 +73,30 @@ class Weapon extends ProjectileShooter {
         return this.parentContainer;
     }
 }
-class DefaultWeapon extends Weapon{
-    constructor(scene) {
-        super(scene, 'default_weapon', CannonBall, {auto_fire:false}, {range:1000, projectile_auto_aim_strength:0});
-    }
-}
 class PistolWeapon extends Weapon{
     constructor(scene) {
         super(scene, 'pistol_weapon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
     }
 }
+class PlasmaBlaster extends Weapon{
+    constructor(scene) {
+        super(scene, 'plasma_blaster', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    }
+}
+class RocketLauncher extends Weapon{
+    constructor(scene) {
+        super(scene, 'rocket_launcher', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    }
+}
+class TeslaRifle extends Weapon{
+    constructor(scene) {
+        super(scene, 'tesla_rifle', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    }
+}
+class LaserCannon extends Weapon{
+    constructor(scene) {
+        super(scene, 'laser_cannon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    }
+}
 
-export {DefaultWeapon, PistolWeapon };
+export {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon };

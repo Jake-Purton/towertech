@@ -23,10 +23,25 @@ class Wheel extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
-class DefaultWheel extends Wheel{
+class BasicWheel extends Wheel{
     constructor(scene) {
-        super(scene, 'wheel', {width:25});
+        super(scene, 'basic_wheel', {width:25});
+    }
+}
+class SpeedsterWheel extends Wheel{
+    constructor(scene) {
+        super(scene, 'speedster_wheel', {width:25});
+    }
+}
+class FloatingWheel extends Wheel{
+    constructor(scene) {
+        super(scene, 'floating_wheel', {width:25});
+    }
+}
+class TankTreads extends Wheel{
+    constructor(scene) {
+        super(scene, 'tank_treads', {width:25});
     }
 }
 
-export {DefaultWheel };
+export {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads };
