@@ -17,7 +17,7 @@ interface Game {
 
 export default function EndGamePage() {
   const [score, setScore] = useState(0);
-  // const [waveScore, setWaveScore] = useState(0);
+  const [waveScore, setWaveScore] = useState(0);
   const [gameData, setGameData] = useState<Game | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,6 +30,8 @@ export default function EndGamePage() {
         const data = await res.json();
         setGameData(data);
         setScore(data.score);
+        setWaveScore(data.waves)
+
         // setWaveScore(data.players.length); // Assuming waveScore is the number of players
       } catch (error) {
         console.error("Failed to fetch game data:", error);
@@ -77,16 +79,16 @@ export default function EndGamePage() {
           </h1>
           
           {/* Scores Section */}
-          {/* <div className="grid grid-cols-2 gap-6 py-6"> */}
+          <div className="grid grid-cols-2 gap-6 py-6">
             <div className="bg-gray-700/50 p-6 rounded-xl border border-orange-500/30">
               <p className="text-sm text-orange-300 mb-2">Total Score</p>
               <p className="text-4xl font-bold text-orange-400">{score}</p>
             </div>
-            {/* <div className="bg-gray-700/50 p-6 rounded-xl border border-orange-500/30">
+            <div className="bg-gray-700/50 p-6 rounded-xl border border-orange-500/30">
               <p className="text-sm text-orange-300 mb-2">Waves Survived</p>
               <p className="text-4xl font-bold text-orange-400">{waveScore}</p>
-            </div> */}
-          {/* </div> */}
+            </div>
+          </div>
 
           {/* Action Buttons */}
           <div className="space-y-4">

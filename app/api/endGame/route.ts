@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       // console.log("✅ Token is valid");
 
       // Insert game data into the database
-      const result = await sql`INSERT INTO gameleaderboard (score) VALUES (${data.gameData.game_score}) RETURNING gameid`;
+      const result = await sql`INSERT INTO gameleaderboard (score, waves) VALUES (${data.gameData.game_score} ${data.gameData.waves_survived}) RETURNING gameid`;
       const gameid = result.rows[0].gameid;
       // console.log(gameid);
 
