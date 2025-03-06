@@ -68,9 +68,10 @@ app.prepare().then(() => {
         const roomCode = decoded.roomCode;
         console.log("Room code from token:", roomCode);
 
-        socket.to(roomCode).emit('end_game_client', gameID)
+        socket.to(roomCode).emit('end_game_client', {room: roomCode, id: gameID})
 
         const users = roomManager.getUsersInRoom(roomCode);
+        roomManager.deleteRoom(roomCode);
 
         for (const user of users) {
 
