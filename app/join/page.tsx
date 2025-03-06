@@ -143,27 +143,27 @@ const JoinPage: React.FC = () => {
                 Back to Home
             </a>
             {!isLoading && (
-                <div className="absolute top-4 left-4 flex gap-4">
+                <div className="absolute top-4 left-14 flex gap-4">
                 {isLoggedIn ? (
                     <>
-                    <p>Signed in as {user.name}.</p>
+                    <p className="text-lg sm:text-xl font-bold">Signed in as {user.name}.</p>
                     <button
                         onClick={handleLogout}
-                        className="text-orange-600 hover:text-orange-700 underline"
+                        className="text-lg sm:text-xl font-bold text-orange-600 hover:text-orange-700 underline"
                     >
                         Sign out?
                     </button>
                     </>
                 ) : (
-                    <ul>
+                    <ul className="w-full flex flex-col gap-2">
                     <li>
-                        <a href="/login" className="text-orange-600 hover:text-orange-700 underline">
-                        Login
+                        <a href="/login" className="w-full rounded-2xl border border-white/20 transition-colors flex items-center justify-center bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg shadow-orange-500/30 text-lg sm:text-xl font-semibold h-12 sm:h-14 px-8 sm:px-10">
+                        🔐 Login
                         </a>
                     </li> 
                     <li>
-                        <a href="/register" className="text-orange-600 hover:text-orange-700 underline">
-                        Register
+                        <a href="/register" className="w-full rounded-2xl border border-white/20 transition-colors flex items-center justify-center bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg shadow-orange-500/30 text-lg sm:text-xl font-semibold h-12 sm:h-14 px-8 sm:px-10">
+                        📝 Register
                         </a>
                     </li>
                     </ul>
