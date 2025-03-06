@@ -494,7 +494,6 @@ export default class Controller extends Phaser.Scene{
         } else if (!menu_preloaded) {
             this.browse_parts_ui_objects[0].force_button_press();
         }
-
     }
     create_specific_part_menu(item_name, container_rect) {
         this.current_selected_part[this.current_selected_part_type] = item_name;

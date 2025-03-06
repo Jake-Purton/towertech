@@ -12,8 +12,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
                     melee_attack_speed=1, leave_path=1, target=null, damage=1, knockback_resistance=1,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
-                    loot_table = {drop_chance:3, drops:{
-                            'basic_wheel':1, 'robot_leg':1, 'striped_leg':1, 'pistol_weapon':4, 'robot_body':4}}) {
+                    loot_table = {drop_chance:5, drops:{
+                            'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1,
+                            'robot_leg':1, 'light_leg':1, 'armored_walker':1, 'spider_leg':1, 'striped_leg':1,
+                            'basic_wheel':1, 'speedster_wheel':1, 'floating_wheel':1, 'tank_treads':1,
+                            'pistol_weapon':1, 'plasma_blaster':1, 'rocket_launcher':1, 'tesla_rifle':1, 'laser_cannon':1,
+                    }}) {
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
