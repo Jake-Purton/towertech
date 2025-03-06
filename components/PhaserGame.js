@@ -78,6 +78,7 @@ const PhaserGame = () => {
               }
 
               // redirect host to next page
+              socket.emit("end_game", {token: roomToken, id: result.gameid});
               
             } catch (error) {
               console.error('Error sending game data to the server:', error);
@@ -85,7 +86,6 @@ const PhaserGame = () => {
           }
 
           // function that sends the end game message to the server
-          socket.emit("end_game", roomToken);
 
         }
 

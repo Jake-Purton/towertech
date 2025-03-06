@@ -53,7 +53,12 @@ app.prepare().then(() => {
       socket.emit("updateUsers", users);
     });
 
-    socket.on("end_game", (roomToken) => {
+    socket.on("end_game", (data) => {
+
+      console.log(data);
+
+      const roomToken = data.token;
+      const gameID = data.id;
 
       jwt.verify(roomToken, JWT_SECRET, async (err, decoded) => {
         if (err) {
@@ -62,7 +67,8 @@ app.prepare().then(() => {
         }
         const roomCode = decoded.roomCode;
         console.log("Room code from token:", roomCode);
-        // Add your logic here using the roomCode
+
+        socket.to(roomCode).emit('end_game_client', gameID)
 
         const users = roomManager.getUsersInRoom(roomCode);
 
@@ -70,9 +76,7 @@ app.prepare().then(() => {
 
           if (user.usersUserID) {
             console.log("User ID:", user.usersUserID);
-            // add the game data to the database
 
-            // update the first instance of it
             const result = await sql `
               UPDATE playeringame
               SET userid = ${user.usersUserID}
@@ -84,7 +88,7 @@ app.prepare().then(() => {
         }
       });
 
-      console.log("end the game");
+      console.log("end the game", gameID);
 
     });
 
