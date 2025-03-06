@@ -29,6 +29,7 @@ export default class Controller extends Phaser.Scene{
         this.current_selected_tower = "CannonTower";
         this.current_selected_part_type = "All";
         this.current_selected_part = {};
+        this.currently_generating_ui = false;
 
         // constants
         this.tower_data = {
@@ -300,6 +301,7 @@ export default class Controller extends Phaser.Scene{
 
     }
     create_ui = () => {
+
         this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
         this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
         // this.print(this.screen_width+"-"+this.screen_height);
@@ -408,7 +410,6 @@ export default class Controller extends Phaser.Scene{
         for (let item of this.sub_menu_ui_objects) {
             item.set_select_group(this.sub_menu_ui_objects);
         }
-        // this.sub_menu_ui_objects[0].force_button_press();
     }
     create_tower_buy_menu(tower_type, container_rect) {
         this.current_selected_tower = tower_type;
@@ -417,10 +418,14 @@ export default class Controller extends Phaser.Scene{
         let level_info = tower_info.level_stats[0];
         let description_string = tower_info.description+"\nDamage: "+level_info.damage+"\nFire Rate: "+level_info.fire_rate+"\nRange: "+level_info.range;
         this.tower_buy_ui_objects = [
-            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+84,
-                tower_info.title, {center:true, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
-            new Text(this, container_rect.x+10, container_rect.y+100, description_string, {center:false}),
-            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-30,
+            new Rectangle(this, container_rect.x+10, container_rect.y+70, container_rect.width-20, container_rect.height-80, RGBtoHEX([96,103,109]),{rounded_corners:5}),
+            new Rectangle(this, container_rect.x+15, container_rect.y+75, container_rect.width-30, container_rect.height-90, RGBtoHEX([78,87,97]),{rounded_corners:5}),
+
+            new Text(this, container_rect.x+20, container_rect.y+75,
+                tower_info.title, {center:false, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
+            new Text(this, container_rect.x+20, container_rect.y+110, description_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:25,wordWrap:{width:container_rect.width-40}}}),
+            new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-40,
                 {text:"Buy - "+level_info.cost, width:104, height:40,
                     press_command: ()=>this.make_tower(tower_type, "Down", level_info),
                     release_command: ()=>this.make_tower(tower_type, "Up", level_info)
@@ -522,6 +527,9 @@ export default class Controller extends Phaser.Scene{
         if (typeof(ui_list) !== 'undefined') {
             for (let obj of ui_list) {
                 obj.destroy();
+            }
+            while (ui_list.length>0) {
+                ui_list.pop();
             }
         }
     }
