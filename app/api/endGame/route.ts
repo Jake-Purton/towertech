@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
         for (const player of data.gameData.player_data) {
           // console.log(player);
-          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}) RETURNING *`;
+          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}) RETURNING *`;
           // console.log(playerResult);
         }
       } catch (error) {
