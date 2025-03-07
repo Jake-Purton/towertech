@@ -123,8 +123,16 @@ export default class Player extends Phaser.GameObjects.Container{
 
             let speed_multiplier =  this.effects.get_speed_multiplier();
 
+            let prev_pos = this.body.position.x;
             this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
+            if (this.get_colliding()) {
+                this.body.position.x = prev_pos
+            }
+            prev_pos = this.body.position.y;
             this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+            if (this.get_colliding()) {
+                this.body.position.y = prev_pos
+            }
 
             // part management
             if (defined(this.leg_object)) {
@@ -217,6 +225,9 @@ export default class Player extends Phaser.GameObjects.Container{
             this.player_score += enemy.coin_value;
             this.set_coins(this.coins+enemy.coin_value);
         }
+    }
+    get_colliding() {
+        return (this.body.x < 0 || this.body.y < 0 || this.body.x+this.body.width > this.scene.level.displayWidth || this.body.y+this.body.height > this.scene.level.displayHeight)
     }
     key_input(data) {
         if (data.Direction === 'Down') {
