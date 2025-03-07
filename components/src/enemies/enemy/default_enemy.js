@@ -21,6 +21,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, type);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setDepth(3);
         
         this.path = path;
         this.path_t = 0; // value moves from 0 to 1 when moving along path

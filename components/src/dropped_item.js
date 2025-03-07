@@ -9,6 +9,7 @@ export default class DroppedItem extends Entity {
                 initial_angular_velocity: random_range(-10, 10), angular_drag:0.95, drag:0.9, time_to_live:time_to_live});
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setDepth(2);
 
         this.setScale(size/this.height);
 
@@ -49,7 +50,7 @@ export default class DroppedItem extends Entity {
 
         let alpha = 1;
         if (this.time_to_live < flash_info.start) {
-            alpha = clamp(1+Math.floor(Math.sin(flash_info.speed*this.time_to_live)),0,1)
+            alpha = clamp(1+Math.floor(Math.sin(flash_info.speed*this.time_to_live)),0.3,1)
         }
         this.setAlpha(alpha);
     }

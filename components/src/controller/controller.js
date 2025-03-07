@@ -112,7 +112,7 @@ export default class Controller extends Phaser.Scene{
                     {health:9, speed:10},
                     {health:11, speed:12},
                 ]},
-            "armorer_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
+            "armored_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
                     {health:10, speed:5},
                     {health:15, speed:6},
                     {health:20, speed:7},
@@ -523,7 +523,7 @@ export default class Controller extends Phaser.Scene{
         this.destroy_ui_list(this.specific_part_ui_objects);
         let part_info = this.parts_data[item_name];
         // let level_info = part_info.level_stats[0];
-
+        console.log(item_name, this.parts_data);
         let item_stats = this.parts_data[item_name].level_stats[this.player_inventory[item_name].level-1];
 
         let description_string = part_info.description;

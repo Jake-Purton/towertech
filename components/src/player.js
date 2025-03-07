@@ -42,6 +42,7 @@ export default class Player extends Phaser.GameObjects.Container{
         super(scene, x, y, []);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setDepth(4);
 
         // create username
         this.username = username;

@@ -12,6 +12,7 @@ class Projectile extends Entity {
                     pierce_count=0, damage=1, knockback=1, inflict_effect=null,
                 } = {}, entity_properties={}) {
         super(scene, x, y, texture, speed, angle, entity_properties);
+        this.setDepth(5);
 
         //// variables
         this.team = team

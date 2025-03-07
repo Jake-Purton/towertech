@@ -10,6 +10,7 @@ class Particle extends Entity {
             properties.drag = 0.95;
         }
         super(scene, x, y, texture, speed, angle, properties);
+        this.setDepth(5);
     }
     game_tick(delta_time) {
         this.physics_tick(delta_time);
