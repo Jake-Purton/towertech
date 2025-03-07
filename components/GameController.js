@@ -63,7 +63,7 @@ const GameController = () => {
         function end_game (data) {
 
           console.log('here');
-          router.push("/end_game?gameID=" + data.id);
+          router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
           // socket.leave(data.room)
           game.destroy()
         }
