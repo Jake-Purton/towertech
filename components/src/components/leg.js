@@ -1,14 +1,16 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
+import {PartStats} from './part_stat_manager.js';
 
 class Leg extends Phaser.GameObjects.Container{
-    constructor(scene, texture,
-                {height=25, y_offset=5, x_offset=5} = {}){
+    constructor(scene, texture, {height=25, y_offset=5, x_offset=5, stats} = {}){
 
         let left_leg = new Phaser.Physics.Arcade.Sprite(scene, -x_offset, y_offset, texture);
         let right_leg = new Phaser.Physics.Arcade.Sprite(scene, x_offset, y_offset, texture);
 
         super(scene, 0, y_offset, [left_leg, right_leg])
+
+        this.stats = new PartStats(stats);
 
         this.left_leg = left_leg;
         this.right_leg = right_leg;
@@ -57,28 +59,28 @@ class Leg extends Phaser.GameObjects.Container{
 
 
 class StripedLeg extends Leg {
-    constructor(scene) {
-        super(scene, 'striped_leg', {height:25});
+    constructor(scene, stats={}) {
+        super(scene, 'striped_leg', {height:25, stats:stats});
     }
 }
 class RobotLeg extends Leg {
-    constructor(scene) {
-        super(scene, 'robot_leg', {height:23});
+    constructor(scene, stats={}) {
+        super(scene, 'robot_leg', {height:23, stats:stats});
     }
 }
 class LightLeg extends Leg {
-    constructor(scene) {
-        super(scene, 'light_leg', {height:23});
+    constructor(scene, stats={}) {
+        super(scene, 'light_leg', {height:23, stats:stats});
     }
 }
 class ArmoredWalker extends Leg {
-    constructor(scene) {
-        super(scene, 'armored_walker', {height:23});
+    constructor(scene, stats={}) {
+        super(scene, 'armored_walker', {height:23, stats:stats});
     }
 }
 class SpiderLeg extends Leg {
-    constructor(scene) {
-        super(scene, 'spider_leg', {height:23});
+    constructor(scene, stats={}) {
+        super(scene, 'spider_leg', {height:23, stats:stats});
     }
 }
 

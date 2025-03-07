@@ -32,7 +32,7 @@ export default class Game extends Phaser.Scene{
         // body
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/robot_body.png');
-        this.load.image('tank_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
         this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
 
         // legs
@@ -327,7 +327,7 @@ export default class Game extends Phaser.Scene{
                 this.players[input.PlayerID].new_tower_input(input);
                 break;
             case 'Equip_Part':
-                this.players[input.PlayerID].equip_part(input.item_name);
+                this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);
                 break;
             case 'Print':
                 console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);

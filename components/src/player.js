@@ -7,6 +7,7 @@ import {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads } from './componen
 import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
 import Effects from './effects.js';
 import {get_item_type} from "./utiles.js";
+import {PartStatsManager} from "./components/part_stat_manager.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -61,12 +62,13 @@ export default class Player extends Phaser.GameObjects.Container{
         this.pickup_range = 20;
 
         // aliveness
-        this.max_health = 1000
-        this.health = this.max_health;
+        this.health = 1000;
+        this.max_health = this.health;
         this.dead = false;
 
 
         // assign body parts
+        this.part_stat_manager = new PartStatsManager(10, 0.2, 1);
         for (let item of [body, weapon, leg]) {
             this.add_to_inventory(item);
             this.equip_part(item);
@@ -130,21 +132,21 @@ export default class Player extends Phaser.GameObjects.Container{
             }
         }
     }
-    set_body(body) {
+    set_body(body, stats={}) {
         this.remove(this.body_object,true);
         this.body_name = body;
-        this.body_object = new part_converter[body](this.scene);
+        this.body_object = new part_converter[body](this.scene, stats);
         this.add(this.body_object);
         this.refresh_player_parts();
     }
-    set_leg(leg) {
+    set_leg(leg, stats={}) {
         this.remove(this.leg_object,true);
         this.leg_name = leg;
-        this.leg_object = new part_converter[leg](this.scene);
+        this.leg_object = new part_converter[leg](this.scene, stats);
         this.add(this.leg_object);
         this.refresh_player_parts();
     }
-    set_weapon(weapon) {
+    set_weapon(weapon, stats={}) {
         let prev_angle
         if (typeof(this.weapon_object) !== "undefined") {
             prev_angle = this.weapon_object.get_weapon_direction();
@@ -153,7 +155,7 @@ export default class Player extends Phaser.GameObjects.Container{
         }
         this.remove(this.weapon_object,true);
         this.weapon_name = weapon;
-        this.weapon_object = new part_converter[weapon](this.scene);
+        this.weapon_object = new part_converter[weapon](this.scene, stats);
         this.weapon_object.set_weapon_direction(prev_angle);
         this.add(this.weapon_object);
         this.refresh_player_parts();
@@ -166,8 +168,17 @@ export default class Player extends Phaser.GameObjects.Container{
             this.weapon_object.set_scale(this.body_object.get_scale_multiplier());
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
+            this.refresh_stats();
 
         }
+    }
+    refresh_stats() {
+        this.part_stat_manager.set_parts(this.leg_object, this.body_object, this.weapon_object);
+        this.max_health = this.part_stat_manager.get_health();
+        if (this.health > this.max_health) {
+            this.health = this.max_health;
+        }
+        this.speed = this.part_stat_manager.get_speed();
     }
 
     get_dead() {
@@ -247,16 +258,16 @@ export default class Player extends Phaser.GameObjects.Container{
         this.add_to_inventory(dropped_item);
         // this.set_part(dropped_item.item_name, dropped_item.item_type);
     }
-    set_part(item_name, item_type) {
+    set_part(item_name, item_type, stats={}) {
         switch (item_type) {
             case 'leg':
-                this.set_leg(item_name);
+                this.set_leg(item_name, stats);
                 break;
             case 'body':
-                this.set_body(item_name);
+                this.set_body(item_name, stats);
                 break;
             case 'weapon':
-                this.set_weapon(item_name);
+                this.set_weapon(item_name, stats);
                 break;
         }
     }
@@ -281,9 +292,9 @@ export default class Player extends Phaser.GameObjects.Container{
         }
         this.save_inventory()
     }
-    equip_part(item_name) {
+    equip_part(item_name, stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
-            this.set_part(item_name, this.inventory[item_name].type);
+            this.set_part(item_name, this.inventory[item_name].type, stats);
             for (let key of Object.keys(this.inventory)) {
                 if (this.inventory[key].type === this.inventory[item_name].type) {
                     this.inventory[key].equipped = false;

@@ -23,7 +23,7 @@ export default class Controller extends Phaser.Scene{
         this.player_created = false;
 
         this.player_coins = 0;
-        this.player_inventory = {'robot_body':{type:'body'}};
+        this.player_inventory = {};
 
         this.current_selected_sub_menu = "Main";
         this.current_selected_tower = "CannonTower";
@@ -500,6 +500,9 @@ export default class Controller extends Phaser.Scene{
         this.destroy_ui_list(this.specific_part_ui_objects);
         let part_info = this.parts_data[item_name];
         // let level_info = part_info.level_stats[0];
+
+        let item_stats = this.parts_data[item_name].level_stats[this.player_inventory[item_name].level-1];
+
         let description_string = part_info.description;
         let button_text;
         if (this.player_inventory[item_name].equipped) {
@@ -517,7 +520,7 @@ export default class Controller extends Phaser.Scene{
                     {fontFamily:"Tahoma",color:'#111111',fontSize:25,wordWrap:{width:container_rect.width-40}}}),
             new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-40,
                 {text:button_text, width:140, height:40, texture:'equip_button',
-                    press_command: ()=>this.equip_part(item_name)}),
+                    press_command: ()=>this.equip_part(item_name, item_stats)}),
         ]
     }
 
@@ -571,7 +574,7 @@ export default class Controller extends Phaser.Scene{
         this.output_data({type:'Create_Tower', Tower: tower, Direction: direction, Tower_Stats:tower_stats})
     }
     equip_part = (item_name) => {
-        this.output_data({type:'Equip_Part', item_name: item_name});
+        this.output_data({type:'Equip_Part', item_name: item_name, item_stats: {}});
     }
     joystick_holding = (x,y) => {
         this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'});

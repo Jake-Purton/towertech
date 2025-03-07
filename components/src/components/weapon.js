@@ -3,13 +3,15 @@ const Vec = Phaser.Math.Vector2;
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from '../projectile.js';
 import {modulo } from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
+import {PartStats} from './part_stat_manager.js';
 
 class Weapon extends ProjectileShooter {
     constructor(scene, texture, projectile_class, {x_offset=0, y_offset=0, hold_distance=16, length=20,
-            auto_fire=true} = {}, properties){
+            auto_fire=true, stats} = {}, properties){
         properties.max_turn_speed = 200;
         properties.passive_turn_speed = 0;
         super(scene, 0, 0, texture, projectile_class, properties);
+        this.stats = new PartStats(stats);
 
         this.x_offset = x_offset;
         this.y_offset = y_offset;
@@ -74,28 +76,28 @@ class Weapon extends ProjectileShooter {
     }
 }
 class PistolWeapon extends Weapon{
-    constructor(scene) {
-        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    constructor(scene, stats={}) {
+        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true, stats:stats}, stats);
     }
 }
 class PlasmaBlaster extends Weapon{
-    constructor(scene) {
-        super(scene, 'plasma_blaster', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    constructor(scene, stats={}) {
+        super(scene, 'plasma_blaster', CannonBall, {auto_fire:true, stats:stats}, stats);
     }
 }
 class RocketLauncher extends Weapon{
-    constructor(scene) {
-        super(scene, 'rocket_launcher', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    constructor(scene, stats={}) {
+        super(scene, 'rocket_launcher', CannonBall, {auto_fire:true, stats:stats}, stats);
     }
 }
 class TeslaRifle extends Weapon{
-    constructor(scene) {
-        super(scene, 'tesla_rifle', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    constructor(scene, stats={}) {
+        super(scene, 'tesla_rifle', CannonBall, {auto_fire:true, stats:stats}, stats);
     }
 }
 class LaserCannon extends Weapon{
-    constructor(scene) {
-        super(scene, 'laser_cannon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+    constructor(scene, stats={}) {
+        super(scene, 'laser_cannon', CannonBall, {auto_fire:true, stats:stats}, stats);
     }
 }
 
