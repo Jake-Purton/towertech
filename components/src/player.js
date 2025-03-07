@@ -6,7 +6,7 @@ import {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg } from './compo
 import {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
 import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type} from "./utiles.js";
+import {get_item_type, defined} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 
 const Vec = Phaser.Math.Vector2;
@@ -71,9 +71,13 @@ export default class Player extends Phaser.GameObjects.Container{
         this.part_stat_manager = new PartStatsManager(10, 0.2, 1);
         for (let item of [body, weapon, leg]) {
             this.add_to_inventory(item);
-            this.equip_part(item);
+            if (this.player_id === 'UI_PLAYER_DISPLAY' || this.player_id === 'TempPlayerID') {
+                this.equip_part(item);
+            } else {
+                this.scene.output_data(this.player_id, {type:'Force_Equip', item_name:item});
+            }
         }
-      
+
         // variables
         this.velocity = new Vec(0,0);
         this.key_inputs = {
@@ -123,12 +127,16 @@ export default class Player extends Phaser.GameObjects.Container{
             this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
 
             // part management
-            this.leg_object.movement_animation(this.velocity);
-            this.weapon_object.game_tick(delta_time);
-            if (this.key_inputs.Attack) {
-                this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
-            } else {
-                this.weapon_object.attack_button_up();
+            if (defined(this.leg_object)) {
+                this.leg_object.movement_animation(this.velocity);
+            }
+            if (defined(this.weapon_object)) {
+                this.weapon_object.game_tick(delta_time);
+                if (this.key_inputs.Attack) {
+                    this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
+                } else {
+                    this.weapon_object.attack_button_up();
+                }
             }
         }
     }

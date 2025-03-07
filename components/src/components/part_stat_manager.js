@@ -35,7 +35,7 @@ class PartStatsManager {
     }
     get_speed() {
         let speed = this.base_speed;
-        speed += this.body.stats.base_speed + this.leg.stats.base_speed + this.weapon.stats.base_speed;
+        speed += (this.body.stats.base_speed + this.leg.stats.base_speed + this.weapon.stats.base_speed)/20;
         speed *= this.body.stats.speed_multiplier * this.leg.stats.speed_multiplier * this.weapon.stats.speed_multiplier;
         return speed;
     }

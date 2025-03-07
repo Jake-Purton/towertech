@@ -29,7 +29,6 @@ export default class Controller extends Phaser.Scene{
         this.current_selected_tower = "CannonTower";
         this.current_selected_part_type = "All";
         this.current_selected_part = {};
-        this.currently_generating_ui = false;
 
         // constants
         this.tower_data = {
@@ -81,97 +80,97 @@ export default class Controller extends Phaser.Scene{
             }
         this.parts_data = {
             "robot_body":{title:"Robot Body", description:"A standard robotic frame that gets the job done without extras.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:10, speed:5},
+                    {health:12, speed:7},
+                    {health:15, speed:10},
                 ]},
             "lightweight_frame":{title:"Lightweight Frame", description:"A lightweight frame built for speed at the cost of durability.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:5, speed:12},
+                    {health:7, speed:15},
+                    {health:10, speed:18},
                 ]},
             "tank_frame":{title:"Tank Frame", description:"A heavily armored frame designed to absorb damage and protect the player.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:20, speed:2},
+                    {health:25, speed:3},
+                    {health:30, speed:4},
                 ]},
             "energy_core_frame":{title:"Energy Core Frame", description:"A futuristic frame that enhances buff durations but leaves the user vulnerable to burst attacks.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:8, speed:6},
+                    {health:12, speed:8},
+                    {health:16, speed:10},
                 ]},
 
             "robot_leg":{title:"Robot Legs", description:"A basic set of robotic legs, simple and reliable.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:7, speed:8},
+                    {health:9, speed:10},
+                    {health:11, speed:12},
                 ]},
             "striped_leg":{title:"Striped Legs", description:"icl i think we should remove these i dont like em", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:7, speed:8},
+                    {health:9, speed:10},
+                    {health:11, speed:12},
                 ]},
             "armorer_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:10, speed:5},
+                    {health:15, speed:6},
+                    {health:20, speed:7},
                 ]},
             "light_leg":{title:"Light Legs", description:"robotic legs for quick movement but limited durability.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:-2, speed:14},
+                    {health:-4, speed:18},
+                    {health:-6, speed:22},
                 ]},
             "spider_leg":{title:"Spider Legs", description:"abdullah u didnt do a description for this one", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:5, speed:10},
+                    {health:8, speed:13},
+                    {health:10, speed:16},
                 ]},
 
             "basic_wheel":{title:"Basic Wheel", description:"A balanced, no-frills wheel option for stable performance.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:5, speed:10},
+                    {health:6, speed:12},
+                    {health:8, speed:14},
                 ]},
             "speedster_wheel":{title:"Speedster Wheel", description:"High-speed wheels for those who want to outrun enemies but risk losing control.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:7, speed:8},
+                    {health:9, speed:10},
+                    {health:11, speed:12},
                 ]},
             "floating_wheel":{title:"Floating Wheel", description:"Hovering movement lets you glide over obstacles but makes you an easy airborne target.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:-3, speed:12},
+                    {health:-5, speed:15},
+                    {health:-7, speed:18},
                 ]},
             "tank_treads":{title:"Tank Treads", description:"Heavy-duty treads that offer durability at the cost of speed.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {health:12, speed:2},
+                    {health:16, speed:3},
+                    {health:20, speed:4},
                 ]},
 
             "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {damage:6, fire_rate:3, fire_distance:100},
+                    {damage:8, fire_rate:4, fire_distance:130},
+                    {damage:10, fire_rate:5, fire_distance:160},
                 ]},
             "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay but lacks power against tougher foes.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {damage:8, fire_rate:5, fire_distance:150},
+                    {damage:12, fire_rate:6, fire_distance:180},
+                    {damage:16, fire_rate:8, fire_distance:210},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {damage:25, fire_rate:1, fire_distance:300},
+                    {damage:30, fire_rate:1.5, fire_distance:350},
+                    {damage:35, fire_rate:2, fire_distance:400},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak against lone threats.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {damage:10, fire_rate:8, fire_distance:140},
+                    {damage:13, fire_rate:10, fire_distance:190},
+                    {damage:16, fire_rate:14, fire_distance:250},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
-                    {},
-                    {},
-                    {},
+                    {damage:15, fire_rate:10, fire_distance:200},
+                    {damage:18, fire_rate:10, fire_distance:250},
+                    {damage:22, fire_rate:10, fire_distance:300},
                 ]},
             }
     }
@@ -180,7 +179,7 @@ export default class Controller extends Phaser.Scene{
         // body
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/robot_body.png');
-        this.load.image('tank_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
         this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
 
         // legs
@@ -283,6 +282,9 @@ export default class Controller extends Phaser.Scene{
                     this.create_ui();
                 }
                 break;
+            case 'Force_Equip':
+                this.equip_part(input.item_name, this.parts_data[input.item_name].level_stats[this.player_inventory[input.item_name].level-1]);
+                break
             default:
                 console.log('unused input received: ',input)
         }
@@ -573,8 +575,8 @@ export default class Controller extends Phaser.Scene{
     make_tower = (tower, direction, tower_stats) => {
         this.output_data({type:'Create_Tower', Tower: tower, Direction: direction, Tower_Stats:tower_stats})
     }
-    equip_part = (item_name) => {
-        this.output_data({type:'Equip_Part', item_name: item_name, item_stats: {}});
+    equip_part = (item_name, item_stats) => {
+        this.output_data({type:'Equip_Part', item_name: item_name, item_stats: item_stats});
     }
     joystick_holding = (x,y) => {
         this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'});

@@ -106,6 +106,10 @@ function get_item_type(item_name) {
     return item_type;
 }
 
+function defined(obj) {
+    return typeof(obj) !== 'undefined'
+}
+
 export {random_gauss, random_choice, random_int, random_range, modulo,
     get_removed, clamp, RGBtoHEX, get_distance, weighted_random_choice,
-    float_to_random_int, get_item_type};
+    float_to_random_int, get_item_type, defined};

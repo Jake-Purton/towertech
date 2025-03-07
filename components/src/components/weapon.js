@@ -7,9 +7,10 @@ import {PartStats} from './part_stat_manager.js';
 
 class Weapon extends ProjectileShooter {
     constructor(scene, texture, projectile_class, {x_offset=0, y_offset=0, hold_distance=16, length=20,
-            auto_fire=true, stats} = {}, properties){
+            stats} = {}, properties){
         properties.max_turn_speed = 200;
         properties.passive_turn_speed = 0;
+        stats.range = 1000;
         super(scene, 0, 0, texture, projectile_class, properties);
         this.stats = new PartStats(stats);
 
@@ -18,7 +19,8 @@ class Weapon extends ProjectileShooter {
         this.hold_distance = hold_distance;
 
         this.weapon_direction = 0;
-        this.auto_fire = auto_fire;
+        if (typeof(stats.auto_fire) === 'undefined') { stats.auto_fire = true }
+        this.auto_fire = stats.auto_fire;
         this.block_fire = false;
         this.auto_target = false;
 
@@ -77,27 +79,27 @@ class Weapon extends ProjectileShooter {
 }
 class PistolWeapon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true, stats:stats}, stats);
+        super(scene, 'pistol_weapon', CannonBall, {stats:stats}, stats);
     }
 }
 class PlasmaBlaster extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'plasma_blaster', CannonBall, {auto_fire:true, stats:stats}, stats);
+        super(scene, 'plasma_blaster', CannonBall, {stats:stats}, stats);
     }
 }
 class RocketLauncher extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'rocket_launcher', CannonBall, {auto_fire:true, stats:stats}, stats);
+        super(scene, 'rocket_launcher', CannonBall, {stats:stats}, stats);
     }
 }
 class TeslaRifle extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'tesla_rifle', CannonBall, {auto_fire:true, stats:stats}, stats);
+        super(scene, 'tesla_rifle', CannonBall, {stats:stats}, stats);
     }
 }
 class LaserCannon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'laser_cannon', CannonBall, {auto_fire:true, stats:stats}, stats);
+        super(scene, 'laser_cannon', CannonBall, {stats:stats}, stats);
     }
 }
 
