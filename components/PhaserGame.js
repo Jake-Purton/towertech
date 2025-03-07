@@ -55,7 +55,8 @@ const PhaserGame = () => {
 
           // the token encoded with the room id for security
           const roomToken = localStorage.getItem('roomToken');
-          console.log(roomToken)
+          // console.log(roomToken)
+          console.log("phaserGame.js: game data is", data)
 
           // if there is a token, we can send the data to the server
           if (roomToken) {
@@ -69,6 +70,8 @@ const PhaserGame = () => {
               });
 
               const result = await response.json();
+
+              console.log("RESULT IS HERE: ", result);
 
               if (result.success) {
                 console.log('Game data successfully sent to the server');

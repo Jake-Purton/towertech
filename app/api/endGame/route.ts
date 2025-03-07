@@ -21,31 +21,35 @@ export async function POST(req: Request) {
 
     try {
       const decoded = jwt.verify(data.roomToken, JWT_SECRET);
-      // console.log("✅ Token is valid");
-
-      // Insert game data into the database
-      const result = await sql`INSERT INTO gameleaderboard (score, waves) VALUES (${data.gameData.game_score} ${data.gameData.waves_survived}) RETURNING gameid`;
-      const gameid = result.rows[0].gameid;
-      // console.log(gameid);
-
-      // console.log(data.gameData.player_data);
 
       try {
-
-        for (const player of data.gameData.player_data) {
-          // console.log(player);
-          const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}) RETURNING *`;
-          // console.log(playerResult);
+        // Insert game data into the database
+        const result = await sql`INSERT INTO gameleaderboard (score, waves) VALUES (${data.gameData.game_score}, ${data.gameData.waves_survived}) RETURNING gameid`;
+        const gameid = result.rows[0].gameid;
+        
+        console.log("✅ Game data inserted");
+        // console.log(data.gameData.player_data);
+        
+        try {
+          
+          for (const player of data.gameData.player_data) {
+            // console.log(player);
+            const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}) RETURNING *`;
+            // console.log(playerResult);
+          }
+        } catch (error) {
+          console.log(error);
+          return NextResponse.json({ error: "Error inserting player data" }, { status: 500 });
         }
+        
+        
+        
+        return NextResponse.json({ success: true, gameid: gameid });
+
       } catch (error) {
-        console.log(error);
-        return NextResponse.json({ error: "Error inserting player data" }, { status: 500 });
+        console.log(error)
+        return NextResponse.json({ valid: false, error: "Error inserting game data" }, { status: 401 });
       }
-
-
-      console.log("✅ Game data inserted");
-
-      return NextResponse.json({ success: true, gameid: gameid });
     } catch (error) {
       return NextResponse.json({ valid: false, error: "Invalid token" }, { status: 401 });
     }

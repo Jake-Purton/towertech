@@ -285,6 +285,7 @@ export default class Game extends Phaser.Scene{
                 username: this.players[player_id].username})
         }
         const waves_survived = this.level.wave_manager.wave_index;
+        console.log("WAVES SURVIVED", waves_survived)
         let game_data = {game_score: this.score, player_data: player_data, waves_survived: waves_survived}
         this.end_game_output(game_data);
 

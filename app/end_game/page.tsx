@@ -29,6 +29,7 @@ export default function EndGamePage() {
         const res = await fetch(`/api/gameleaderboard?gameid=${gameid}`);
         const data = await res.json();
         setGameData(data);
+        console.log(data)
         setScore(data.score);
         setWaveScore(data.waves)
 
@@ -57,6 +58,19 @@ export default function EndGamePage() {
         <div className="space-y-4">
           <h2 className="text-xl text-orange-400 text-center mb-4">🌟 Legends</h2>
           <div className="space-y-2">
+            {gameData?.players.length === 0 && (
+              <div className="text-center text-gray-400">No players to display</div>
+            )}
+            {gameData?.players.map((player, index) => (
+              <div 
+                key={`${player.userid}-${index}`}
+                className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
+              >
+                <div className="text-orange-400 text-sm">#{index + 1}</div>
+                <div className="text-lg font-bold">{player.name}</div>
+                <div className="text-sm text-orange-300">{player.playerscore} pts</div>
+              </div>
+            ))}
             {gameData?.players.slice(0, 3).map((player, index) => (
               <div 
                 key={`${player.userid}-${index}`}

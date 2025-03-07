@@ -55,14 +55,14 @@ app.prepare().then(() => {
 
     socket.on("end_game", (data) => {
 
-      console.log(data);
+      console.log("GAME ENDED");
 
       const roomToken = data.token;
       const gameID = data.id;
 
       jwt.verify(roomToken, JWT_SECRET, async (err, decoded) => {
         if (err) {
-          console.error("Invalid token:", err);
+          console.error("Invalid token server.js:", err);
           return;
         }
         const roomCode = decoded.roomCode;

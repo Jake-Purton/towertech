@@ -12,6 +12,7 @@ export async function GET(request: Request) {
         SELECT 
           gameleaderboard.gameid,
           gameleaderboard.score,
+          gameleaderboard.waves,
           playeringame.userid,
           playeringame.kills,
           playeringame.playerscore,
@@ -32,6 +33,7 @@ export async function GET(request: Request) {
         SELECT 
           gameleaderboard.gameid,
           gameleaderboard.score,
+          gameleaderboard.waves,
           playeringame.userid,
           playeringame.kills,
           playeringame.playerscore,
@@ -60,6 +62,7 @@ export async function GET(request: Request) {
         acc.push({
           gameid: row.gameid,
           score: row.score,
+          waves: row.waves, // Include waves in the response
           players: [playerData]
         });
       } else {
