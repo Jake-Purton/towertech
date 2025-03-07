@@ -10,6 +10,7 @@ interface Player {
   name: string;
   kills: number;
   playerscore: number;
+  username: string;
 }
 
 interface Game {
@@ -135,8 +136,8 @@ export default function GameLeaderboard() {
                                   className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none cursor-pointer"
                                   onClick={() => handlePlayerClick(player.userid)}
                                 >
-                                  <td className="px-6 py-4 text-lg font-medium">{player.userid}</td>
-                                  <td className="px-6 py-4 text-lg">{player.name}</td>
+                                  <td className="px-6 py-4 text-lg font-medium">{player.userid=== "0" ? `Guest` : player.userid}</td>
+                                  <td className="px-6 py-4 text-lg">{player.username}</td>
                                   <td className="px-6 py-4 text-lg">{player.kills}</td>
                                   <td className="px-6 py-4 text-lg">{player.playerscore}</td>
                                 </tr>
