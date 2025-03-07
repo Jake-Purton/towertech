@@ -7,11 +7,13 @@ interface Player {
   name: string;
   kills: number;
   playerscore: number;
+  username: string;
 }
 
 interface Game {
   gameid: number;
   score: number;
+  waves: number;
   players: Player[];
 }
 
@@ -67,11 +69,11 @@ export default function EndGamePage() {
                 className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
               >
                 <div className="text-orange-400 text-sm">#{index + 1}</div>
-                <div className="text-lg font-bold">{player.name}</div>
+                <div className="text-lg font-bold">{player.username}</div>
                 <div className="text-sm text-orange-300">{player.playerscore} pts</div>
               </div>
             ))}
-            {gameData?.players.slice(0, 3).map((player, index) => (
+            {/* {gameData?.players.slice(0, 3).map((player, index) => (
               <div 
                 key={`${player.userid}-${index}`}
                 className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
@@ -80,7 +82,7 @@ export default function EndGamePage() {
                 <div className="text-lg font-bold">{player.name}</div>
                 <div className="text-sm text-orange-300">{player.playerscore} pts</div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
@@ -139,7 +141,7 @@ export default function EndGamePage() {
                 className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
               >
                 <span className="text-orange-400 w-8">#{index + 1}</span>
-                <span className="flex-1">{player.name}</span>
+                <span className="flex-1">{player.username}</span>
                 <span className="font-bold text-orange-300">{player.playerscore}</span>
               </div>
             ))}

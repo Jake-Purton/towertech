@@ -16,6 +16,7 @@ export async function GET(request: Request) {
           playeringame.userid,
           playeringame.kills,
           playeringame.playerscore,
+          playeringame.username,
           users.name
         FROM 
           gameleaderboard
@@ -37,6 +38,7 @@ export async function GET(request: Request) {
           playeringame.userid,
           playeringame.kills,
           playeringame.playerscore,
+          playeringame.username,
           users.name
         FROM 
           gameleaderboard
@@ -55,7 +57,8 @@ export async function GET(request: Request) {
         userid: row.userid,
         name: row.name,
         kills: row.kills,
-        playerscore: row.playerscore
+        playerscore: row.playerscore,
+        username: row.username,
       };
 
       if (gameIndex === -1) {
