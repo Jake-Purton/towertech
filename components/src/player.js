@@ -102,7 +102,7 @@ export default class Player extends Phaser.GameObjects.Container{
     game_tick(delta_time, enemies){ //function run by game.js every game tick
         if (!this.dead) {
             // handle effects
-            this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
+            this.add_health(this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps);
             this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
             this.effects.game_tick(delta_time, this);
 
@@ -190,10 +190,7 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     refresh_stats() {
         this.part_stat_manager.set_parts(this.leg_object, this.body_object, this.weapon_object);
-        this.max_health = this.part_stat_manager.get_health();
-        if (this.health > this.max_health) {
-            this.health = this.max_health;
-        }
+        this.set_health(this.health, this.part_stat_manager.get_health())
         this.speed = this.part_stat_manager.get_speed();
     }
 
@@ -211,7 +208,7 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
-            this.health -= damage;
+            this.add_health(-damage)
             this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
             if (source !== null) {
                 this.last_damage_source = source;
@@ -293,6 +290,25 @@ export default class Player extends Phaser.GameObjects.Container{
     set_coins(coins) {
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+    }
+    set_health(health, max_health) {
+        if (health > max_health) {
+            health = max_health;
+        } else if (health < 0) {
+            health = 0;
+        }
+        this.health = health;
+        this.max_health = max_health;
+        if (this.player_id !== 'UI_PLAYER_DISPLAY') {
+            this.scene.output_data(this.player_id, {
+                type: 'Set_Health',
+                health: this.health,
+                max_health: this.max_health
+            });
+        }
+    }
+    add_health(health_change) {
+        this.set_health(this.health+health_change, this.max_health);
     }
     save_inventory() {
         if (this.player_id !== 'UI_PLAYER_DISPLAY') {

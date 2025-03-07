@@ -23,6 +23,8 @@ export default class Controller extends Phaser.Scene{
         this.player_created = false;
 
         this.player_coins = 0;
+        this.player_health = 5;
+        this.player_max_health = 5
         this.player_inventory = {};
 
         this.current_selected_sub_menu = "Main";
@@ -210,6 +212,7 @@ export default class Controller extends Phaser.Scene{
         this.load.image('parts_button_65px','/game_images/UI/parts_button_65px.png');
         this.load.image('selector_button','/game_images/UI/selector_button.png');
         this.load.image('equip_button','/game_images/UI/equip_button.png');
+        this.load.image('player_health_bar','/game_images/UI/player_health_bar.png');
 
         this.load.image('joystick_base','/game_images/UI/joystick_base.png');
         this.load.image('joystick_head','/game_images/UI/joystick_head.png');
@@ -282,8 +285,18 @@ export default class Controller extends Phaser.Scene{
                     this.create_ui();
                 }
                 break;
+            case 'Set_Health':
+                this.player_health = input.health;
+                this.player_max_health = input.max_health;
+                this.health_ui_text.setText('Health: '+Math.ceil(this.player_health*10)/10+'/'+this.player_max_health);
+                this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
+                break;
             case 'Force_Equip':
-                this.equip_part(input.item_name, this.parts_data[input.item_name].level_stats[this.player_inventory[input.item_name].level-1]);
+                if (Object.keys(this.parts_data).includes(input.item_name)) {
+                    this.equip_part(input.item_name, this.parts_data[input.item_name].level_stats[this.player_inventory[input.item_name].level-1]);
+                } else {
+                    console.log('no part data found when equipping item: ', input)
+                }
                 break
             default:
                 console.log('unused input received: ',input)
@@ -332,10 +345,18 @@ export default class Controller extends Phaser.Scene{
             new AttackButton(this, this.screen_width-120, this.screen_height-120, {width:200, height:200,
                 joystick_base:'attack_button', joystick_head:'attack_button_head',
                 holding_command:this.attack_pressed, release_command:this.attack_released}).setDepth(4),
+
+            // Player Health bar
+            new Rectangle(this, this.screen_width-220, 60, 200, 30, RGBtoHEX([20,10,10]),{rounded_corners:4}).setDepth(5),
             ]
         // money text
-        this.coins_ui_text = new Text(this, 20, 20, 'Coins: '+this.player_coins, {center:false}).setDepth(4)
+        this.coins_ui_text = new Text(this, 115, 40, 'Coins: '+this.player_coins, {center:true}).setDepth(4)
         this.ui_objects.push(this.coins_ui_text);
+
+        // Player Health
+        this.health_ui_text = new Text(this, this.screen_width-115, 40, 'Health: '+this.player_health+'/'+this.player_max_health, {center:true}).setDepth(6);
+        this.health_ui_bar = this.add.sprite(this.screen_width-218, 62, 'player_health_bar').setDepth(7).setDisplayOrigin(0,0);
+        this.ui_objects.push(this.health_ui_text, this.health_ui_bar);
 
         // top tab buttons
         let tab_buttons = ['Main', 'Player', 'Tower'];
