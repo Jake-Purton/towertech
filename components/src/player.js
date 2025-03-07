@@ -6,8 +6,9 @@ import {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg } from './compo
 import {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
 import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type, defined} from "./utiles.js";
+import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
+import {Rectangle} from "./ui_widgets/shape.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -46,8 +47,16 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // create username
         this.username = username;
-        this.name_text = new Phaser.GameObjects.Text(scene, 0, -20, this.username, {fontFamily:'Tahoma',color:'#000000', fontSize:18, align:"center"}).setOrigin(0.5, 0.5);
+        this.name_text = new Phaser.GameObjects.Text(scene, 0, -20, this.username,
+            {fontFamily:'Tahoma',color:'#000000', fontSize:18, align:"center", padding:2,
+            }).setOrigin(0.5, 0.5).setDepth(8);
         this.add(this.name_text);
+        if (player_id !== "UI_PLAYER_DISPLAY") {
+            this.name_backing = new Rectangle(scene,
+                this.name_text.x-this.name_text.width/2, this.name_text.y-this.name_text.height/2+3,
+                this.name_text.width, this.name_text.height-6, RGBtoHEX([255,255,255]),{z_index:7, alpha:0.2});
+            this.add(this.name_backing);
+        }
 
         // game stats
         this.coins = 0;
@@ -65,11 +74,14 @@ export default class Player extends Phaser.GameObjects.Container{
         // aliveness
         this.health = 1000;
         this.max_health = this.health;
+        this.passive_healing_timer = 1;
+        this.passive_healing_hit_timer = 3;
+        this.passive_healing_rate = 1;
         this.dead = false;
 
 
         // assign body parts
-        this.part_stat_manager = new PartStatsManager(10, 0.2, 1);
+        this.part_stat_manager = new PartStatsManager();
         for (let item of [body, weapon, leg]) {
             this.add_to_inventory(item);
             if (this.player_id === 'UI_PLAYER_DISPLAY' || this.player_id === 'TempPlayerID') {
@@ -102,6 +114,11 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
         if (!this.dead) {
+            this.passive_healing_timer -= delta_time/this.scene.target_fps;
+            if (this.passive_healing_timer < 0) {
+                this.add_health(this.passive_healing_rate*delta_time/this.scene.target_fps);
+            }
+
             // handle effects
             this.add_health(this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps);
             this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
@@ -124,16 +141,9 @@ export default class Player extends Phaser.GameObjects.Container{
 
             let speed_multiplier =  this.effects.get_speed_multiplier();
 
-            let prev_pos = this.body.position.x;
             this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
-            if (this.get_colliding()) {
-                this.body.position.x = prev_pos
-            }
-            prev_pos = this.body.position.y;
             this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
-            if (this.get_colliding()) {
-                this.body.position.y = prev_pos
-            }
+            this.keep_in_map();
 
             // part management
             if (defined(this.leg_object)) {
@@ -193,6 +203,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.part_stat_manager.set_parts(this.leg_object, this.body_object, this.weapon_object);
         this.set_health(this.health, this.part_stat_manager.get_health())
         this.speed = this.part_stat_manager.get_speed();
+        this.passive_healing_rate = this.part_stat_manager.get_passive_healing_rate();
     }
 
     get_dead() {
@@ -209,6 +220,7 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
+            this.passive_healing_timer = this.passive_healing_hit_timer;
             this.add_health(-damage)
             this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
             if (source !== null) {
@@ -224,8 +236,17 @@ export default class Player extends Phaser.GameObjects.Container{
             this.set_coins(this.coins+enemy.coin_value);
         }
     }
-    get_colliding() {
-        return (this.body.x < 0 || this.body.y < 0 || this.body.x+this.body.width > this.scene.level.displayWidth || this.body.y+this.body.height > this.scene.level.displayHeight)
+    keep_in_map() {
+        if (this.body.x < 0) {
+            this.body.position.x = 0
+        } else if (this.body.x+this.body.width > this.scene.level.displayWidth) {
+            this.body.position.x = this.scene.level.displayWidth-this.body.width
+        }
+        if (this.body.y < 0) {
+            this.body.position.y = 0
+        } else if (this.body.y+this.body.height > this.scene.level.displayHeight) {
+            this.body.position.y = this.scene.level.displayHeight-this.body.height
+        }
     }
     key_input(data) {
         if (data.Direction === 'Down') {
@@ -293,19 +314,22 @@ export default class Player extends Phaser.GameObjects.Container{
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
     set_health(health, max_health) {
-        if (health > max_health) {
-            health = max_health;
-        } else if (health < 0) {
-            health = 0;
-        }
-        this.health = health;
-        this.max_health = max_health;
-        if (this.player_id !== 'UI_PLAYER_DISPLAY') {
-            this.scene.output_data(this.player_id, {
-                type: 'Set_Health',
-                health: this.health,
-                max_health: this.max_health
-            });
+        if (health !== this.health || max_health !== this.max_health || true) {
+            // console.log('set health', health, max_health);
+            if (health > max_health) {
+                health = max_health;
+            } else if (health < 0) {
+                health = 0;
+            }
+            this.health = health;
+            this.max_health = max_health;
+            if (this.player_id !== 'UI_PLAYER_DISPLAY') {
+                this.scene.output_data(this.player_id, {
+                    type: 'Set_Health',
+                    health: this.health,
+                    max_health: this.max_health
+                });
+            }
         }
     }
     add_health(health_change) {

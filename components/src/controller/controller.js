@@ -336,8 +336,8 @@ export default class Controller extends Phaser.Scene{
                 this.sub_menu_container.width, this.sub_menu_container.height, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:-1}),
 
             // rects to hide selector buttons
-            new Rectangle(this, 230, 0, 10, this.screen_height, this.background_color, {z_index:2}),
-            new Rectangle(this, this.screen_width-240, 0, 10, this.screen_height, this.background_color, {z_index:2}),
+            new Rectangle(this, -10, 0, 250, this.screen_height, this.background_color, {z_index:2}),
+            new Rectangle(this, this.screen_width-240, 0, 250, this.screen_height, this.background_color, {z_index:2}),
 
             // main joystick and attack button
             new Joystick(this, 120, this.screen_height-120, {base_size:200,
@@ -523,7 +523,7 @@ export default class Controller extends Phaser.Scene{
         this.destroy_ui_list(this.specific_part_ui_objects);
         let part_info = this.parts_data[item_name];
         // let level_info = part_info.level_stats[0];
-        console.log(item_name, this.parts_data);
+
         let item_stats = this.parts_data[item_name].level_stats[this.player_inventory[item_name].level-1];
 
         let description_string = part_info.description;

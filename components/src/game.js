@@ -184,7 +184,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
+        // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // create Level (map info and enemy path)
         this.level = new Level(this, 'main', this.scale.width, this.scale.height);
@@ -307,31 +307,30 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        switch (input.type) {
-            case 'Constructor':
-                if (!(input.PlayerID in this.players)){
-                    this.players[input.PlayerID] = new Player(
-                        this, 100*Object.keys(this.players).length, 100, input.PlayerID, {username:input.username});
-                }
-                break;
-            case 'Key_Input':
-                this.players[input.PlayerID].key_input(input);
-                break;
-            case 'Attack_Input':
-                this.players[input.PlayerID].attack_input(input);
-                break;
-            case 'Joystick_Input':
-                this.players[input.PlayerID].joystick_input(input);
-                break;
-            case 'Create_Tower':
-                this.players[input.PlayerID].new_tower_input(input);
-                break;
-            case 'Equip_Part':
-                this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);
-                break;
-            case 'Print':
-                console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);
-                break;
+        if (Object.keys(this.players).includes(input.PlayerID)) {
+            switch (input.type) {
+                case 'Key_Input':
+                    this.players[input.PlayerID].key_input(input);
+                    break;
+                case 'Attack_Input':
+                    this.players[input.PlayerID].attack_input(input);
+                    break;
+                case 'Joystick_Input':
+                    this.players[input.PlayerID].joystick_input(input);
+                    break;
+                case 'Create_Tower':
+                    this.players[input.PlayerID].new_tower_input(input);
+                    break;
+                case 'Equip_Part':
+                    this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);
+                    break;
+                case 'Print':
+                    console.log('MESSAGE FROM CONTROLLER <' + input.PlayerID + '> = ' + input.text);
+                    break;
+            }
+        } else if (input.type === "Constructor") {
+            this.players[input.PlayerID] = new Player(
+                this, 100 * Object.keys(this.players).length, 100, input.PlayerID, {username: input.username});
         }
     }
 

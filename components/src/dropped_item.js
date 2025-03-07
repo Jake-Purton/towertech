@@ -40,7 +40,7 @@ export default class DroppedItem extends Entity {
         this.setPosition(x, y);
     }
     set_as_ui_display() {
-
+        this.setDepth(1);
     }
     destroy(fromScene) {
         super.destroy(fromScene);
