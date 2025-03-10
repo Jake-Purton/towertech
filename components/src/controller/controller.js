@@ -7,6 +7,7 @@ import AttackButton from "../ui_widgets/attack_button.js";
 import SelectorButton from "../ui_widgets/selector_button.js";
 import {Rectangle} from "../ui_widgets/shape.js";
 import Player from '../player.js';
+import {defined} from "../utiles.js";
 
 
 export default class Controller extends Phaser.Scene{
@@ -288,8 +289,10 @@ export default class Controller extends Phaser.Scene{
             case 'Set_Health':
                 this.player_health = input.health;
                 this.player_max_health = input.max_health;
-                this.health_ui_text.setText('Health: '+Math.ceil(this.player_health*10)/10+'/'+this.player_max_health);
-                this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
+                if (defined(this.health_ui_text)) {
+                    this.health_ui_text.setText('Health: '+Math.ceil(this.player_health*10)/10+'/'+this.player_max_health);
+                    this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
+                }
                 break;
             case 'Force_Equip':
                 if (Object.keys(this.parts_data).includes(input.item_name)) {
@@ -493,6 +496,16 @@ export default class Controller extends Phaser.Scene{
         let items = Object.keys(this.player_inventory).filter(
             (item) => (this.player_inventory[item].type === filter || filter === null || filter === 'all'));
         for (let i=0;i<items.length;i++) {
+            let num = this.player_inventory[items[i]].count;
+            let display_text = num+'/0';
+            let display_text_col = '#bbb';
+            if (this.player_inventory[items[i]].level < this.parts_data[items[i]].level_stats.length) {
+                let upgrade_number = this.parts_data[items[i]].level_stats[this.player_inventory[items[i]].level].upgrade_number;
+                display_text = num+"/"+upgrade_number;
+                if (num>=upgrade_number) {
+                    display_text_col = '#34cc00';
+                }
+            }
             this.browse_parts_ui_objects.push(new SelectorButton(this,
                 container_rect.x+i*60+10, container_rect.y+55,
                 {text:'',width:50, height:50, center:false, texture:'selector_button',
@@ -500,7 +513,8 @@ export default class Controller extends Phaser.Scene{
                     select_tint:RGBtoHEX([200,200,200])},
                 {sector_x:container_rect.x, sector_width:container_rect.width,
                     max_scroll:(items.length*60+10)-container_rect.width,
-                    displayed_item:items[i], display_type:"part"}));
+                    displayed_item:items[i], display_type:"part",
+                    display_text:display_text, display_text_col:display_text_col}));
             if (items[i] === this.current_selected_part[this.current_selected_part_type]) {
                 this.browse_parts_ui_objects[this.browse_parts_ui_objects.length-1].force_button_press();
                 menu_preloaded = true;
@@ -526,9 +540,11 @@ export default class Controller extends Phaser.Scene{
         let item_stats = this.parts_data[item_name].level_stats[this.player_inventory[item_name].level-1];
 
         let description_string = part_info.description;
-        let listed_stats = ['health', 'speed'];
-        for (let stat of listed_stats) {
-            description_string += '\n'+stat+': '+item_stats[stat];
+        let listed_stats = {'health':'Health', 'speed':'Speed', 'damage':'Damage', 'fire_rate':'Fire Rate', 'fire_distance':'Range'};
+        for (let stat of Object.keys(listed_stats)) {
+            if (defined(item_stats[stat])) {
+                description_string += '\n'+listed_stats[stat]+': '+item_stats[stat];
+            }
         }
         let button_text;
         if (this.player_inventory[item_name].equipped) {
@@ -555,12 +571,12 @@ export default class Controller extends Phaser.Scene{
             new Text(this, container_rect.x+20, container_rect.y+155, description_string, {center:false, text_style:
                     {fontFamily:"Tahoma",color:'#111111',fontSize:20,wordWrap:{width:container_rect.width-40}}}),
 
-            new Button(this, container_rect.x+container_rect.width*0.35, container_rect.y+container_rect.height-40,
-                {text:button_text, width:140, height:40, texture:'equip_button',
+            new Button(this, container_rect.x+20, container_rect.y+container_rect.height-60,
+                {text:button_text, width:140, height:40, texture:'equip_button', center:false,
                     press_command: ()=>this.equip_part(item_name, item_stats)}),
 
-            new Button(this, container_rect.x+container_rect.width*0.65, container_rect.y+container_rect.height-40,
-                {text:upgrade_text, width:140, height:40, texture:'equip_button',
+            new Button(this, container_rect.x+container_rect.width-160, container_rect.y+container_rect.height-60,
+                {text:upgrade_text, width:140, height:40, texture:'equip_button', center:false,
                     press_command: ()=>this.upgrade_part(item_name, upgraded_stats)}).set_enabled(upgrade_enabled),
 
         ]
