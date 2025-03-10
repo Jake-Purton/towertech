@@ -364,6 +364,20 @@ export default class Player extends Phaser.GameObjects.Container{
             this.save_inventory();
         }
     }
+    upgrade_part(item_name, new_stats) {
+        if (Object.keys(this.inventory).includes(item_name)) {
+            if (this.inventory[item_name].count >= new_stats.upgrade_number && this.coins >= new_stats.upgrade_cost) {
+                this.inventory[item_name].count -= new_stats.upgrade_number;
+                this.inventory[item_name].level += 1;
+                this.set_coins(this.coins - new_stats.upgrade_cost)
+                if (this.inventory[item_name].equipped) {
+                    this.equip_part(item_name, new_stats);
+                } else {
+                    this.save_inventory();
+                }
+            }
+        }
+    }
     destroy(fromScene) {
         this.removeAll(true);
         super.destroy(fromScene);

@@ -328,6 +328,9 @@ export default class Game extends Phaser.Scene{
                 case 'Equip_Part':
                     this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);
                     break;
+                case 'Upgrade_Part':
+                    this.players[input.PlayerID].upgrade_part(input.item_name, input.item_stats);
+                    break;
                 case 'Print':
                     console.log('MESSAGE FROM CONTROLLER <' + input.PlayerID + '> = ' + input.text);
                     break;
