@@ -155,7 +155,7 @@ export default class Controller extends Phaser.Scene{
                     {damage:8, fire_rate:4, fire_distance:130, upgrade_cost:5, upgrade_number:3},
                     {damage:10, fire_rate:5, fire_distance:160, upgrade_cost:5, upgrade_number:3},
                 ]},
-            "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay but lacks power against tougher foes.", level_stats:[
+            "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay.", level_stats:[
                     {damage:8, fire_rate:5, fire_distance:150},
                     {damage:12, fire_rate:6, fire_distance:180, upgrade_cost:5, upgrade_number:3},
                     {damage:16, fire_rate:8, fire_distance:210, upgrade_cost:5, upgrade_number:3},
@@ -541,9 +541,10 @@ export default class Controller extends Phaser.Scene{
 
         let description_string = part_info.description;
         let listed_stats = {'health':'Health', 'speed':'Speed', 'damage':'Damage', 'fire_rate':'Fire Rate', 'fire_distance':'Range'};
+        let stats_string = ""
         for (let stat of Object.keys(listed_stats)) {
             if (defined(item_stats[stat])) {
-                description_string += '\n'+listed_stats[stat]+': '+item_stats[stat];
+                stats_string += listed_stats[stat]+': '+item_stats[stat]+'\n';
             }
         }
         let button_text;
@@ -557,7 +558,7 @@ export default class Controller extends Phaser.Scene{
         let upgrade_enabled = false;
         if (this.player_inventory[item_name].level<this.parts_data[item_name].level_stats.length) {
             upgraded_stats = this.parts_data[item_name].level_stats[this.player_inventory[item_name].level]
-            upgrade_text = 'Upgrade - '+upgraded_stats.upgrade_cost;
+            upgrade_text = 'Upgrade-'+upgraded_stats.upgrade_cost;
             upgrade_enabled = true;
         }
 
@@ -565,11 +566,16 @@ export default class Controller extends Phaser.Scene{
             new Rectangle(this, container_rect.x+10, container_rect.y+115, container_rect.width-20, container_rect.height-125, RGBtoHEX([96,103,109]),{rounded_corners:5}),
             new Rectangle(this, container_rect.x+15, container_rect.y+120, container_rect.width-30, container_rect.height-135, RGBtoHEX([78,87,97]),{rounded_corners:5}),
 
-            new Text(this, container_rect.x+20, container_rect.y+120,
-                'Level '+this.player_inventory[item_name].level+' '+part_info.title,
-                {center:false, text_style: {fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
-            new Text(this, container_rect.x+20, container_rect.y+155, description_string, {center:false, text_style:
-                    {fontFamily:"Tahoma",color:'#111111',fontSize:20,wordWrap:{width:container_rect.width-40}}}),
+            new Text(this, container_rect.x+20, container_rect.y+120, part_info.title,
+                {center:false, text_style: {fontFamily:"Tahoma",color:'#111111',fontSize:25,fontStyle:"bold"}}),
+            new Text(this, container_rect.x+20, container_rect.y+150, 'Level '+this.player_inventory[item_name].level,
+                {center:false, text_style: {fontFamily:"Tahoma",color:'#0a0a0a',fontSize:22,fontStyle:"bold"}}),
+
+            new Text(this, container_rect.x+container_rect.width*0.4, container_rect.y+155, description_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width*0.6-10}}}),
+
+            new Text(this, container_rect.x+20, container_rect.y+180, stats_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width/2-40}}}),
 
             new Button(this, container_rect.x+20, container_rect.y+container_rect.height-60,
                 {text:button_text, width:140, height:40, texture:'equip_button', center:false,
