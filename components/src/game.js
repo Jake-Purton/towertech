@@ -117,6 +117,10 @@ export default class Game extends Phaser.Scene{
         this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:32, frameHeight:48});
         this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
         this.load.spritesheet('goocaster','/game_images/enemy_sprites/enemy/goocaster.png', {frameWidth:32, frameHeight:48});
+
+        // health bar
+        this.load.image('enemy_health_bar_back', '/game_images/UI/enemy_health_bar_back.png');
+        this.load.image('enemy_health_bar', '/game_images/UI/enemy_health_bar.png');
     }
     create() {
         this.init_server();

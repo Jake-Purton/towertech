@@ -11,6 +11,7 @@ class Weapon extends ProjectileShooter {
         properties.max_turn_speed = 200;
         properties.passive_turn_speed = 0;
         stats.range = 1000;
+        stats.auto_aim_stength = 0;
         super(scene, 0, 0, texture, projectile_class, properties);
         this.stats = new PartStats(stats);
 

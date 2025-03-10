@@ -35,29 +35,29 @@ export default class Controller extends Phaser.Scene{
         // constants
         this.tower_data = {
             "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:180},
+                    {cost:5, damage:1, fire_rate:2, range:180},
+                    {cost:5, damage:1, fire_rate:2, range:180},
                 ]},
             "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:10, range:180},
+                    {cost:5, damage:1, fire_rate:10, range:180},
+                    {cost:5, damage:1, fire_rate:10, range:180},
                 ]},
             "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:380},
+                    {cost:5, damage:1, fire_rate:2, range:380},
+                    {cost:5, damage:1, fire_rate:2, range:380},
                 ]},
             "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:280},
+                    {cost:5, damage:1, fire_rate:2, range:280},
+                    {cost:5, damage:1, fire_rate:2, range:280},
                 ]},
             "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
-                    {cost:5, damage:1, fire_rate:2, range:80},
+                    {cost:5, damage:1, fire_rate:2, range:180},
+                    {cost:5, damage:1, fire_rate:2, range:180},
+                    {cost:5, damage:1, fire_rate:2, range:280},
                 ]},
             "HealingTower":{title:"Healer", description:"its not a cannon", level_stats:[
                     {cost:5, damage:1, fire_rate:2, range:80},

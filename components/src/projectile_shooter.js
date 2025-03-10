@@ -53,7 +53,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         this.time_since_attacking += delta_time/this.scene.target_fps;
     }
     check_target(enemies) {
-        if (!this.stay_on_same_target || get_removed(this.target)) {
+        if (!this.stay_on_same_target || get_removed(this.target) || get_removed(this.target.scene)) {
             this.locate_target(enemies);
         } else {
             if (this.get_relative_pos(this.target).length()>this.range){
