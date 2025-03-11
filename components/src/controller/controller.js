@@ -181,7 +181,7 @@ export default class Controller extends Phaser.Scene{
         // player images
         // body
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
-        this.load.image('lightweight_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
         this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
         this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
 

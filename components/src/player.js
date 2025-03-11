@@ -149,6 +149,9 @@ export default class Player extends Phaser.GameObjects.Container{
             if (defined(this.leg_object)) {
                 this.leg_object.movement_animation(this.velocity);
             }
+            if (defined(this.body_object)) {
+                this.body_object.movement_animation(this.velocity);
+            }
             if (defined(this.weapon_object)) {
                 this.weapon_object.game_tick(delta_time);
                 if (this.key_inputs.Attack) {
@@ -188,7 +191,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.refresh_player_parts();
     }
     refresh_player_parts(){
-        if (typeof(this.body_object) !== 'undefined' && typeof(this.weapon_object) !== 'undefined' && typeof(this.leg_object) !== 'undefined') {
+        if (defined(this.body_object) && defined(this.weapon_object) && defined(this.leg_object)) {
             this.bringToTop(this.weapon_object);
             this.sendToBack(this.leg_object);
             this.bringToTop(this.name_text);
@@ -197,6 +200,10 @@ export default class Player extends Phaser.GameObjects.Container{
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
             this.refresh_stats();
 
+            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13);
+            if (defined(this.name_backing)) {
+                this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
+            }
         }
     }
     refresh_stats() {

@@ -31,6 +31,7 @@ class Weapon extends ProjectileShooter {
         this.set_weapon_direction(40);
     }
     set_scale(scale) {
+        console.log(this,scale*this.weapon_length/this.width);
         this.setScale(scale*this.weapon_length/this.width);
         this.set_weapon_direction(this.get_weapon_direction());
     }
@@ -53,13 +54,13 @@ class Weapon extends ProjectileShooter {
     set_weapon_direction(angle) {
         this.weapon_direction = angle;
         if (modulo(angle, 360) > 90 && modulo(angle, 360) < 270) {
-            this.setScale(1,-1);
+            this.setScale(this.scaleX,-this.scaleX);
         } else {
-            this.setScale(1,1);
+            this.setScale(this.scaleX);
         }
         this.setAngle(angle);
-        this.setPosition(this.x_offset+this.hold_distance*Math.cos(angle/180*Math.PI),
-                         this.y_offset+this.hold_distance*Math.sin(angle/180*Math.PI));
+        this.setPosition(this.x_offset+this.scaleX*this.hold_distance*Math.cos(angle/180*Math.PI),
+                         this.y_offset+this.scaleX*this.hold_distance*Math.sin(angle/180*Math.PI));
     }
     get_weapon_direction() {
         return this.weapon_direction;
