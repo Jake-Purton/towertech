@@ -3,20 +3,25 @@ const Vec = Phaser.Math.Vector2;
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from '../projectile.js';
 import {modulo } from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
+import {PartStats} from './part_stat_manager.js';
 
 class Weapon extends ProjectileShooter {
     constructor(scene, texture, projectile_class, {x_offset=0, y_offset=0, hold_distance=16, length=20,
-            auto_fire=true} = {}, properties){
+            stats} = {}, properties){
         properties.max_turn_speed = 200;
         properties.passive_turn_speed = 0;
+        stats.range = 1000;
+        properties.auto_aim_stength = 0;
         super(scene, 0, 0, texture, projectile_class, properties);
+        this.stats = new PartStats(stats);
 
         this.x_offset = x_offset;
         this.y_offset = y_offset;
         this.hold_distance = hold_distance;
 
         this.weapon_direction = 0;
-        this.auto_fire = auto_fire;
+        if (typeof(stats.auto_fire) === 'undefined') { stats.auto_fire = true }
+        this.auto_fire = stats.auto_fire;
         this.block_fire = false;
         this.auto_target = false;
 
@@ -26,6 +31,7 @@ class Weapon extends ProjectileShooter {
         this.set_weapon_direction(40);
     }
     set_scale(scale) {
+        console.log(this,scale*this.weapon_length/this.width);
         this.setScale(scale*this.weapon_length/this.width);
         this.set_weapon_direction(this.get_weapon_direction());
     }
@@ -48,13 +54,13 @@ class Weapon extends ProjectileShooter {
     set_weapon_direction(angle) {
         this.weapon_direction = angle;
         if (modulo(angle, 360) > 90 && modulo(angle, 360) < 270) {
-            this.setScale(1,-1);
+            this.setScale(this.scaleX,-this.scaleX);
         } else {
-            this.setScale(1,1);
+            this.setScale(this.scaleX);
         }
         this.setAngle(angle);
-        this.setPosition(this.x_offset+this.hold_distance*Math.cos(angle/180*Math.PI),
-                         this.y_offset+this.hold_distance*Math.sin(angle/180*Math.PI));
+        this.setPosition(this.x_offset+this.scaleX*this.hold_distance*Math.cos(angle/180*Math.PI),
+                         this.y_offset+this.scaleX*this.hold_distance*Math.sin(angle/180*Math.PI));
     }
     get_weapon_direction() {
         return this.weapon_direction;
@@ -73,15 +79,30 @@ class Weapon extends ProjectileShooter {
         return this.parentContainer;
     }
 }
-class DefaultWeapon extends Weapon{
-    constructor(scene) {
-        super(scene, 'default_weapon', CannonBall, {auto_fire:false}, {range:1000, projectile_auto_aim_strength:0});
+class PistolWeapon extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'pistol_weapon', CannonBall, {stats:stats}, stats);
     }
 }
-class PistolWeapon extends Weapon{
-    constructor(scene) {
-        super(scene, 'pistol_weapon', CannonBall, {auto_fire:true}, {damage:100 ,range:1000, projectile_auto_aim_strength:0});
+class PlasmaBlaster extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'plasma_blaster', CannonBall, {stats:stats}, stats);
+    }
+}
+class RocketLauncher extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'rocket_launcher', CannonBall, {stats:stats}, stats);
+    }
+}
+class TeslaRifle extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'tesla_rifle', CannonBall, {stats:stats}, stats);
+    }
+}
+class LaserCannon extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'laser_cannon', CannonBall, {stats:stats}, stats);
     }
 }
 
-export {DefaultWeapon, PistolWeapon };
+export {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon };

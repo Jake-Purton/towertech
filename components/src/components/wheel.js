@@ -1,9 +1,11 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
+import {PartStats} from './part_stat_manager.js';
 
 class Wheel extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, texture, {y_offset=16, width=25} = {}){
+    constructor(scene, texture, {y_offset=16, width=25, stats} = {}){
         super(scene, 0, y_offset, texture);
+        this.stats = new PartStats(stats);
         this.rotate = 0;
 
         this.wheel_width = width;
@@ -23,10 +25,25 @@ class Wheel extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
-class DefaultWheel extends Wheel{
-    constructor(scene) {
-        super(scene, 'wheel', {width:25});
+class BasicWheel extends Wheel{
+    constructor(scene, stats={}) {
+        super(scene, 'basic_wheel', {width:25, stats:stats});
+    }
+}
+class SpeedsterWheel extends Wheel{
+    constructor(scene, stats={}) {
+        super(scene, 'speedster_wheel', {width:25, stats:stats});
+    }
+}
+class FloatingWheel extends Wheel{
+    constructor(scene, stats={}) {
+        super(scene, 'floating_wheel', {width:25, stats:stats});
+    }
+}
+class TankTreads extends Wheel{
+    constructor(scene, stats={}) {
+        super(scene, 'tank_treads', {width:25, stats:stats});
     }
 }
 
-export {DefaultWheel };
+export {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads };

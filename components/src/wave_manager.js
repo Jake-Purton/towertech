@@ -28,7 +28,7 @@ export default class WaveManager
         this.game = game;
     }
 
-    load_waves(jsonString)
+    load_waves(parsedJson)
     {
 
         if (this.waveData != {})
@@ -36,7 +36,7 @@ export default class WaveManager
             this.reset_waves();
         }
 
-        let parsedJson = JSON.parse(jsonString);
+        // let parsedJson = JSON.parse(jsonString);
 
 
         // do stuff

@@ -29,16 +29,31 @@ export default class Game extends Phaser.Scene{
     }
     preload() {
         //// player part images
-        this.load.image('default_body','/game_images/player_sprites/bodies/default_body.png');
+        // body
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
+        this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
+        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
 
-        this.load.image('default_leg','/game_images/player_sprites/legs/default_leg.png');
-        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png')
-        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png')
-        this.load.image('wheel','/game_images/player_sprites/legs/wheel.png');
+        // legs
+        this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('armored_walker','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('spider_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
-        this.load.image('default_weapon','/game_images/player_sprites/weapons/default_weapon.png');
+        // wheels
+        this.load.image('basic_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('floating_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
+
+        // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('laser_cannon','/game_images/player_sprites/weapons/pistol.png');
 
         //// background
         this.load.image('background','/game_images/background.png');
@@ -94,14 +109,18 @@ export default class Game extends Phaser.Scene{
         this.load.image('goo_melee','/game_images/projectiles/goo_melee.png');
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goocrab','/game_images/enemy_sprites/enemy/goocrab.png', {frameWidth:30, frameHeight:13});
-        this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:30, frameHeight:13});
-        this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:48, frameHeight:19});
         this.load.spritesheet('goober','/game_images/enemy_sprites/enemy/goober.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:48, frameHeight:48});
         this.load.spritesheet('gooshifter','/game_images/enemy_sprites/enemy/gooshifter.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:48, frameHeight:48});
+        this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:48, frameHeight:48});
         this.load.spritesheet('goocaster','/game_images/enemy_sprites/enemy/goocaster.png', {frameWidth:32, frameHeight:48});
+
+        // health bar
+        this.load.image('enemy_health_bar_back', '/game_images/UI/enemy_health_bar_back.png');
+        this.load.image('enemy_health_bar', '/game_images/UI/enemy_health_bar.png');
     }
     create() {
         this.init_server();
@@ -127,7 +146,7 @@ export default class Game extends Phaser.Scene{
         });
         this.anims.create({
             key: 'goosplits_walk',
-            frames: this.anims.generateFrameNumbers('goosplits', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('goosplits', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
@@ -145,19 +164,19 @@ export default class Game extends Phaser.Scene{
         });
         this.anims.create({
             key: 'gooslinger_walk',
-            frames: this.anims.generateFrameNumbers('gooslinger', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('gooslinger', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
         this.anims.create({
             key: 'goobouncer_walk',
-            frames: this.anims.generateFrameNumbers('goobouncer', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('goobouncer', { start: 0, end: 5 }),
             frameRate: 8,
             repeat: -1
         });
         this.anims.create({
             key: 'goosplitter_walk',
-            frames: this.anims.generateFrameNumbers('goosplitter', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('goosplitter', { start: 0, end: 5 }),
             frameRate: 8,
             repeat: -1
         });
@@ -169,7 +188,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
+        // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // create Level (map info and enemy path)
         this.level = new Level(this, 'main', this.scale.width, this.scale.height);
@@ -295,31 +314,33 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        switch (input.type) {
-            case 'Constructor':
-                if (!(input.PlayerID in this.players)){
-                    this.players[input.PlayerID] = new Player(
-                        this, 100*Object.keys(this.players).length, 100, input.PlayerID, {username:input.username});
-                }
-                break;
-            case 'Key_Input':
-                this.players[input.PlayerID].key_input(input);
-                break;
-            case 'Attack_Input':
-                this.players[input.PlayerID].attack_input(input);
-                break;
-            case 'Joystick_Input':
-                this.players[input.PlayerID].joystick_input(input);
-                break;
-            case 'Create_Tower':
-                this.players[input.PlayerID].new_tower_input(input);
-                break;
-            case 'Equip_Part':
-                this.players[input.PlayerID].equip_part(input.item_name);
-                break;
-            case 'Print':
-                console.log('MESSAGE FROM CONTROLLER <'+input.PlayerID+'> = '+input.text);
-                break;
+        if (Object.keys(this.players).includes(input.PlayerID)) {
+            switch (input.type) {
+                case 'Key_Input':
+                    this.players[input.PlayerID].key_input(input);
+                    break;
+                case 'Attack_Input':
+                    this.players[input.PlayerID].attack_input(input);
+                    break;
+                case 'Joystick_Input':
+                    this.players[input.PlayerID].joystick_input(input);
+                    break;
+                case 'Create_Tower':
+                    this.players[input.PlayerID].new_tower_input(input);
+                    break;
+                case 'Equip_Part':
+                    this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);
+                    break;
+                case 'Upgrade_Part':
+                    this.players[input.PlayerID].upgrade_part(input.item_name, input.item_stats);
+                    break;
+                case 'Print':
+                    console.log('MESSAGE FROM CONTROLLER <' + input.PlayerID + '> = ' + input.text);
+                    break;
+            }
+        } else if (input.type === "Constructor") {
+            this.players[input.PlayerID] = new Player(
+                this, 100 * Object.keys(this.players).length, 100, input.PlayerID, {username: input.username});
         }
     }
 

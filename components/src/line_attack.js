@@ -8,6 +8,7 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
         super(scene, 0, 0, texture);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setDepth(5);
         LineAttack.unique_id_tracker+=1
 
         this.base_texture = texture;

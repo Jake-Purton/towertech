@@ -9,6 +9,7 @@ export default class Goober extends Enemy{
         super(scene, x, y, 'goober', path,
             {move_speed:move_speed, health:health,
              coin_value:coin_value, melee_damage:melee_damage,
-             melee_attack_speed:melee_attack_speed});
+             melee_attack_speed:melee_attack_speed,
+             loot_table:{drop_chance:0.2,drops:{'plasma_blaster':3, 'tank_treads':1}}});
     }
 }
