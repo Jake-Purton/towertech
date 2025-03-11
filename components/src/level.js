@@ -47,8 +47,8 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
         let wave_data = {
             "waves":[
                 {"type":"wave", "length":30, "spawnDelay":1,
-                "enemyList":["goolime", "goober","gooshifter"],
-                "enemyWeights":[5,5,5], "enemyCount": 30}
+                "enemyList":["goober", "goobouncer", "goocaster", "goocrab", "goolime", "gooshifter", "gooslinger", "goosniper", "goosplitter"],//, "goowalker", "goodropper", "goofly"],
+                "enemyWeights":[5,5,5,5,5,5,5,5,5], "enemyCount": 30}
             ],
             "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}
 
