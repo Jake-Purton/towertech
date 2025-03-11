@@ -290,7 +290,7 @@ export default class Controller extends Phaser.Scene{
                 this.player_health = input.health;
                 this.player_max_health = input.max_health;
                 if (defined(this.health_ui_text)) {
-                    this.health_ui_text.setText('Health: '+Math.ceil(this.player_health*10)/10+'/'+this.player_max_health);
+                    this.health_ui_text.setText('Health: '+Math.round(this.player_health)+'/'+this.player_max_health);
                     this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
                 }
                 break;
@@ -357,7 +357,7 @@ export default class Controller extends Phaser.Scene{
         this.ui_objects.push(this.coins_ui_text);
 
         // Player Health
-        this.health_ui_text = new Text(this, this.screen_width-115, 40, 'Health: '+this.player_health+'/'+this.player_max_health, {center:true}).setDepth(6);
+        this.health_ui_text = new Text(this, this.screen_width-115, 40, 'Health: '+Math.round(this.player_health)+'/'+this.player_max_health, {center:true}).setDepth(6);
         this.health_ui_bar = this.add.sprite(this.screen_width-218, 62, 'player_health_bar').setDepth(7).setDisplayOrigin(0,0);
         this.ui_objects.push(this.health_ui_text, this.health_ui_bar);
 
