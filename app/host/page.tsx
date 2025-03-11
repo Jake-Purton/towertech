@@ -18,7 +18,7 @@ const HostPage = () => {
     // Get IP address
     const getIPAddress = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/getip');
+        const response = await fetch('/api/getip');
         const data = await response.json();
         setIpAddress(data.ip);
       } catch (error) {
