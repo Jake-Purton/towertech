@@ -12,9 +12,11 @@ export async function GET(request: Request) {
         SELECT 
           gameleaderboard.gameid,
           gameleaderboard.score,
+          gameleaderboard.waves,
           playeringame.userid,
           playeringame.kills,
           playeringame.playerscore,
+          playeringame.username,
           users.name
         FROM 
           gameleaderboard
@@ -32,9 +34,11 @@ export async function GET(request: Request) {
         SELECT 
           gameleaderboard.gameid,
           gameleaderboard.score,
+          gameleaderboard.waves,
           playeringame.userid,
           playeringame.kills,
           playeringame.playerscore,
+          playeringame.username,
           users.name
         FROM 
           gameleaderboard
@@ -53,13 +57,15 @@ export async function GET(request: Request) {
         userid: row.userid,
         name: row.name,
         kills: row.kills,
-        playerscore: row.playerscore
+        playerscore: row.playerscore,
+        username: row.username,
       };
 
       if (gameIndex === -1) {
         acc.push({
           gameid: row.gameid,
           score: row.score,
+          waves: row.waves, // Include waves in the response
           players: [playerData]
         });
       } else {

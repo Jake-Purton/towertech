@@ -7,17 +7,19 @@ interface Player {
   name: string;
   kills: number;
   playerscore: number;
+  username: string;
 }
 
 interface Game {
   gameid: number;
   score: number;
+  waves: number;
   players: Player[];
 }
 
 export default function EndGamePage() {
   const [score, setScore] = useState(0);
-  // const [waveScore, setWaveScore] = useState(0);
+  const [waveScore, setWaveScore] = useState(0);
   const [gameData, setGameData] = useState<Game | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,7 +31,10 @@ export default function EndGamePage() {
         const res = await fetch(`/api/gameleaderboard?gameid=${gameid}`);
         const data = await res.json();
         setGameData(data);
+        console.log(data)
         setScore(data.score);
+        setWaveScore(data.waves)
+
         // setWaveScore(data.players.length); // Assuming waveScore is the number of players
       } catch (error) {
         console.error("Failed to fetch game data:", error);
@@ -55,7 +60,20 @@ export default function EndGamePage() {
         <div className="space-y-4">
           <h2 className="text-xl text-orange-400 text-center mb-4">🌟 Legends</h2>
           <div className="space-y-2">
-            {gameData?.players.slice(0, 3).map((player, index) => (
+            {gameData?.players.length === 0 && (
+              <div className="text-center text-gray-400">No players to display</div>
+            )}
+            {gameData?.players.map((player, index) => (
+              <div 
+                key={`${player.userid}-${index}`}
+                className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
+              >
+                <div className="text-orange-400 text-sm">#{index + 1}</div>
+                <div className="text-lg font-bold">{player.username}</div>
+                <div className="text-sm text-orange-300">{player.playerscore} pts</div>
+              </div>
+            ))}
+            {/* {gameData?.players.slice(0, 3).map((player, index) => (
               <div 
                 key={`${player.userid}-${index}`}
                 className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
@@ -64,7 +82,7 @@ export default function EndGamePage() {
                 <div className="text-lg font-bold">{player.name}</div>
                 <div className="text-sm text-orange-300">{player.playerscore} pts</div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
@@ -77,16 +95,16 @@ export default function EndGamePage() {
           </h1>
           
           {/* Scores Section */}
-          {/* <div className="grid grid-cols-2 gap-6 py-6"> */}
+          <div className="grid grid-cols-2 gap-6 py-6">
             <div className="bg-gray-700/50 p-6 rounded-xl border border-orange-500/30">
               <p className="text-sm text-orange-300 mb-2">Total Score</p>
               <p className="text-4xl font-bold text-orange-400">{score}</p>
             </div>
-            {/* <div className="bg-gray-700/50 p-6 rounded-xl border border-orange-500/30">
+            <div className="bg-gray-700/50 p-6 rounded-xl border border-orange-500/30">
               <p className="text-sm text-orange-300 mb-2">Waves Survived</p>
               <p className="text-4xl font-bold text-orange-400">{waveScore}</p>
-            </div> */}
-          {/* </div> */}
+            </div>
+          </div>
 
           {/* Action Buttons */}
           <div className="space-y-4">
@@ -123,7 +141,7 @@ export default function EndGamePage() {
                 className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
               >
                 <span className="text-orange-400 w-8">#{index + 1}</span>
-                <span className="flex-1">{player.name}</span>
+                <span className="flex-1">{player.username}</span>
                 <span className="font-bold text-orange-300">{player.playerscore}</span>
               </div>
             ))}

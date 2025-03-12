@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { socket } from "../app/src/socket";
 import Controller from './src/controller/controller.js';
 import CreateTowerMenu from "./src/controller/create_tower_menu.js";
 
 const GameController = () => {
   const gameRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -12,6 +14,8 @@ const GameController = () => {
 
         if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
+        socket.on('end_game_client', end_game)
+
 
         let mobile_device = /Mobi|Android/i.test(navigator.userAgent);
 
@@ -52,8 +56,17 @@ const GameController = () => {
 
         return () => {
           socket.off("output_from_game_to_client");
+          socket.off('end_game_client')
           game.destroy(true);
         };
+
+        function end_game (data) {
+
+          console.log('here');
+          router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
+          // socket.leave(data.room)
+          game.destroy()
+        }
 
         function input_data(data) {
           if (data['PlayerID'] === socket.id) {

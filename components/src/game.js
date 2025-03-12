@@ -109,13 +109,13 @@ export default class Game extends Phaser.Scene{
         this.load.image('goo_melee','/game_images/projectiles/goo_melee.png');
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
         this.load.spritesheet('goocrab','/game_images/enemy_sprites/enemy/goocrab.png', {frameWidth:30, frameHeight:13});
-        this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:30, frameHeight:13});
-        this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:48, frameHeight:19});
         this.load.spritesheet('goober','/game_images/enemy_sprites/enemy/goober.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:48, frameHeight:48});
         this.load.spritesheet('gooshifter','/game_images/enemy_sprites/enemy/gooshifter.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:48, frameHeight:48});
+        this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:48, frameHeight:48});
         this.load.spritesheet('goocaster','/game_images/enemy_sprites/enemy/goocaster.png', {frameWidth:32, frameHeight:48});
 
         // health bar
@@ -146,7 +146,7 @@ export default class Game extends Phaser.Scene{
         });
         this.anims.create({
             key: 'goosplits_walk',
-            frames: this.anims.generateFrameNumbers('goosplits', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('goosplits', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
@@ -164,19 +164,19 @@ export default class Game extends Phaser.Scene{
         });
         this.anims.create({
             key: 'gooslinger_walk',
-            frames: this.anims.generateFrameNumbers('gooslinger', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('gooslinger', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
         this.anims.create({
             key: 'goobouncer_walk',
-            frames: this.anims.generateFrameNumbers('goobouncer', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('goobouncer', { start: 0, end: 5 }),
             frameRate: 8,
             repeat: -1
         });
         this.anims.create({
             key: 'goosplitter_walk',
-            frames: this.anims.generateFrameNumbers('goosplitter', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('goosplitter', { start: 0, end: 5 }),
             frameRate: 8,
             repeat: -1
         });
@@ -308,6 +308,7 @@ export default class Game extends Phaser.Scene{
         let game_data = {
             game_score: this.score, waves_survived: this.level.wave_manager.wave_index, timestamp: new Date(),
             player_data: player_data}
+
         this.end_game_output(game_data);
 
         this.game_over = true;
