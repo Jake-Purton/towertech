@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import Entity from './entity.js';
 import {GooBlood, FireParticle} from './particle.js';
+import {defined} from "./utiles.js";
 const Vec = Phaser.Math.Vector2;
 
 class Projectile extends Entity {
@@ -76,6 +77,9 @@ class Projectile extends Entity {
     deal_damage(entity) {
         this.pierced_enemies.push(entity);
         this.pierce_count -= 1;
+        if (this.source !== null && defined(this.source.damage_dealt)) {
+            this.source.damage_dealt += 1;
+        }
         entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.knockback, this.source);
         this.apply_inflict_effect(entity);
     }

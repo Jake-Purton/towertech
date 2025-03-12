@@ -300,9 +300,14 @@ export default class Game extends Phaser.Scene{
         // end the game
         let player_data = [];
         for (let player_id of Object.keys(this.players)) {
-            player_data.push({player_id: player_id, score: this.players[player_id].player_score, kills: this.players[player_id].kill_count})
+            player_data.push({
+                player_id: player_id, score: this.players[player_id].player_score,
+                kills: this.players[player_id].kill_count, towers_placed: this.players[player_id].towers_placed,
+                coins_spent: this.players[player_id].coins_spent})
         }
-        let game_data = {game_score: this.score, player_data: player_data}
+        let game_data = {
+            game_score: this.score, wave_reached: this.level.wave_manager.wave_index, timestamp: new Date(),
+            player_data: player_data}
         this.end_game_output(game_data);
 
         this.game_over = true;

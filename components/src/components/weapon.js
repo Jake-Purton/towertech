@@ -31,7 +31,6 @@ class Weapon extends ProjectileShooter {
         this.set_weapon_direction(40);
     }
     set_scale(scale) {
-        console.log(this,scale*this.weapon_length/this.width);
         this.setScale(scale*this.weapon_length/this.width);
         this.set_weapon_direction(this.get_weapon_direction());
     }

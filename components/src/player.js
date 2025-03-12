@@ -60,8 +60,15 @@ export default class Player extends Phaser.GameObjects.Container{
 
         // game stats
         this.coins = 0;
-        this.kill_count = 0;
         this.player_score = 0;
+        this.towers_placed = 0;
+        this.kill_count = 0;
+        this.damage_dealt = 0;
+        this.damage_taken = 0;
+        this.health_healed = 0;
+        this.coins_spent = 0;
+        this.shots_fired = 0;
+        this.death_count = 0;
         this.inventory = {};
       
         // constants
@@ -217,6 +224,7 @@ export default class Player extends Phaser.GameObjects.Container{
         return (this.health<=0)
     }
     die() {
+        this.death_count += 1;
         this.dead = true;
         this.visible = false;
         this.set_coins(0);
@@ -291,6 +299,7 @@ export default class Player extends Phaser.GameObjects.Container{
                 if (data.Tower_Stats.cost <= this.coins) {
                     new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
                     this.set_coins(this.coins - data.Tower_Stats.cost);
+                    this.towers_placed += 1;
                 }
             }
             this.prev_tower_button_direction = data.Direction;
@@ -301,6 +310,7 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     pickup_item(dropped_item) {
         this.add_to_inventory(dropped_item);
+        this.items_picked_up += 1;
         // this.set_part(dropped_item.item_name, dropped_item.item_type);
     }
     set_part(item_name, item_type, stats={}) {
@@ -317,16 +327,25 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     set_coins(coins) {
+        if (coins < this.coins) {
+            this.coins_spent += this.coins-coins;
+        }
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
     }
     set_health(health, max_health) {
         if (health !== this.health || max_health !== this.max_health || true) {
-            // console.log('set health', health, max_health);
             if (health > max_health) {
                 health = max_health;
             } else if (health < 0) {
                 health = 0;
+            }
+            if (max_health === this.max_health) {
+                if (health < this.health) {
+                    this.damage_taken += this.health-health;
+                } else {
+                    this.health_healed += health-this.health;
+                }
             }
             this.health = health;
             this.max_health = max_health;
