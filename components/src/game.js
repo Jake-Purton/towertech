@@ -305,9 +305,12 @@ export default class Game extends Phaser.Scene{
                 kills: this.players[player_id].kill_count, towers_placed: this.players[player_id].towers_placed,
                 coins_spent: this.players[player_id].coins_spent, username: this.players[player_id].username})
         }
+        let date = new Date().toDateString().split(" ");
+        date = date[1]+" "+date[2]+" "+date[3];
+        let time = new Date().toTimeString().split(" ")[0];
         let game_data = {
-            game_score: this.score, waves_survived: this.level.wave_manager.wave_index, timestamp: new Date(),
-            player_data: player_data}
+            game_score: this.score, waves_survived: this.level.wave_manager.wave_index,
+            game_date: date, game_time: time, player_data: player_data}
 
         this.end_game_output(game_data);
 
