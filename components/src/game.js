@@ -55,6 +55,10 @@ export default class Game extends Phaser.Scene{
         this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
         this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
 
+        // weapon projectiles
+        this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
+
+
         //// background
         this.load.image('background','/game_images/background.png');
 
@@ -65,6 +69,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('speed_particle','/game_images/particles/Speed.png');
         this.load.image('slow_particle','/game_images/particles/Slow.png');
         this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
+        this.load.image('smoke_particle','/game_images/particles/smoke.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
@@ -188,7 +193,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // game objects
-        // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
+        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // create Level (map info and enemy path)
         this.level = new Level(this, 'main', this.scale.width, this.scale.height);

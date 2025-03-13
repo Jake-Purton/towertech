@@ -358,6 +358,9 @@ export default class Player extends Phaser.GameObjects.Container{
             this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
         this.save_inventory()
+        if (this.player_id === "TempPlayerID") {
+            this.equip_part(item.item_name, {health:1000, speed: 10, damage:1000, target_distance:300})
+        }
     }
     equip_part(item_name, stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
