@@ -188,8 +188,8 @@ export default class Controller extends Phaser.Scene{
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('armored_walker','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('spider_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
+        this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
         this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
         // wheels
