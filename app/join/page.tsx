@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { JoinRoomMessage } from "../src/messages";
 import { useRouter, useSearchParams } from 'next/navigation';
-import { printTreeView } from "next/dist/build/utils";
 
 async function verifyToken(token: string) {
     try {
@@ -65,6 +64,7 @@ const JoinPage: React.FC = () => {
 
         function onRoomErr(err: string) {
             setMessage(err);
+            setIsSubmitted(false);
         }
 
         function onSuccess() {
