@@ -31,7 +31,6 @@ class Weapon extends ProjectileShooter {
         this.set_weapon_direction(40);
     }
     set_scale(scale) {
-        console.log(this,scale*this.weapon_length/this.width);
         this.setScale(scale*this.weapon_length/this.width);
         this.set_weapon_direction(this.get_weapon_direction());
     }
@@ -72,8 +71,8 @@ class Weapon extends ProjectileShooter {
         return new Vec(enemy.x-this.parentContainer.x, enemy.y-this.parentContainer.y);
     }
     get_projectile_source_position() {
-        return new Vec(this.parentContainer.x + this.width*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
-            this.parentContainer.y + this.width*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
+        return new Vec(this.parentContainer.x + this.displayWidth*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
+            this.parentContainer.y + this.displayWidth*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
     }
     get_projectile_source() {
         return this.parentContainer;
@@ -81,27 +80,27 @@ class Weapon extends ProjectileShooter {
 }
 class PistolWeapon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'pistol_weapon', CannonBall, {stats:stats}, stats);
+        super(scene, 'pistol_weapon', CannonBall, {stats:stats, length:20}, stats);
     }
 }
 class PlasmaBlaster extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'plasma_blaster', CannonBall, {stats:stats}, stats);
+        super(scene, 'plasma_blaster', CannonBall, {stats:stats, length:30, hold_distance:40}, stats);
     }
 }
 class RocketLauncher extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'rocket_launcher', CannonBall, {stats:stats}, stats);
+        super(scene, 'rocket_launcher', CannonBall, {stats:stats, length:50, hold_distance:30}, stats);
     }
 }
 class TeslaRifle extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'tesla_rifle', CannonBall, {stats:stats}, stats);
+        super(scene, 'tesla_rifle', CannonBall, {stats:stats, length:30, hold_distance:60}, stats);
     }
 }
 class LaserCannon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'laser_cannon', CannonBall, {stats:stats}, stats);
+        super(scene, 'laser_cannon', CannonBall, {stats:stats, length:40, hold_distance:60}, stats);
     }
 }
 

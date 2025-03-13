@@ -122,6 +122,13 @@ class FireProjectile extends Projectile {
         }
     }
 }
+class Rocket extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+}
+
 class EffectAOE extends Projectile {
     constructor(scene, x, y, team, effect, radius, base_half_width) {
         super(scene, x, y, '', 0, 0, team,

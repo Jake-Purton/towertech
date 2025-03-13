@@ -50,10 +50,10 @@ export default class Game extends Phaser.Scene{
 
         // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('laser_cannon','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/plasma_blaster.png');
+        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/rocket_launcher.png');
+        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
+        this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
 
         //// background
         this.load.image('background','/game_images/background.png');
