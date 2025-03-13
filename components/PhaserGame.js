@@ -9,14 +9,14 @@ const PhaserGame = () => {
 
   useEffect(() => {
 
-    socket.on('updateUsers', (userList) => {
-      if (userList.length === 0) {
-        // COMMENT THE BELOW LINE OUT IF YOU DONT WANT TO GET KICKED OUT OFF THE PAGE
-        router.push('/join/room')
-      }
-    });
+    // socket.on('updateUsers', (userList) => {
+    //   if (userList.length === 0) {
+    //     // COMMENT THE BELOW LINE OUT IF YOU DONT WANT TO GET KICKED OUT OFF THE PAGE
+    //     router.push('/join/room')
+    //   }
+    // });
 
-    socket.emit('getUsers');
+    // socket.emit('getUsers');
 
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
