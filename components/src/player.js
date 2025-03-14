@@ -382,15 +382,26 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     upgrade_part(item_name, new_stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
-            if (this.inventory[item_name].count >= new_stats.upgrade_number && this.coins >= new_stats.upgrade_cost) {
-                this.inventory[item_name].count -= new_stats.upgrade_number;
-                this.inventory[item_name].level += 1;
-                this.set_coins(this.coins - new_stats.upgrade_cost)
-                if (this.inventory[item_name].equipped) {
-                    this.equip_part(item_name, new_stats);
+            if (this.inventory[item_name].count >= new_stats.upgrade_number) {
+                if (this.coins >= new_stats.upgrade_cost) {
+                    this.inventory[item_name].count -= new_stats.upgrade_number;
+                    this.inventory[item_name].level += 1;
+                    this.set_coins(this.coins - new_stats.upgrade_cost)
+                    if (this.inventory[item_name].equipped) {
+                        this.equip_part(item_name, new_stats);
+                    } else {
+                        this.save_inventory();
+                    }
                 } else {
-                    this.save_inventory();
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this upgrade!"})
                 }
+            } else {
+                let diff = new_stats.upgrade_number - this.inventory[item_name].count
+                let item_output = item_name.replace("_", " ")
+                if (diff > 1) {
+                    item_output += "'s"
+                }
+                this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You need "+diff+" more "+item_output+" for this upgrade!"})
             }
         }
     }
