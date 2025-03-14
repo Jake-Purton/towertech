@@ -291,7 +291,14 @@ export default class Player extends Phaser.GameObjects.Container{
                 if (data.Tower_Stats.cost <= this.coins) {
                     if (!this.scene.level.check_path_collision(this.x, this.y, 30)) {
                         new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
-                        this.set_coins(this.coins - data.Tower_Stats.cost);
+                        if (new_tower.get_overlap_other_towers()) {
+                            new_tower.destroy()
+                            new_tower = null
+                            this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place towers on top of each other!"})
+                        } else {
+                            // buy the tower
+                            this.set_coins(this.coins - data.Tower_Stats.cost);
+                        }
                     } else {
                         this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place a tower on the path!"})
                     }
