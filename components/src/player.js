@@ -72,7 +72,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.pickup_range = 20;
 
         // aliveness
-        this.health = 1000;
+        this.health = 30;
         this.max_health = this.health;
         this.passive_healing_timer = 1;
         this.passive_healing_hit_timer = 3;
@@ -332,6 +332,7 @@ export default class Player extends Phaser.GameObjects.Container{
     set_coins(coins) {
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+        this.scene.level.player_info_display.update_list_text()
     }
     set_health(health, max_health) {
         if (health !== this.health || max_health !== this.max_health || true) {
@@ -349,6 +350,7 @@ export default class Player extends Phaser.GameObjects.Container{
                     health: this.health,
                     max_health: this.max_health
                 });
+                this.scene.level.player_info_display.update_list_text()
             }
         }
     }

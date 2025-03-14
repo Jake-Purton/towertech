@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import WaveManager from "./wave_manager.js";
+import PlayerInfoDisplay from "./ui_widgets/player_info_display.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Level extends Phaser.Physics.Arcade.Sprite {
@@ -44,6 +45,10 @@ constructor(scene, map_name, screen_width, screen_height) {
 
         this.setScale(this.texture_width/this.width, this.texture_height/this.height);
         this.setPosition(this.texture_width/2, this.texture_height/2);
+
+        // game ui
+        this.player_info_display = new PlayerInfoDisplay(scene, this.texture_width, 0)
+
 
         // wave stuf
         this.current_wave = null;

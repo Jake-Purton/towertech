@@ -194,11 +194,11 @@ export default class Game extends Phaser.Scene{
             repeat: -1
         });
 
-        // game objects
-        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
-
         // create Level (map info and enemy path)
         this.level = new Level(this, 'level 2', this.scale.width, this.scale.height);
+
+        // game objects
+        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
