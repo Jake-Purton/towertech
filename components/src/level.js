@@ -5,11 +5,11 @@ const Vec = Phaser.Math.Vector2;
 export default class Level extends Phaser.Physics.Arcade.Sprite {
     static map_data = {
         // 'original': {map_texture: '', enemy_path:[[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]},
-        'main': {map_texture:'background', width:800, height:800, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]},
-        'level 2': {map_texture:'background_2', width:1500, height:750, enemy_path:[
+        'main': {map_texture:'background', width:800, height:800, path_radius:50, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]},
+        'level 2': {map_texture:'background_2', width:1500, height:750, path_radius:50 ,enemy_path:[
             [0.06,0],[0.06,0.344, 0.03],[0.23,0.344,0.03],[0.23,0.14,0.03],[0.44,0.14,0.03],[0.44,0.56,0.03],
             [0.11,0.56,0.03],[0.11,0.84,0.03],[0.61,0.84,0.03],[0.61,0.2,0.03],[0.73,0.2,0.03],[0.73,0.79,0.03],[0.88,0.79,0.03],[0.88,0.47]]},
-        'level 3': {map_texture:'background_3', width:1500, height:750, enemy_path:[]}}
+        'level 3': {map_texture:'background_3', width:1500, height:750, path_radius:50, enemy_path:[]}}
 
 constructor(scene, map_name, screen_width, screen_height) {
         let info = Level.map_data[map_name];
@@ -38,6 +38,7 @@ constructor(scene, map_name, screen_width, screen_height) {
         this.scene.cameras.main.setScroll((this.texture_width-this.display_width)/2,(this.texture_height-this.display_height)/2);
         this.scene.cameras.main.setViewport((screen_width-this.display_width)/2, (screen_height-this.display_height)/2, this.display_width, this.display_height);
 
+        this.path_radius = info.path_radius;
         this.enemy_path = this.load_path(info.enemy_path);
         this.depth = -10;
 
@@ -96,5 +97,14 @@ constructor(scene, map_name, screen_width, screen_height) {
         // path.draw(graphics);
 
         return path
+    }
+    check_path_collision(x, y, radius, accuracy=300) {
+        let points = this.enemy_path.getPoints(accuracy)
+        for (let p of points) {
+            if (Phaser.Math.Distance.Between(x, y, p.x, p.y) < this.path_radius) {
+                return true
+            }
+        }
+        return false
     }
 }

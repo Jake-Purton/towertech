@@ -301,6 +301,9 @@ export default class Controller extends Phaser.Scene{
                     console.log('no part data found when equipping item: ', input)
                 }
                 break
+            case 'Prompt_User':
+                this.create_prompt_text(input.prompt);
+                break;
             default:
                 console.log('unused input received: ',input)
         }
@@ -597,7 +600,18 @@ export default class Controller extends Phaser.Scene{
 
         ]
     }
-
+    create_prompt_text(text) {
+        let text_obj = this.add.text(this.screen_width/2, this.screen_height/2, text,
+            {fontSize: 20, fontFamily:"Tahoma", fontStyle:"bold",align:"center",
+                color:'#b11', wordWrap:{width:200}})
+        let rect = new Rectangle(this, text_obj.x-10-text_obj.width/2, text_obj.y-10-text_obj.height/2,
+            text_obj.width+20, text_obj.height+20, RGBtoHEX([30,10,10]),{rounded_corners:10}).setDepth(10)
+        text_obj.setOrigin(0.5,0.5).setDepth(10.1);
+        this.time.delayedCall(3000, () => {
+            text_obj.destroy()
+            rect.destroy()
+        }, [], this);
+    }
 
     destroy_ui_list(ui_list) {
         if (typeof(ui_list) !== 'undefined') {
