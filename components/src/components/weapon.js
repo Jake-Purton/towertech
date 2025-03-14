@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import {CannonBall, Rocket, Bullet, FireProjectile, EffectAOE } from '../projectile.js';
+import {CannonBall, Rocket, Bullet, PlasmaShot, FireProjectile, EffectAOE } from '../projectile.js';
 import {modulo } from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
 import {PartStats} from './part_stat_manager.js';
@@ -84,7 +84,10 @@ class PistolWeapon extends Weapon{
 }
 class PlasmaBlaster extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'plasma_blaster', CannonBall, {stats:stats, length:30, hold_distance:40}, stats);
+        super(scene, 'plasma_blaster', PlasmaShot, {stats:stats, length:30, hold_distance:40}, stats);
+    }
+    get_projectile_texture_name() {
+        return "plasma_blaster_projectile"
     }
 }
 class RocketLauncher extends Weapon{

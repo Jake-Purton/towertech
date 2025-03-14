@@ -145,9 +145,16 @@ class Rocket extends Projectile {
         super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
     }
 }
+class PlasmaShot extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        entity_properties.initial_scale = 0.6
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+}
 
 class EffectAOE extends Projectile {
-    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1}) {
+    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1}={}) {
         super(scene, x, y, '', 0, 0, team,
             {inflict_effect:effect, pierce_count:1000, damage:damage},
             {initial_alpha:0, time_to_live:time_to_live, drag:0});
@@ -203,4 +210,5 @@ class GooMeleeDamage extends Projectile {
 }
 
 export {CannonBall, Bullet, Rocket, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile,
-        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile};
+        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile,
+        PlasmaShot};

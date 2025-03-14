@@ -1,11 +1,17 @@
 import * as Phaser from 'phaser';
 import WaveManager from "./wave_manager.js";
+const Vec = Phaser.Math.Vector2;
 
 export default class Level extends Phaser.Physics.Arcade.Sprite {
     static map_data = {
         // 'original': {map_texture: '', enemy_path:[[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]},
-        'main': {map_texture:'background', width:800, height:800, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]}}
-    constructor(scene, map_name, screen_width, screen_height) {
+        'main': {map_texture:'background', width:800, height:800, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]},
+        'level 2': {map_texture:'background_2', width:1500, height:750, enemy_path:[
+            [0.06,0],[0.06,0.344, 0.03],[0.23,0.344,0.03],[0.23,0.14,0.03],[0.44,0.14,0.03],[0.44,0.56,0.03],
+            [0.11,0.56,0.03],[0.11,0.84,0.03],[0.61,0.84,0.03],[0.61,0.2,0.03],[0.73,0.2,0.03],[0.73,0.79,0.03],[0.88,0.79,0.03],[0.88,0.47]]},
+        'level 3': {map_texture:'background_3', width:1500, height:750, enemy_path:[]}}
+
+constructor(scene, map_name, screen_width, screen_height) {
         let info = Level.map_data[map_name];
         super(scene, 0, 0, info.map_texture);
         scene.add.existing(this);
@@ -62,10 +68,33 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
             this.x_pos + points[0][0]*this.texture_width,
             this.y_pos + points[0][1]*this.texture_height);
         for (let i=1;i<points.length;i++) {
-            path.lineTo(
-                this.x_pos + points[i][0]*this.texture_width,
-                this.y_pos + points[i][1]*this.texture_height);
+            if (points[i].length === 2) {
+                path.lineTo(
+                    this.x_pos + points[i][0]*this.texture_width,
+                    this.y_pos + points[i][1]*this.texture_height);
+            } else {
+                let prev = path.getEndPoint();
+                let next = new Vec(points[i+1][0]*this.texture_width, points[i+1][1]*this.texture_height)
+                let current = new Vec(points[i][0]*this.texture_width, points[i][1]*this.texture_height)
+                let diff = current.clone().subtract(prev)
+                points[i][2] *= this.texture_width
+                diff.setLength(diff.length()-points[i][2])
+                path.lineTo(
+                    prev.x + diff.x,
+                    prev.y + diff.y);
+                diff = next.clone().subtract(current);
+                diff.setLength(points[i][2]);
+                let pos2 = current.clone().add(diff);
+                path.quadraticBezierTo(pos2.x, pos2.y, current.x, current.y)
+            }
+
         }
+
+        ///// draws the path
+        // let graphics = this.scene.add.graphics();
+        // graphics.lineStyle(2, 0xffffff, 1);
+        // path.draw(graphics);
+
         return path
     }
 }

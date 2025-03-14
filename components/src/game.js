@@ -43,9 +43,9 @@ export default class Game extends Phaser.Scene{
         this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
         // wheels
-        this.load.image('basic_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('basic_wheel','/game_images/player_sprites/legs/basic_wheel.png');
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
-        this.load.image('floating_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('floating_wheel','/game_images/player_sprites/legs/floating_wheel.png');
         this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
 
         // weapons
@@ -57,10 +57,12 @@ export default class Game extends Phaser.Scene{
 
         // weapon projectiles
         this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
-
+        this.load.image('plasma_blaster_projectile','/game_images/projectiles/plasma_blaster_projectile.png');
 
         //// background
         this.load.image('background','/game_images/background.png');
+        this.load.image('background_2','/game_images/background_2.png');
+        this.load.image('background_3','/game_images/background_3.png');
 
         //// particle images
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
@@ -196,7 +198,7 @@ export default class Game extends Phaser.Scene{
         this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // create Level (map info and enemy path)
-        this.level = new Level(this, 'main', this.scale.width, this.scale.height);
+        this.level = new Level(this, 'level 2', this.scale.width, this.scale.height);
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
