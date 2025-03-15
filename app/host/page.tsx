@@ -14,7 +14,7 @@ const HostPage = () => {
   const [ipAddress, setIpAddress] = useState<string>("");
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("Medium");
-  const [selectedMap, setSelectedMap] = useState<string>("background_1.png");
+  const [selectedMap, setSelectedMap] = useState<string>("level 1");
 
   const handleDifficultyClick = (difficulty: string) => {
     setSelectedDifficulty(difficulty);
@@ -112,15 +112,15 @@ const HostPage = () => {
           <div className="relative w-full h-24">
             <button
               className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
-                selectedMap === "background_1.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+                selectedMap === "level 1" ? "border-2 border-orange-600" : "border-2 border-transparent"
               }`}
               style={{ backgroundImage: "url('/game_images/background_1.png')" }}
-              onClick={() => handleMapClick("background_1.png")}
+              onClick={() => handleMapClick("level 1")}
             >
             </button>
             <p 
               className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
-              onClick={() => handleMapClick("background_1.png")}
+              onClick={() => handleMapClick("level 1")}
             >
               Level 1
             </p>
@@ -128,15 +128,15 @@ const HostPage = () => {
           <div className="relative w-full h-24">
             <button
               className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
-                selectedMap === "background_2.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+                selectedMap === "level 2" ? "border-2 border-orange-600" : "border-2 border-transparent"
               }`}
               style={{ backgroundImage: "url('/game_images/background_2.png')" }}
-              onClick={() => handleMapClick("background_2.png")}
+              onClick={() => handleMapClick("level 2")}
             >
             </button>
             <p 
               className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
-              onClick={() => handleMapClick("background_2.png")}
+              onClick={() => handleMapClick("level 2")}
             >
               Level 2
             </p>
@@ -144,15 +144,15 @@ const HostPage = () => {
           <div className="relative w-full h-24">
             <button
               className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
-                selectedMap === "background_3.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+                selectedMap === "level 3" ? "border-2 border-orange-600" : "border-2 border-transparent"
               }`}
               style={{ backgroundImage: "url('/game_images/background_3.png')" }}
-              onClick={() => handleMapClick("background_3.png")}
+              onClick={() => handleMapClick("level 3")}
             >
             </button>
             <p 
               className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
-              onClick={() => handleMapClick("background_3.png")}
+              onClick={() => handleMapClick("level 3")}
             >
               Level 3
             </p>

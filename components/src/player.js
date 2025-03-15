@@ -142,9 +142,13 @@ export default class Player extends Phaser.GameObjects.Container{
 
             this.move_direction.scale(this.speed * delta_time);
 
-            this.velocity.add(this.move_direction);
-            this.velocity.x *= this.drag**delta_time;
-            this.velocity.y *= this.drag**delta_time;
+            if (this.username === "chris" || true) {
+                this.velocity.add(this.move_direction);
+                this.velocity.x *= this.drag**delta_time;
+                this.velocity.y *= this.drag**delta_time;
+            } else {
+                this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
+            }
 
             let speed_multiplier =  this.effects.get_speed_multiplier();
 
