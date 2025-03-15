@@ -12,7 +12,7 @@ export default class WaveManager
     wave_index = -1;
     waveSeed = -1;
 
-    constructor(game)
+    constructor(game, base_difficulty=0)
     {
         this.current_wave = null;
         // Each entry in waveData would contain:
@@ -24,20 +24,18 @@ export default class WaveManager
         this.wave_index = -1;
         //this.waveSeed = -1;
 
+        this.base_difficulty = base_difficulty;
 
         this.game = game;
     }
 
-    load_waves(jsonString)
+    load_waves(parsedJson)
     {
 
         if (this.waveData != {})
         {
             this.reset_waves();
         }
-
-        // let parsedJson = JSON.parse(jsonString);
-        let parsedJson = jsonString;
 
         // do stuff
         // basically: unparsed json goes in, array of wave data comes out.
@@ -52,9 +50,9 @@ export default class WaveManager
 
     generate_wave(difficulty)
     {
-        // number of enemies increases by 3 with each wave.
-        let numEnemies = this.waveTemplateData.enemyCount + 2 * (this.wave_index - this.waveData.length);
-        let length = this.waveTemplateData.length + 2 * (this.wave_index - this.waveData.length) * this.waveTemplateData.spawnDelay
+        // number of enemies increases by 5 with each wave.
+        let numEnemies = this.waveTemplateData.enemyCount + 5 * (this.wave_index - this.waveData.length);
+        let length = this.waveTemplateData.length + 5 * (this.wave_index - this.waveData.length) * this.waveTemplateData.spawnDelay
 
 
         // Copy pointers to the allEnemies and allWeights arrays
@@ -108,10 +106,10 @@ export default class WaveManager
         this.wave_index ++;
 
         // increases difficulty by number of players every 5 waves
-        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * Object.keys(this.game.players).length;
+        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * Object.keys(this.game.players).length + this.base_difficulty;
         let waveinfo = {wave:this.wave_index + 1, difficulty:difficulty}
         console.log(waveinfo)
-        
+
         let newWave = null;
         if (this.wave_index < this.waveData.length)
         {
