@@ -14,8 +14,6 @@ class Weapon extends ProjectileShooter {
         super(scene, 0, 0, texture, projectile_class, properties);
         this.stats = new PartStats(stats);
 
-        this.damage = 3
-
         this.x_offset = x_offset;
         this.y_offset = y_offset;
         this.hold_distance = hold_distance;
