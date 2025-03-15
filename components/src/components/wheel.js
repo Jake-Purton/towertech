@@ -28,11 +28,6 @@ class Wheel extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
-class BasicWheel extends Wheel{
-    constructor(scene, stats={}) {
-        super(scene, 'basic_wheel', {width:25, stats:stats});
-    }
-}
 class SpeedsterWheel extends Wheel{
     constructor(scene, stats={}) {
         super(scene, 'speedster_wheel', {width:25, stats:stats});
@@ -49,4 +44,4 @@ class TankTreads extends Wheel{
     }
 }
 
-export {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads };
+export {SpeedsterWheel, FloatingWheel, TankTreads };

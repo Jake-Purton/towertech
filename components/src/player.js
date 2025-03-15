@@ -2,8 +2,8 @@ import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
 
 import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame } from './components/body.js';
-import {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg } from './components/leg.js';
-import {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
+import {RobotLeg, ArmoredWalker, SpiderLeg } from './components/leg.js';
+import {SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
 import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
 import Effects from './effects.js';
 import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
@@ -14,12 +14,9 @@ const Vec = Phaser.Math.Vector2;
 
 const part_converter = {
     'robot_leg':RobotLeg,
-    'striped_leg':StripedLeg,
-    'light_leg':LightLeg,
     'armored_walker':ArmoredWalker,
     'spider_leg':SpiderLeg,
 
-    'basic_wheel':BasicWheel,
     'speedster_wheel':SpeedsterWheel,
     'floating_wheel':FloatingWheel,
     'tank_treads':TankTreads,
