@@ -196,7 +196,7 @@ export default class Controller extends Phaser.Scene{
         this.load.image('basic_wheel','/game_images/player_sprites/legs/basic_wheel.png');
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
         this.load.image('floating_wheel','/game_images/player_sprites/legs/floating_wheel.png');
-        this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('tank_treads','/game_images/player_sprites/legs/tank_treads.png');
 
         // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
