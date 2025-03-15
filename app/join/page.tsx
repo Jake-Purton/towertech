@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { JoinRoomMessage } from "../src/messages";
-import { useRouter } from 'next/navigation';
-import { printTreeView } from "next/dist/build/utils";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 async function verifyToken(token: string) {
     try {
@@ -25,16 +24,22 @@ async function verifyToken(token: string) {
 }
 
 const JoinPage: React.FC = () => {
-    const router = useRouter()
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState({ name: "", email: "" });
     const [number, setNumber] = useState('');
     const [message, setMessage] = useState<string>("");
     const [username, setUsername] = useState<string>("");
+    const [isSubmitted, setIsSubmitted] = useState(false);
     
     
     useEffect(() => {
+        const roomCode = searchParams.get('roomCode');
+        if (roomCode) {
+            setNumber(roomCode);
+        }
 
         const checkToken = async () => {
             const token = localStorage.getItem("token");
@@ -59,6 +64,7 @@ const JoinPage: React.FC = () => {
 
         function onRoomErr(err: string) {
             setMessage(err);
+            setIsSubmitted(false);
         }
 
         function onSuccess() {
@@ -75,7 +81,7 @@ const JoinPage: React.FC = () => {
             socket.off("RoomErr", onRoomErr);
             socket.off("roomJoinSuccess", onSuccess);
         };
-    }, []);
+    }, [searchParams]);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -90,6 +96,8 @@ const JoinPage: React.FC = () => {
 
         console.log("Joining room with code:", number, username, isLoggedIn);
         
+        localStorage.setItem('player_username', username)
+
         if (!isLoggedIn) {
             dataSender(number, username);
         } else {
@@ -98,6 +106,7 @@ const JoinPage: React.FC = () => {
                 dataSenderAuthenticated(number, token);
             }
         }
+        setIsSubmitted(true);
     };
 
     const dataSenderAuthenticated = (code: string, token: string) => {
@@ -127,6 +136,12 @@ const JoinPage: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
+            <a
+                href="/"
+                className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+            >
+                Back to Home
+            </a>
             {!isLoading && (
                 <div className="absolute top-4 left-4 flex gap-4">
                 {isLoggedIn ? (
@@ -184,7 +199,13 @@ const JoinPage: React.FC = () => {
                         }}  
                     />
                 </label>
-                <button type="submit" className="mt-6 px-4 py-2 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 transition-all">
+                <button
+                    type="submit"
+                    className={`mt-6 px-4 py-2 rounded-lg shadow-md transition-all ${
+                        isSubmitted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
+                    } text-white`}
+                    disabled={isSubmitted}
+                >
                     Submit
                 </button>
             </form>

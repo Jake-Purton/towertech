@@ -70,6 +70,12 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black-900 text-white">
+      <a
+        href="/"
+        className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+      >
+        Back to Home
+      </a>
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         {message && (
           <div className={`mb-4 text-center ${

@@ -1,12 +1,17 @@
 import * as Phaser from 'phaser';
-import {RGBtoHEX} from "./utiles.js";
+import {RGBtoHEX} from "../utiles.js";
+const Vec = Phaser.Math.Vector2;
 
 export default class Button extends Phaser.GameObjects.Container {
     // x and y are the center point of the object
     constructor(scene, x, y, {texture='button', text='Text',
-            text_style={fontFamily:'Tahoma', fontStyle:'bold',color:'#333', fontSize:25},
-            width=100, height=40, shrink_ratio=0.95,
+            text_style={fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:25},
+            width=100, height=40, shrink_ratio=0.95, center=true, select_tint=null, select_group=[],
             press_command=() => void 0, release_command=() => void 0} = {}) {
+        if (!center) {
+            x+=width/2;
+            y+=height/2;
+        }
         super(scene, x, y, []);
         scene.add.existing(this);
 
@@ -33,8 +38,15 @@ export default class Button extends Phaser.GameObjects.Container {
         this.release_command = release_command;
 
         this.button_pressed = false;
+        this.mouse_hovering = false;
         this.enabled = true;
         this.active_pointer_id = null;
+        this.pointer_prev_pos = null;
+
+        this.selectable = (select_tint !== null);
+        this.select_tint = select_tint;
+        this.selected = false;
+        this.set_select_group(select_group);
     }
     mouse_down(pointer) {
         if (this.enabled && this.active_pointer_id === null) {
@@ -47,13 +59,13 @@ export default class Button extends Phaser.GameObjects.Container {
         }
     }
     mouse_hovered(pointer) {
-        if (this.enabled) {
-            this.texture.setTint(RGBtoHEX([200, 200, 200]))
-        }
+        this.mouse_hovering = true;
+        this.refresh_tint()
     }
     mouse_remove_hover(pointer) {
-        if (this.enabled && pointer.id === this.active_pointer_id) {
-            this.texture.clearTint();
+        this.mouse_hovering = false;
+        this.refresh_tint();
+        if (this.enabled && (pointer.id === this.active_pointer_id || !this.button_pressed)) {
             if (this.button_pressed) {
                 this.button_up();
             }
@@ -62,11 +74,16 @@ export default class Button extends Phaser.GameObjects.Container {
 
     disable_button() {
         this.enabled = false;
-        this.texture.setTint(RGBtoHEX([150,150,150]));
+        this.refresh_tint();
     }
     enable_button() {
         this.enabled = true;
-        this.texture.clearTint();
+        this.refresh_tint()
+    }
+    set_enabled(enabled) {
+        this.enabled = enabled;
+        this.refresh_tint();
+        return this;
     }
 
     button_down(pointer) {
@@ -74,6 +91,7 @@ export default class Button extends Phaser.GameObjects.Container {
             this.button_pressed = true;
             this.active_pointer_id = pointer.id;
             this.setScale(this.shrink_ratio);
+            this.set_selected(true);
             if (this.press_command !== null) {
                 this.press_command();
             }
@@ -85,6 +103,43 @@ export default class Button extends Phaser.GameObjects.Container {
         this.setScale(1);
         if (this.release_command !== null) {
             this.release_command();
+        }
+    }
+    set_selected(selected) {
+        if (this.selectable) {
+            this.selected = selected;
+            if (this.selected) {
+                for (let item of this.select_group) {
+                    item.set_selected(false);
+                }
+                this.refresh_tint();
+            } else {
+                this.texture.clearTint();
+            }
+        }
+    }
+    set_select_group(select_group) {
+        this.select_group = []
+        for (let item of select_group) {
+            if (item !== this) {
+                this.select_group.push(item);
+            }
+        }
+    }
+    force_button_press() {
+        this.button_down({id:1});
+        this.button_up({id:1});
+    }
+
+    refresh_tint() {
+        if (!this.enabled) {
+            this.texture.setTint(RGBtoHEX([150,150,150]));
+        } else if (this.mouse_hovering) {
+            this.texture.setTint(RGBtoHEX([200, 200, 200]))
+        } else if (this.selected) {
+            this.texture.setTint(this.select_tint);
+        } else {
+            this.texture.clearTint();
         }
     }
 }

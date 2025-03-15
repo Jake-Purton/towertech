@@ -8,6 +8,16 @@ const PhaserGame = () => {
   const router = useRouter();
 
   useEffect(() => {
+
+    // socket.on('updateUsers', (userList) => {
+    //   if (userList.length === 0) {
+    //     // COMMENT THE BELOW LINE OUT IF YOU DONT WANT TO GET KICKED OUT OFF THE PAGE
+    //     router.push('/join/room')
+    //   }
+    // });
+
+    // socket.emit('getUsers');
+
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
 
@@ -30,7 +40,7 @@ const PhaserGame = () => {
             arcade: {
               fps: 60,
               gravity: { y: 0 },
-              debug: true,
+              // debug: true,
             }
           },
           scene: new Game(output_data, init_server, end_game_output),
@@ -41,6 +51,7 @@ const PhaserGame = () => {
 
         return () => {
           socket.off("game_input");
+          socket.off("updateUsers")
           game.destroy(true);
         };
 
@@ -55,7 +66,8 @@ const PhaserGame = () => {
 
           // the token encoded with the room id for security
           const roomToken = localStorage.getItem('roomToken');
-          console.log(roomToken)
+          // console.log(roomToken)
+          console.log("phaserGame.js: game data is", data)
 
           // if there is a token, we can send the data to the server
           if (roomToken) {
@@ -70,14 +82,17 @@ const PhaserGame = () => {
 
               const result = await response.json();
 
+              console.log("RESULT IS HERE: ", result);
+
               if (result.success) {
                 console.log('Game data successfully sent to the server');
-                router.push("/home");
+                router.push("/end_game?gameID=" + result.gameid);
               } else {
                 console.log('Failed to send game data to the server:', result.error);
               }
 
               // redirect host to next page
+              socket.emit("end_game", {token: roomToken, id: result.gameid});
               
             } catch (error) {
               console.error('Error sending game data to the server:', error);
@@ -85,7 +100,6 @@ const PhaserGame = () => {
           }
 
           // function that sends the end game message to the server
-          socket.emit("end_game", roomToken);
 
         }
 

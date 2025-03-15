@@ -1,31 +1,34 @@
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { socket } from "../app/src/socket";
 import Controller from './src/controller/controller.js';
 import CreateTowerMenu from "./src/controller/create_tower_menu.js";
 
 const GameController = () => {
   const gameRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
+
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
 
         if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
+        socket.on('end_game_client', end_game)
 
-        let display_width = Math.min(window.innerWidth-20,3000);
-        let display_height = Math.min(window.innerHeight-20,3000);
+
         let mobile_device = /Mobi|Android/i.test(navigator.userAgent);
 
         let scene_info = {
           output_data_func: output_data,
-          screen_width: display_width,
-          screen_height: display_height,
+          max_screen_width: 804, //1200
+          max_screen_height: 385, // 500
           mobile_device: mobile_device};
 
         const config = {
-          width: display_width,//800,
-          height: display_height,//600,
+          width: 800,
+          height: 600,
           type: Phaser.AUTO,
           parent: gameRef.current,
           audio: {
@@ -47,17 +50,34 @@ const GameController = () => {
             }
           },
           scene: [new Controller(scene_info), new CreateTowerMenu(scene_info)],
-          backgroundColor: '#ff0000',
+          backgroundColor: '#151421',
         };
-
-        output_data({width: display_width, height: display_height});
 
         const game = new Phaser.Game(config);
 
+        socket.on('updateUsers', (userList) => {
+          if (userList.length === 0) {
+            // COMMENT THE BELOW LINE OUT IF YOU DONT WANT TO GET KICKED OUT OFF THE PAGE
+            router.push('/join/room');
+            game.destroy();
+          }
+        });
+    
+        socket.emit('getUsers');
+
         return () => {
           socket.off("output_from_game_to_client");
+          socket.off('end_game_client')
           game.destroy(true);
         };
+
+        function end_game (data) {
+
+          console.log('here');
+          router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
+          // socket.leave(data.room)
+          game.destroy(true);
+        }
 
         function input_data(data) {
           if (data['PlayerID'] === socket.id) {

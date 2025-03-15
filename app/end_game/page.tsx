@@ -1,22 +1,54 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+interface Player {
+  userid: string;
+  name: string;
+  kills: number;
+  playerscore: number;
+  username: string;
+}
+
+interface Game {
+  gameid: number;
+  score: number;
+  waves: number;
+  players: Player[];
+}
 
 export default function EndGamePage() {
   const [score, setScore] = useState(0);
   const [waveScore, setWaveScore] = useState(0);
+  const [gameData, setGameData] = useState<Game | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const gameid = searchParams.get("gameID");
 
   useEffect(() => {
-    const gameScore = localStorage.getItem("gameScore");
-    const gameWaveScore = localStorage.getItem("gameWaveScore");
-    if (gameScore) setScore(parseInt(gameScore));
-    if (gameWaveScore) setWaveScore(parseInt(gameWaveScore));
-  }, []);
+    const fetchGameData = async () => {
+      try {
+        const res = await fetch(`/api/gameleaderboard?gameid=${gameid}`);
+        const data = await res.json();
+        setGameData(data);
+        console.log(data)
+        setScore(data.score);
+        setWaveScore(data.waves)
 
-  const handlePlayAgain = () => router.push("/game");
+        // setWaveScore(data.players.length); // Assuming waveScore is the number of players
+      } catch (error) {
+        console.error("Failed to fetch game data:", error);
+      }
+    };
+
+    if (gameid) {
+      fetchGameData();
+    }
+  }, [gameid]);
+
+  const handlePlayAgain = () => router.push("/host");
   const handleMainMenu = () => router.push("/");
-  const handleLeaderboard = () => router.push("/leaderboard");
+  const handleLeaderboard = () => router.push("/game_leaderboard");
 
   return (
     <div className="flex items-stretch justify-center min-h-screen bg-gradient-to-br from-black-900 to-black text-white p-8 gap-8">
@@ -28,16 +60,29 @@ export default function EndGamePage() {
         <div className="space-y-4">
           <h2 className="text-xl text-orange-400 text-center mb-4">🌟 Legends</h2>
           <div className="space-y-2">
-            {[1, 2, 3].map((position) => (
+            {gameData?.players.length === 0 && (
+              <div className="text-center text-gray-400">No players to display</div>
+            )}
+            {gameData?.players.map((player, index) => (
               <div 
-                key={position}
+                key={`${player.userid}-${index}`}
                 className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
               >
-                <div className="text-orange-400 text-sm">#{position}</div>
-                <div className="text-lg font-bold">Player {position}</div>
-                <div className="text-sm text-orange-300">{1000 - (position-1)*200} pts</div>
+                <div className="text-orange-400 text-sm">#{index + 1}</div>
+                <div className="text-lg font-bold">{player.username}</div>
+                <div className="text-sm text-orange-300">{player.playerscore} pts</div>
               </div>
             ))}
+            {/* {gameData?.players.slice(0, 3).map((player, index) => (
+              <div 
+                key={`${player.userid}-${index}`}
+                className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
+              >
+                <div className="text-orange-400 text-sm">#{index + 1}</div>
+                <div className="text-lg font-bold">{player.name}</div>
+                <div className="text-sm text-orange-300">{player.playerscore} pts</div>
+              </div>
+            ))} */}
           </div>
         </div>
       </div>
@@ -90,14 +135,14 @@ export default function EndGamePage() {
         <div className="space-y-4">
           <h2 className="text-xl text-orange-400 text-center mb-4">🏆 Top Players</h2>
           <div className="space-y-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((position) => (
+            {gameData?.players.map((player, index) => (
               <div 
-                key={position}
+                key={`${player.userid}-${index}`}
                 className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
               >
-                <span className="text-orange-400 w-8">#{position}</span>
-                <span className="flex-1">Player {position}</span>
-                <span className="font-bold text-orange-300">{1500 - position*100}</span>
+                <span className="text-orange-400 w-8">#{index + 1}</span>
+                <span className="flex-1">{player.username}</span>
+                <span className="font-bold text-orange-300">{player.playerscore}</span>
               </div>
             ))}
           </div>
