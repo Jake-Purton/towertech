@@ -1,5 +1,5 @@
 function handleMessage(socket) {
-  return (msg) => {
+  return () => {
     // console.log("Received message:", msg);
     socket.emit("message", `Hello from server`);
   };

@@ -71,7 +71,7 @@ async function sql_fetch(): Promise<User[]> {
 }
 
 async function put_users_in_db(newUser: User) {
-  const abde = await sql`INSERT INTO users (name, email, password) VALUES (${newUser.name}, ${newUser.email}, ${newUser.password});`;
+  await sql`INSERT INTO users (name, email, password) VALUES (${newUser.name}, ${newUser.email}, ${newUser.password});`;
 }
 function validate_email(email: string): boolean {
   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -79,8 +79,10 @@ function validate_email(email: string): boolean {
 }
 
 function validate_password(password: string): boolean {
-  return true; // Replace with actual password validation
-  // make sure it is more than 6 characters...
+  if (password.length < 6) {
+    return false;
+  }
+  return true;
 }
 
 // Add login handler in the same file
@@ -116,7 +118,7 @@ export async function GET(req: Request) {
       token,
       user: { name: user.name, email: user.email }
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 }

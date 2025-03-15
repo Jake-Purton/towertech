@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {RGBtoHEX, get_removed, modulo } from './utiles.js';
+import {get_removed, modulo } from './utiles.js';
 import {LaserDust } from './particle.js';
 
 export default class LineAttack extends Phaser.Physics.Arcade.Sprite {

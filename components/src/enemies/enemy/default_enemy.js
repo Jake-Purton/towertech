@@ -62,7 +62,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         // this.game_tick(0); // sets the position to the start of the path
     }
-    game_tick(delta_time, players, towers){
+    game_tick(delta_time){
         let time = delta_time/this.scene.target_fps;
         // handle effects
         this.add_health(this.effects.get_effect("Healing", 0)*time);

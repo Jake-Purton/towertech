@@ -59,7 +59,6 @@ constructor(scene, map_name, screen_width, screen_height) {
 
         this.wave_manager = new WaveManager(this.scene);
 
-        let test = '{"waves":[ {"type":"wave", "length":30, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter","goocaster","goocrab","goobouncer","goobuilder","gooacid","goobullet"], "enemyWeights":[5,5,5,5,5,5,5,5,5,5,5,5], "enemyCount": 30} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
         let wave_data = {
             "waves":[
                 {"type":"wave", "length":30, "spawnDelay":1,

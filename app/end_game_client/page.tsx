@@ -1,16 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function EndGameClientPage() {
+const EndGameClientPageContent = () => {
   const [score, setScore] = useState(0);
   const [username, setUsername] = useState('');
   const [kills, setKills] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const gameid = searchParams.get("gameid");
-  const playerid = searchParams.get("playerid");
+  const gameid = searchParams?.get("gameid") || '';
+  const playerid = searchParams?.get("playerid") || '';
 
   useEffect(() => {
     const fetchGameData = async () => {
@@ -82,5 +82,13 @@ export default function EndGameClientPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function EndGameClientPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <EndGameClientPageContent />
+    </Suspense>
   );
 }

@@ -170,7 +170,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         }
     }
     get_projectile_texture_name() {return ''}
-    set_weapon_direction(angle) {}
+    set_weapon_direction() {}
     get_weapon_direction() {return 0;}
     // returns the relative position from this to the passed enemy
     get_relative_pos(enemy) {

@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {PartStats} from "./part_stat_manager.js";
-const Vec = Phaser.Math.Vector2;
 
 
 class Body extends Phaser.Physics.Arcade.Sprite{

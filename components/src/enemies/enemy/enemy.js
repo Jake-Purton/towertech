@@ -1,4 +1,3 @@
-import * as Phaser from 'phaser';
 import Goober from './goober.js';
 import Goolime from './goolime.js';
 import Goobouncer from './goobouncer.js';
@@ -13,7 +12,6 @@ import Gootower from './gootower.js';
 import Goobuilder from '../boss/goobuilder.js';
 import Gooacid from '../boss/gooacid.js';
 import Goobullet from '../boss/goobullet.js';
-const Vec = Phaser.Math.Vector2;
 
 const enemy_map = {
     'goober':Goober,

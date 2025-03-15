@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface Player {
@@ -17,13 +17,13 @@ interface Game {
   players: Player[];
 }
 
-export default function EndGamePage() {
+const EndGamePageContent: React.FC = () => {
   const [score, setScore] = useState(0);
   const [waveScore, setWaveScore] = useState(0);
   const [gameData, setGameData] = useState<Game | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const gameid = searchParams.get("gameID");
+  const gameid = searchParams?.get("gameID") || '';
 
   useEffect(() => {
     const fetchGameData = async () => {
@@ -34,8 +34,6 @@ export default function EndGamePage() {
         console.log(data)
         setScore(data.score);
         setWaveScore(data.waves)
-
-        // setWaveScore(data.players.length); // Assuming waveScore is the number of players
       } catch (error) {
         console.error("Failed to fetch game data:", error);
       }
@@ -73,16 +71,6 @@ export default function EndGamePage() {
                 <div className="text-sm text-orange-300">{player.playerscore} pts</div>
               </div>
             ))}
-            {/* {gameData?.players.slice(0, 3).map((player, index) => (
-              <div 
-                key={`${player.userid}-${index}`}
-                className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors"
-              >
-                <div className="text-orange-400 text-sm">#{index + 1}</div>
-                <div className="text-lg font-bold">{player.name}</div>
-                <div className="text-sm text-orange-300">{player.playerscore} pts</div>
-              </div>
-            ))} */}
           </div>
         </div>
       </div>
@@ -157,4 +145,14 @@ export default function EndGamePage() {
       </div>
     </div>
   );
-}
+};
+
+const EndGamePage: React.FC = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <EndGamePageContent />
+    </Suspense>
+  );
+};
+
+export default EndGamePage;
