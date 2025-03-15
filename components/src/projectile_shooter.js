@@ -47,6 +47,9 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         this.max_turn_speed = max_turn_speed; // measured in degrees
         this.target_type = target_type; // can be one of "Closest", "Furthest", "Front", "Back", "MostHealth", "LeastHealth"
         this.stay_on_same_target = stay_on_same_target; // if true will keep attacking same target even if new target appears, e.g. a new closest target
+
+        // stats
+        this.shots_fired = 0;
     }
     game_tick(delta_time) {
         this.shoot_cooldown -= delta_time/this.scene.target_fps;
@@ -109,6 +112,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         return false;
     }
     shoot(effects) {
+        this.shots_fired += 1;
         // create a new projectile object and add it to projectiles list
         let angle = random_gauss(this.get_weapon_direction(), this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
