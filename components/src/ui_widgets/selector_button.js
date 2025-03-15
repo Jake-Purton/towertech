@@ -69,4 +69,9 @@ export default class SelectorButton extends Button {
         this.displayed_object.destroy(fromScene);
         super.destroy(fromScene);
     }
+    setVisible(visible) {
+        this.displayed_object.setVisible(visible);
+        super.setVisible(visible);
+        return this;
+    }
 }

@@ -36,9 +36,9 @@ export default class Controller extends Phaser.Scene{
         // constants
         this.tower_data = {
             "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:180},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:180},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:180},
+                    {level:1, cost:5, damage:3, fire_rate:2, range:180},
+                    {level:2, cost:10, damage:5, fire_rate:2, range:180},
+                    {level:3, cost:15, damage:8, fire_rate:2, range:180},
                 ]},
             "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
                     {level:1, cost:25, damage:0.3, fire_rate:10, range:180},
@@ -230,28 +230,14 @@ export default class Controller extends Phaser.Scene{
 
     }
     create() {
-        this.scale.setGameSize(window.innerWidth, window.innerHeight);
+        // this.scale.setGameSize(window.innerWidth, window.innerHeight);
         
         if (this.mobile_device) {
             this.resized();
-            
-            this.prompt_tap_text = this.add.text(-1000, -1000, '', {
-                fontSize: '32px',
-                color: '#ffffff',
-                backgroundColor: '#000000',
-                padding: { x: 15, y: 8 },
-                align: 'center'
-            }).setOrigin(0.5).setDepth(1000).setVisible(false);
-            
-            this.time.delayedCall(500, () => {
-                this.init_fullscreen();
-            }, [], this);
-            
-
-            this.input.once('pointerup', this.init_fullscreen, this);
+            this.init_fullscreen();
         } else {
             window.addEventListener('resize', () => {
-                this.scale.setGameSize(window.innerWidth, window.innerHeight);
+                // this.scale.setGameSize(window.innerWidth, window.innerHeight);
                 this.create_ui();
             });
             this.create_ui();
@@ -280,7 +266,7 @@ export default class Controller extends Phaser.Scene{
                 break;
             case 'Set_Inventory':
                 this.player_inventory = input.inventory;
-                if (this.current_selected_sub_menu === "Player") {
+                if (this.current_selected_sub_menu === "Player" && defined(this.ui_objects)) {
                     this.create_ui();
                 }
                 break;
@@ -289,6 +275,7 @@ export default class Controller extends Phaser.Scene{
                 this.player_max_health = input.max_health;
                 if (defined(this.health_ui_text)) {
                     this.health_ui_text.setText('Health: '+Math.round(this.player_health)+'/'+this.player_max_health);
+                    console.log(input, this.health_ui_bar);
                     this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
                 }
                 break;
@@ -307,28 +294,34 @@ export default class Controller extends Phaser.Scene{
         }
     }
     init_fullscreen = () => {
-        if (this.prompt_tap_text) {
-            this.prompt_tap_text.destroy();
-            this.prompt_tap_text = null;
-        }
-
         if (this.orientation_text) {
             this.orientation_text.destroy();
             this.orientation_text = null;
         }
 
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen()
-                .catch(err => console.warn('Request Fullscreen Failed:', err));
-        }
+        this.input.once('pointerup',() => {
+            if (!this.scale.fullscreen) {
+                this.print('SET FULLSCREEN')
+                this.scale.startFullscreen()
+            }
+        }, this)
+
+        // try {
+        //     this.scale.startFullscreen();
+        //     screen.orientation.lock('landscape');
+        // } catch {
+        //     if (document.documentElement.requestFullscreen) {
+        //         document.documentElement.requestFullscreen()
+        //             .catch(err => console.warn('Request Fullscreen Failed:', err));
+        //     }
+        // }
 
         this.orientation_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 
-            'LANDSCAPE', {
-            fontSize: '32px',
+            'Please change\nto Landscape', {
+            fontSize: 64,
+            font: 'Tahoma',
             color: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { x: 15, y: 8 },
-            align: 'center'
+            align: 'center',
         }).setOrigin(0.5).setDepth(2000); 
         this.orientation_text.setVisible(false);
 
@@ -336,38 +329,33 @@ export default class Controller extends Phaser.Scene{
         window.addEventListener('orientationchange', () => this.handleOrientation());
 
         this.handleOrientation();
-
-        this.input.keyboard.on('keydown', this.key_pressed, this);
-        this.input.keyboard.on('keyup', this.key_pressed, this);
     }
 
     handleOrientation = () => {
+        this.print(new Date().toTimeString()+' INNER width/height - '+window.innerWidth+'/'+window.innerHeight)
         setTimeout(() => {
+
             const isPortrait = window.innerHeight > window.innerWidth;
-            
+
             if (isPortrait) {
                 this.hideAllUIElements();
-                
+
                 if (this.orientation_text) {
                     this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
                     this.orientation_text.setVisible(true);
-                    this.orientation_text.setDepth(2000);  
+                    this.orientation_text.setDepth(2000);
                 }
             } else {
                 if (this.orientation_text) {
                     this.orientation_text.setVisible(false);
                 }
-                
+                this.print('creating ui -00000000 from handle input')
 
-                if (!this.ui_objects) {
-                    this.create_ui();
-                } else {
-                    this.showAllUIElements();
-                }
+                this.create_ui();
             }
-            
+
             this.resized();
-        }, 100);
+        }, 50);
     }
 
     hideAllUIElements = () => {
@@ -395,37 +383,38 @@ export default class Controller extends Phaser.Scene{
     }
 
     showAllUIElements = () => {
-        if (this.ui_objects) {
-            this.ui_objects.forEach(obj => obj.setVisible(true));
-        }
-        if (this.sub_menu_ui_objects) {
-            this.sub_menu_ui_objects.forEach(obj => obj.setVisible(true));
-        }
-        if (this.tower_buy_ui_objects) {
-            this.tower_buy_ui_objects.forEach(obj => obj.setVisible(true));
-        }
-        if (this.player_parts_ui_objects) {
-            this.player_parts_ui_objects.forEach(obj => obj.setVisible(true));
-        }
-        if (this.browse_parts_ui_objects) {
-            this.browse_parts_ui_objects.forEach(obj => obj.setVisible(true));
-        }
-        if (this.specific_part_ui_objects) {
-            this.specific_part_ui_objects.forEach(obj => obj.setVisible(true));
-        }
-        if (this.coins_ui_text) {
-            this.coins_ui_text.setVisible(true);
-        }
+        this.create_ui()
+        // if (this.ui_objects) {
+        //     this.ui_objects.forEach(obj => obj.setVisible(true));
+        // }
+        // if (this.sub_menu_ui_objects) {
+        //     this.sub_menu_ui_objects.forEach(obj => obj.setVisible(true));
+        // }
+        // if (this.tower_buy_ui_objects) {
+        //     this.tower_buy_ui_objects.forEach(obj => obj.setVisible(true));
+        // }
+        // if (this.player_parts_ui_objects) {
+        //     this.player_parts_ui_objects.forEach(obj => obj.setVisible(true));
+        // }
+        // if (this.browse_parts_ui_objects) {
+        //     this.browse_parts_ui_objects.forEach(obj => obj.setVisible(true));
+        // }
+        // if (this.specific_part_ui_objects) {
+        //     this.specific_part_ui_objects.forEach(obj => obj.setVisible(true));
+        // }
+        // if (this.coins_ui_text) {
+        //     this.coins_ui_text.setVisible(true);
+        // }
     }
 
     resized = () => {
         const computeScreenSize = () => {
-            if (this.mobile_device && window.innerHeight > window.innerWidth) {
-                return {
-                    width: window.innerHeight,
-                    height: window.innerWidth
-                };
-            }
+            // if (this.mobile_device && window.innerHeight > window.innerWidth) {
+            //     return {
+            //         width: window.innerHeight,
+            //         height: window.innerWidth
+            //     };
+            // }
             return {
                 width: window.innerWidth,
                 height: window.innerHeight
@@ -437,20 +426,19 @@ export default class Controller extends Phaser.Scene{
 
     create_ui = () => {
         this.resized();
-        
-        if (this.mobile_device) {
-            // Mobile limits
-            this.screen_width = Math.min(this.exactScreenSize.width, this.max_screen_width);
-            this.screen_height = Math.min(this.exactScreenSize.height, this.max_screen_height);
-        } else {
-            this.screen_width = this.exactScreenSize.width;
-            this.screen_height = this.exactScreenSize.height;
-        }
+
+        // this.screen_width = Math.min(this.exactScreenSize.width, this.max_screen_width);
+        // this.screen_height = Math.min(this.exactScreenSize.height, this.max_screen_height);
+
+        this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
+        this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
+
+        this.print(new Date().toTimeString()+' screen width/height - '+this.screen_width+'/'+this.screen_height)
 
         this.destroy_ui_list(this.ui_objects);
 
         this.sub_menu_ui_objects = [];
-        const TOP_MARGIN = this.mobile_device ? 50 : 10;
+        const TOP_MARGIN = 10//this.mobile_device ? 50 : 10;
         this.sub_menu_container = {
             x: 240, 
             y: TOP_MARGIN + 46,
@@ -494,13 +482,13 @@ export default class Controller extends Phaser.Scene{
         this.ui_objects.push(this.health_ui_text, this.health_ui_bar);
 
         // top tab buttons
-        let tab_buttons = ['Player', 'Tower', 'Upgrade'];
+        let tab_buttons = {'Player':'Player', 'Tower':'Tower', 'Upgrade':'Modify'};
         let select_buttons = [];
-        for (let i=0;i<tab_buttons.length;i++) {
+        for (let i=0;i<Object.values(tab_buttons).length;i++) {
             select_buttons.push(new Button(this, this.sub_menu_container.x+this.sub_menu_container.width/2-162+110*i, TOP_MARGIN, {
-                text:tab_buttons[i], center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
-                press_command:()=>this.move_sub_menu(tab_buttons[i],this.sub_menu_container)}).setDepth(4))
-            if (tab_buttons[i] === this.current_selected_sub_menu) {
+                text:Object.values(tab_buttons)[i], center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
+                press_command:()=>this.move_sub_menu(Object.keys(tab_buttons)[i],this.sub_menu_container)}).setDepth(4))
+            if (Object.keys(tab_buttons)[i] === this.current_selected_sub_menu) {
                 select_buttons[select_buttons.length-1].force_button_press();
             }
         }

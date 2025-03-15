@@ -99,7 +99,6 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-        console.log(this.current_wave)
         if (this.current_wave.game_tick(deltaTime)) {
             this.next_wave();
         }

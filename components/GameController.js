@@ -22,8 +22,8 @@ const GameController = () => {
 
         let scene_info = {
           output_data_func: output_data,
-          max_screen_width: 804, //1200
-          max_screen_height: 385, // 500
+          max_screen_width: 1200, //804,
+          max_screen_height: 500, //385
           mobile_device: mobile_device};
 
         const config = {
@@ -81,7 +81,10 @@ const GameController = () => {
 
         function input_data(data) {
           if (data['PlayerID'] === socket.id) {
-            game.scene.getScene('GameController').take_input(data);
+            let scene = game.scene.getScene('GameController');
+            if (scene !== null) {
+              scene.take_input(data);
+            }
           }
         }
         function output_data(data) {

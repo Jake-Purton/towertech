@@ -191,7 +191,6 @@ export default class Game extends Phaser.Scene{
         });
 
         // create Level (map info and enemy path)
-        console.log(localStorage.getItem('gameMap'))
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
 
         // game objects
@@ -345,7 +344,7 @@ export default class Game extends Phaser.Scene{
                     this.players[input.PlayerID].upgrade_part(input.item_name, input.item_stats);
                     break;
                 case 'Print':
-                    console.log('MESSAGE FROM CONTROLLER <' + input.PlayerID + '> = ' + input.text);
+                    console.log('msg: ' + input.text);
                     break;
             }
         } else if (input.type === "Constructor") {
