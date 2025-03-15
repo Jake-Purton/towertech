@@ -3,22 +3,25 @@ const Vec = Phaser.Math.Vector2;
 import {PartStats} from './part_stat_manager.js';
 
 class Wheel extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, texture, {y_offset=16, width=25, stats} = {}){
+    constructor(scene, texture, {y_offset=16, width=25, rotates=true, stats} = {}){
         super(scene, 0, y_offset, texture);
         this.stats = new PartStats(stats);
         this.rotate = 0;
-
+        this.rotates = rotates
         this.wheel_width = width;
         this.set_scale(1);
     }
-    movement_animation(velocity){
+    movement_animation(velocity) {
         let speed = velocity.length();
-        if (velocity.x<0){
-            speed*=-1;
+        if (velocity.x < 0) {
+            speed *= -1;
         }
-        
-        this.rotate = this.rotate + 0.03 * speed;
-        this.setRotation(this.rotate)
+        if (this.rotates) {
+            this.rotate = this.rotate + 0.03 * speed;
+            this.setRotation(this.rotate)
+        } else {
+            this.setRotation(velocity.angle())
+        }
     }
     set_scale(scale) {
         this.setScale(scale*this.wheel_width/this.width);
@@ -42,7 +45,7 @@ class FloatingWheel extends Wheel{
 }
 class TankTreads extends Wheel{
     constructor(scene, stats={}) {
-        super(scene, 'tank_treads', {width:25, stats:stats});
+        super(scene, 'tank_treads', {width:35, rotates:false, stats:stats});
     }
 }
 
