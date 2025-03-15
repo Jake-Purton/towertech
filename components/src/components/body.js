@@ -49,7 +49,7 @@ class TankFrame extends Body{
 }
 class EnergyCoreFrame extends Body{
     constructor(scene, stats={}) {
-        super(scene, 'energy_core_frame', {height: 25, stats:stats});
+        super(scene, 'energy_core_frame', {height: 30, stats:stats});
     }
 }
 

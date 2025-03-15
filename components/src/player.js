@@ -79,7 +79,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.pickup_range = 20;
 
         // aliveness
-        this.health = 1000;
+        this.health = 30;
         this.max_health = this.health;
         this.passive_healing_timer = 1;
         this.passive_healing_hit_timer = 3;
@@ -297,9 +297,22 @@ export default class Player extends Phaser.GameObjects.Container{
             let new_tower = null;
             if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
                 if (data.Tower_Stats.cost <= this.coins) {
-                    new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
-                    this.set_coins(this.coins - data.Tower_Stats.cost);
-                    this.towers_placed += 1;
+                    if (!this.scene.level.check_path_collision(this.x, this.y, 30)) {
+                        new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
+                        if (new_tower.get_overlap_other_towers()) {
+                            new_tower.destroy()
+                            new_tower = null
+                            this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place towers on top of each other!"})
+                        } else {
+                            // buy the tower
+                            this.set_coins(this.coins - data.Tower_Stats.cost);
+                            this.towers_placed += 1;
+                        }
+                    } else {
+                        this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place a tower on the path!"})
+                    }
+                } else {
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this tower!"})
                 }
             }
             this.prev_tower_button_direction = data.Direction;
@@ -332,6 +345,7 @@ export default class Player extends Phaser.GameObjects.Container{
         }
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+        this.scene.level.player_info_display.update_list_text()
     }
     set_health(health, max_health) {
         if (health !== this.health || max_health !== this.max_health || true) {
@@ -355,6 +369,7 @@ export default class Player extends Phaser.GameObjects.Container{
                     health: this.health,
                     max_health: this.max_health
                 });
+                this.scene.level.player_info_display.update_list_text()
             }
         }
     }
@@ -377,6 +392,9 @@ export default class Player extends Phaser.GameObjects.Container{
             this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
         this.save_inventory()
+        if (this.player_id === "TempPlayerID") {
+            this.equip_part(item.item_name, {health:1000, speed: 10, damage:1000, target_distance:300})
+        }
     }
     equip_part(item_name, stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
@@ -392,15 +410,26 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     upgrade_part(item_name, new_stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
-            if (this.inventory[item_name].count >= new_stats.upgrade_number && this.coins >= new_stats.upgrade_cost) {
-                this.inventory[item_name].count -= new_stats.upgrade_number;
-                this.inventory[item_name].level += 1;
-                this.set_coins(this.coins - new_stats.upgrade_cost)
-                if (this.inventory[item_name].equipped) {
-                    this.equip_part(item_name, new_stats);
+            if (this.inventory[item_name].count >= new_stats.upgrade_number) {
+                if (this.coins >= new_stats.upgrade_cost) {
+                    this.inventory[item_name].count -= new_stats.upgrade_number;
+                    this.inventory[item_name].level += 1;
+                    this.set_coins(this.coins - new_stats.upgrade_cost)
+                    if (this.inventory[item_name].equipped) {
+                        this.equip_part(item_name, new_stats);
+                    } else {
+                        this.save_inventory();
+                    }
                 } else {
-                    this.save_inventory();
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this upgrade!"})
                 }
+            } else {
+                let diff = new_stats.upgrade_number - this.inventory[item_name].count
+                let item_output = item_name.replace("_", " ")
+                if (diff > 1) {
+                    item_output += "'s"
+                }
+                this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You need "+diff+" more "+item_output+" for this upgrade!"})
             }
         }
     }

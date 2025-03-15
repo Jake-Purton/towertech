@@ -33,30 +33,36 @@ export default class Game extends Phaser.Scene{
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
         this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
-        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/energy_core_frame.png');
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('armored_walker','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('spider_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
+        this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
         this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
         // wheels
-        this.load.image('basic_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('basic_wheel','/game_images/player_sprites/legs/basic_wheel.png');
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
-        this.load.image('floating_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('floating_wheel','/game_images/player_sprites/legs/floating_wheel.png');
         this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
 
         // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('laser_cannon','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/plasma_blaster.png');
+        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/rocket_launcher.png');
+        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
+        this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
+
+        // weapon projectiles
+        this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
+        this.load.image('plasma_blaster_projectile','/game_images/projectiles/plasma_blaster_projectile.png');
 
         //// background
-        this.load.image('background','/game_images/background.png');
+        this.load.image('background_1','/game_images/background_1.png');
+        this.load.image('background_2','/game_images/background_2.png');
+        this.load.image('background_3','/game_images/background_3.png');
 
         //// particle images
         this.load.image('goo_blood','/game_images/particles/gooblood.png');
@@ -65,6 +71,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('speed_particle','/game_images/particles/Speed.png');
         this.load.image('slow_particle','/game_images/particles/Slow.png');
         this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
+        this.load.image('smoke_particle','/game_images/particles/smoke.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
@@ -187,11 +194,11 @@ export default class Game extends Phaser.Scene{
             repeat: -1
         });
 
-        // game objects
-        // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
-
         // create Level (map info and enemy path)
-        this.level = new Level(this, 'main', this.scale.width, this.scale.height);
+        this.level = new Level(this, 'level 1', this.scale.width, this.scale.height);
+
+        // game objects
+        this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();

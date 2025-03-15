@@ -131,6 +131,14 @@ class Tower extends ProjectileShooter {
     enable_tower(){
         this.enabled = true;
     }
+    get_overlap_other_towers() {
+        for (let tower of this.scene.towers) {
+            if (this.scene.physics.overlap(this, tower)) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 class CannonTower extends Tower{

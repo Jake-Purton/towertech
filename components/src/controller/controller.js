@@ -183,27 +183,27 @@ export default class Controller extends Phaser.Scene{
         this.load.image('robot_body','/game_images/player_sprites/bodies/robot_body.png');
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
         this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
-        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/robot_body.png');
+        this.load.image('energy_core_frame','/game_images/player_sprites/bodies/energy_core_frame.png');
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('armored_walker','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('spider_leg','/game_images/player_sprites/legs/robot_leg.png');
+        this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
+        this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
         this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
         // wheels
-        this.load.image('basic_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('basic_wheel','/game_images/player_sprites/legs/basic_wheel.png');
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
-        this.load.image('floating_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('floating_wheel','/game_images/player_sprites/legs/floating_wheel.png');
         this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
 
         // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/pistol.png');
-        this.load.image('laser_cannon','/game_images/player_sprites/weapons/pistol.png');
+        this.load.image('plasma_blaster','/game_images/player_sprites/weapons/plasma_blaster.png');
+        this.load.image('rocket_launcher','/game_images/player_sprites/weapons/rocket_launcher.png');
+        this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
+        this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
 
         // ui images
         this.load.image('button','/game_images/UI/tab_button.png');
@@ -301,6 +301,9 @@ export default class Controller extends Phaser.Scene{
                     console.log('no part data found when equipping item: ', input)
                 }
                 break
+            case 'Prompt_User':
+                this.create_prompt_text(input.prompt);
+                break;
             default:
                 console.log('unused input received: ',input)
         }
@@ -364,13 +367,11 @@ export default class Controller extends Phaser.Scene{
         // top tab buttons
         let tab_buttons = ['Player', 'Tower', 'Upgrade'];
         let select_buttons = [];
-        console.log('making tab buttons:', this.current_selected_sub_menu)
         for (let i=0;i<tab_buttons.length;i++) {
             select_buttons.push(new Button(this, this.sub_menu_container.x+this.sub_menu_container.width/2-162+110*i, 10, {
                 text:tab_buttons[i], center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
                 press_command:()=>this.move_sub_menu(tab_buttons[i],this.sub_menu_container)}).setDepth(4))
             if (tab_buttons[i] === this.current_selected_sub_menu) {
-                console.log('opening sub menu', tab_buttons[i]);
                 select_buttons[select_buttons.length-1].force_button_press();
             }
         }
@@ -599,7 +600,18 @@ export default class Controller extends Phaser.Scene{
 
         ]
     }
-
+    create_prompt_text(text) {
+        let text_obj = this.add.text(this.screen_width/2, this.screen_height/2, text,
+            {fontSize: 20, fontFamily:"Tahoma", fontStyle:"bold",align:"center",
+                color:'#b11', wordWrap:{width:200}})
+        let rect = new Rectangle(this, text_obj.x-10-text_obj.width/2, text_obj.y-10-text_obj.height/2,
+            text_obj.width+20, text_obj.height+20, RGBtoHEX([30,10,10]),{rounded_corners:10}).setDepth(10)
+        text_obj.setOrigin(0.5,0.5).setDepth(10.1);
+        this.time.delayedCall(3000, () => {
+            text_obj.destroy()
+            rect.destroy()
+        }, [], this);
+    }
 
     destroy_ui_list(ui_list) {
         if (typeof(ui_list) !== 'undefined') {
