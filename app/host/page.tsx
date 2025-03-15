@@ -18,10 +18,12 @@ const HostPage = () => {
 
   const handleDifficultyClick = (difficulty: string) => {
     setSelectedDifficulty(difficulty);
+    localStorage.setItem("gameDifficulty", difficulty);
   };
 
   const handleMapClick = (map: string) => {
     setSelectedMap(map);
+    localStorage.setItem("gameMap", map);
   };
   
   useEffect(() => {
