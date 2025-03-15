@@ -9,6 +9,7 @@ const GameController = () => {
   const router = useRouter();
 
   useEffect(() => {
+
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
 
@@ -53,6 +54,16 @@ const GameController = () => {
         };
 
         const game = new Phaser.Game(config);
+
+        socket.on('updateUsers', (userList) => {
+          if (userList.length === 0) {
+            // COMMENT THE BELOW LINE OUT IF YOU DONT WANT TO GET KICKED OUT OFF THE PAGE
+            router.push('/join/room');
+            game.destroy();
+          }
+        });
+    
+        socket.emit('getUsers');
 
         return () => {
           socket.off("output_from_game_to_client");
