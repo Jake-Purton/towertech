@@ -30,9 +30,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         // stats and info
         this.move_speed = move_speed;
         this.velocity = new Vec(0,0);
-        this.health = Math.floor(health * (1 + difficulty / 5));
+        this.health = Math.floor(health * (1 + difficulty));
         this.coin_value = coin_value;
-        this.melee_damage = Math.floor(melee_damage * (1 + difficulty / 5));
+        this.melee_damage = Math.floor(melee_damage * (1 + difficulty/5));
         this.knockback_resistance = knockback_resistance;
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
@@ -43,8 +43,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.cooldown = cooldown;
         this.max_cooldown = max_cooldown;
         this.shoot_angle = shoot_angle;
-        this.damage = Math.floor(damage * (1 + difficulty / 5));
-        this.max_health = health;
+        this.damage = Math.floor(damage * (1 + difficulty/2));
+        this.max_health = this.health;
         this.loot_table = loot_table;
         this.difficulty = difficulty;
 

@@ -38,6 +38,9 @@ const HostPage = () => {
       }
     };
 
+    handleDifficultyClick("Medium")
+    handleMapClick("level 2");
+
     if (!socket.connected) socket.connect();
     socket.emit("createRoom");
     getIPAddress();

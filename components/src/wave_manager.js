@@ -12,7 +12,7 @@ export default class WaveManager
     wave_index = -1;
     waveSeed = -1;
 
-    constructor(game, base_difficulty=0)
+    constructor(game)
     {
         this.current_wave = null;
         // Each entry in waveData would contain:
@@ -24,7 +24,13 @@ export default class WaveManager
         this.wave_index = -1;
         //this.waveSeed = -1;
 
-        this.base_difficulty = base_difficulty;
+
+        let difficulties = {
+            Easy:1,
+            Medium:2,
+            Hard:3}
+        let diff = localStorage.getItem("gameDifficulty")
+        this.base_difficulty = difficulties[diff];
 
         this.game = game;
     }
@@ -87,8 +93,6 @@ export default class WaveManager
             }
         }
 
-        console.log(enemyList)
-
         return new Wave(this.game, length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies, difficulty);
 
 
@@ -97,7 +101,10 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-        this.current_wave.game_tick(deltaTime);
+        console.log(this.current_wave)
+        if (this.current_wave.game_tick(deltaTime)) {
+            this.next_wave();
+        }
     }
 
     next_wave()
@@ -106,9 +113,7 @@ export default class WaveManager
         this.wave_index ++;
 
         // increases difficulty by number of players every 5 waves
-        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * Object.keys(this.game.players).length + this.base_difficulty;
-        let waveinfo = {wave:this.wave_index + 1, difficulty:difficulty}
-        console.log(waveinfo)
+        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
 
         let newWave = null;
         if (this.wave_index < this.waveData.length)

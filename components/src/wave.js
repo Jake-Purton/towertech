@@ -41,10 +41,12 @@ export default class Wave
         // Initialise time, duration, and spawning timer variables.
         this.duration = length * this.game.target_fps;
         this.remainingTime = length * this.game.target_fps;
+        this.timeBetweenWaves = 5 * this.game.target_fps;
 
         this.spawnDelay = spawnDelay * this.game.target_fps;
         this.nextSpawn = spawnDelay * this.game.target_fps;
         this.numEnemies = numEnemies;
+        this.totalEnemies = this.numEnemies;
 
         this.difficulty = difficulty;
     }
@@ -52,7 +54,9 @@ export default class Wave
     game_tick(deltaTime)
     {
         // Subtract deltaTime from the remaining time.
-        this.remainingTime -= deltaTime;
+        if (this.game.enemies.length <= 0) {
+            this.timeBetweenWaves -= deltaTime;
+        }
         this.nextSpawn -= deltaTime;
 
         // When it's time to spawn a new enemy,
@@ -63,12 +67,7 @@ export default class Wave
             // and reset the timer.
             this.nextSpawn = this.spawnDelay;
         }
-
-        if (this.remainingTime <= 0)
-        {
-            // do stuff - likely communicate to start the next wave.
-            this.game.level.wave_manager.next_wave();
-        }
+        return (this.remainingTime <= 0 || this.timeBetweenWaves <= 0)
     }
 
     find_enemy_to_spawn()
