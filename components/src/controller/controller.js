@@ -300,21 +300,8 @@ export default class Controller extends Phaser.Scene{
         }
 
         this.input.once('pointerup',() => {
-            if (!this.scale.fullscreen) {
-                this.print('SET FULLSCREEN')
-                this.scale.startFullscreen()
-            }
+            this.apply_fullscreen()
         }, this)
-
-        // try {
-        //     this.scale.startFullscreen();
-        //     screen.orientation.lock('landscape');
-        // } catch {
-        //     if (document.documentElement.requestFullscreen) {
-        //         document.documentElement.requestFullscreen()
-        //             .catch(err => console.warn('Request Fullscreen Failed:', err));
-        //     }
-        // }
 
         this.orientation_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 
             'Please change\nto Landscape', {
@@ -338,7 +325,11 @@ export default class Controller extends Phaser.Scene{
             const isPortrait = window.innerHeight > window.innerWidth;
 
             if (isPortrait) {
-                this.hideAllUIElements();
+                this.destroy_ui();
+                if (this.scale.fullscreen || true) {
+                    this.scale.stopFullscreen()
+                }
+                this.input.off('pointerup');
 
                 if (this.orientation_text) {
                     this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
@@ -349,72 +340,49 @@ export default class Controller extends Phaser.Scene{
                 if (this.orientation_text) {
                     this.orientation_text.setVisible(false);
                 }
-                this.print('creating ui -00000000 from handle input')
-
+                if (!this.scale.fullscreen || true) {
+                    this.input.once('pointerup', () => {
+                        this.apply_fullscreen()
+                    }, this)
+                }
                 this.create_ui();
             }
 
             this.resized();
         }, 50);
     }
+    apply_fullscreen() {
+        if (!this.scale.isFullscreen) {
+            try {
+                this.scale.startFullscreen();
+            } catch {}
 
-    hideAllUIElements = () => {
-        if (this.ui_objects) {
-            this.ui_objects.forEach(obj => obj.setVisible(false));
-        }
-        if (this.sub_menu_ui_objects) {
-            this.sub_menu_ui_objects.forEach(obj => obj.setVisible(false));
-        }
-        if (this.tower_buy_ui_objects) {
-            this.tower_buy_ui_objects.forEach(obj => obj.setVisible(false));
-        }
-        if (this.player_parts_ui_objects) {
-            this.player_parts_ui_objects.forEach(obj => obj.setVisible(false));
-        }
-        if (this.browse_parts_ui_objects) {
-            this.browse_parts_ui_objects.forEach(obj => obj.setVisible(false));
-        }
-        if (this.specific_part_ui_objects) {
-            this.specific_part_ui_objects.forEach(obj => obj.setVisible(false));
-        }
-        if (this.coins_ui_text) {
-            this.coins_ui_text.setVisible(false);
+            // let forceFullScreen = () => {
+            //     let gameContainer = document.getElementById('game_controller');
+            //     gameContainer.style.position = 'fixed';
+            //     gameContainer.style.width = '100vw';
+            //     gameContainer.style.height = '100vh';
+            //     gameContainer.style.top = '0';
+            //     gameContainer.style.left = '0';
+            // }
+            // forceFullScreen()
         }
     }
 
-    showAllUIElements = () => {
-        this.create_ui()
-        // if (this.ui_objects) {
-        //     this.ui_objects.forEach(obj => obj.setVisible(true));
-        // }
-        // if (this.sub_menu_ui_objects) {
-        //     this.sub_menu_ui_objects.forEach(obj => obj.setVisible(true));
-        // }
-        // if (this.tower_buy_ui_objects) {
-        //     this.tower_buy_ui_objects.forEach(obj => obj.setVisible(true));
-        // }
-        // if (this.player_parts_ui_objects) {
-        //     this.player_parts_ui_objects.forEach(obj => obj.setVisible(true));
-        // }
-        // if (this.browse_parts_ui_objects) {
-        //     this.browse_parts_ui_objects.forEach(obj => obj.setVisible(true));
-        // }
-        // if (this.specific_part_ui_objects) {
-        //     this.specific_part_ui_objects.forEach(obj => obj.setVisible(true));
-        // }
-        // if (this.coins_ui_text) {
-        //     this.coins_ui_text.setVisible(true);
-        // }
+    destroy_ui = (destroy_all=true) => {
+        if (destroy_all) {
+            this.destroy_ui_list(this.ui_objects);
+        }
+        this.destroy_ui_list(this.tower_menu_ui_objects);
+        this.destroy_ui_list(this.tower_buy_ui_objects);
+        this.destroy_ui_list(this.upgrade_menu_ui_objects);
+        this.destroy_ui_list(this.player_parts_ui_objects);
+        this.destroy_ui_list(this.browse_parts_ui_objects);
+        this.destroy_ui_list(this.specific_part_ui_objects);
     }
 
     resized = () => {
         const computeScreenSize = () => {
-            // if (this.mobile_device && window.innerHeight > window.innerWidth) {
-            //     return {
-            //         width: window.innerHeight,
-            //         height: window.innerWidth
-            //     };
-            // }
             return {
                 width: window.innerWidth,
                 height: window.innerHeight
@@ -503,12 +471,7 @@ export default class Controller extends Phaser.Scene{
         if (menu !== this.prev_sub_menu) {
             this.prev_sub_menu = menu;
             this.current_selected_sub_menu = menu;
-            this.destroy_ui_list(this.tower_menu_ui_objects);
-            this.destroy_ui_list(this.tower_buy_ui_objects);
-            this.destroy_ui_list(this.upgrade_menu_ui_objects);
-            this.destroy_ui_list(this.player_parts_ui_objects);
-            this.destroy_ui_list(this.browse_parts_ui_objects);
-            this.destroy_ui_list(this.specific_part_ui_objects);
+            this.destroy_ui(false);
             switch (menu) {
                 case "Player":
                     this.create_player_parts_menu(container_rect);

@@ -11,7 +11,7 @@ const GameController = dynamic(() => import('../../components/GameController'), 
 
 const GameControllerPage: React.FC = () => {
     return (
-        <div className="game flex items-center justify-center h-screen w-screen">
+        <div id="game_controller" className="game flex items-center justify-center h-screen w-screen">
             <GameController />
         </div>
     );
