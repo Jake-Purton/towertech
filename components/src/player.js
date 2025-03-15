@@ -1,54 +1,103 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
 
-import {DefaultBody, RobotBody} from './components/body.js';
-import {DefaultLeg, RobotLeg, StripedLeg } from './components/leg.js';
-import {DefaultWheel } from './components/wheel.js';
-import {DefaultWeapon, PistolWeapon } from './components/weapon.js';
+import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame } from './components/body.js';
+import {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg } from './components/leg.js';
+import {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
+import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type} from "./utiles.js";
+import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
+import {PartStatsManager} from "./components/part_stat_manager.js";
+import {Rectangle} from "./ui_widgets/shape.js";
 
 const Vec = Phaser.Math.Vector2;
 
 const part_converter = {
     'robot_leg':RobotLeg,
     'striped_leg':StripedLeg,
-    'default_leg':DefaultLeg,
-    'wheel':DefaultWheel,
+    'light_leg':LightLeg,
+    'armored_walker':ArmoredWalker,
+    'spider_leg':SpiderLeg,
 
-    'default_body':DefaultBody,
+    'basic_wheel':BasicWheel,
+    'speedster_wheel':SpeedsterWheel,
+    'floating_wheel':FloatingWheel,
+    'tank_treads':TankTreads,
+
     'robot_body':RobotBody,
+    'lightweight_frame':LightweightFrame,
+    'tank_frame':TankFrame,
+    'energy_core_frame':EnergyCoreFrame,
 
-    'default_weapon':DefaultWeapon,
     'pistol_weapon':PistolWeapon,
+    'plasma_blaster': PlasmaBlaster,
+    'rocket_launcher': RocketLauncher,
+    'tesla_rifle': TeslaRifle,
+    'laser_cannon': LaserCannon,
 }
 
 export default class Player extends Phaser.GameObjects.Container{
-    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='pistol_weapon'}={}){
+    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='pistol_weapon', username='Player'}={}){
 
         // create phaser stuff
         super(scene, x, y, []);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setDepth(4);
+
+        // create username
+        this.username = username;
+        this.name_text = new Phaser.GameObjects.Text(scene, 0, -20, this.username,
+            {fontFamily:'Tahoma',color:'#000000', fontSize:18, align:"center", padding:2,
+            }).setOrigin(0.5, 0.5).setDepth(8);
+        this.add(this.name_text);
+        if (player_id !== "UI_PLAYER_DISPLAY") {
+            this.name_backing = new Rectangle(scene,
+                this.name_text.x-this.name_text.width/2, this.name_text.y-this.name_text.height/2+3,
+                this.name_text.width, this.name_text.height-6, RGBtoHEX([255,255,255]),{z_index:7, alpha:0.2});
+            this.add(this.name_backing);
+        }
 
         // game stats
         this.coins = 0;
-        this.kill_count = 0;
         this.player_score = 0;
+        this.towers_placed = 0;
+        this.kill_count = 0;
+        this.damage_dealt = 0;
+        this.damage_taken = 0;
+        this.health_healed = 0;
+        this.coins_spent = 0;
+        this.shots_fired = 0;
+        this.death_count = 0;
         this.inventory = {};
       
         // constants
         this.speed = 0.4;
+        this.knockback_resistance = 0.5;
         this.drag = 0.9;
         this.player_id = player_id;
         this.pickup_range = 20;
 
+        // aliveness
+        this.health = 30;
+        this.max_health = this.health;
+        this.passive_healing_timer = 1;
+        this.passive_healing_hit_timer = 3;
+        this.passive_healing_rate = 1;
+        this.dead = false;
+
+
         // assign body parts
+        this.part_stat_manager = new PartStatsManager();
         for (let item of [body, weapon, leg]) {
             this.add_to_inventory(item);
-            this.equip_part(item);
+            if (this.player_id === 'UI_PLAYER_DISPLAY' || this.player_id === 'TempPlayerID') {
+                this.equip_part(item);
+            } else {
+                this.scene.output_data(this.player_id, {type:'Force_Equip', item_name:item});
+            }
         }
-      
+
         // variables
         this.velocity = new Vec(0,0);
         this.key_inputs = {
@@ -65,11 +114,6 @@ export default class Player extends Phaser.GameObjects.Container{
 
         this.has_nearby_tower = false;
 
-        // aliveness
-        this.health = 1000;
-        this.dead = false;
-
-
         // effects info
         this.effects = new Effects(scene);
         this.last_damage_source = null;
@@ -77,8 +121,13 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
         if (!this.dead) {
+            this.passive_healing_timer -= delta_time/this.scene.target_fps;
+            if (this.passive_healing_timer < 0) {
+                this.add_health(this.passive_healing_rate*delta_time/this.scene.target_fps);
+            }
+
             // handle effects
-            this.health += this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps;
+            this.add_health(this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps);
             this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
             this.effects.game_tick(delta_time, this);
 
@@ -93,40 +142,52 @@ export default class Player extends Phaser.GameObjects.Container{
 
             this.move_direction.scale(this.speed * delta_time);
 
-            this.velocity.add(this.move_direction);
-            this.velocity.x *= this.drag**delta_time;
-            this.velocity.y *= this.drag**delta_time;
+            if (this.username === "chris" || true) {
+                this.velocity.add(this.move_direction);
+                this.velocity.x *= this.drag**delta_time;
+                this.velocity.y *= this.drag**delta_time;
+            } else {
+                this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
+            }
 
             let speed_multiplier =  this.effects.get_speed_multiplier();
 
             this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
             this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+            this.keep_in_map();
 
             // part management
-            this.leg_object.movement_animation(this.velocity);
-            this.weapon_object.game_tick(delta_time);
-            if (this.key_inputs.Attack) {
-                this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
-            } else {
-                this.weapon_object.attack_button_up();
+            if (defined(this.leg_object)) {
+                this.leg_object.movement_animation(this.velocity);
+            }
+            if (defined(this.body_object)) {
+                this.body_object.movement_animation(this.velocity);
+            }
+            if (defined(this.weapon_object)) {
+                this.weapon_object.game_tick(delta_time);
+                if (this.key_inputs.Attack) {
+                    this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
+                } else {
+                    this.weapon_object.attack_button_up();
+                }
             }
         }
     }
-    set_body(body) {
+    set_body(body, stats={}) {
         this.remove(this.body_object,true);
         this.body_name = body;
-        this.body_object = new part_converter[body](this.scene);
+        this.body_object = new part_converter[body](this.scene, stats);
         this.add(this.body_object);
         this.refresh_player_parts();
     }
-    set_leg(leg) {
+    set_leg(leg, stats={}) {
         this.remove(this.leg_object,true);
         this.leg_name = leg;
-        this.leg_object = new part_converter[leg](this.scene);
+        this.leg_object = new part_converter[leg](this.scene, stats);
         this.add(this.leg_object);
         this.refresh_player_parts();
     }
-    set_weapon(weapon) {
+    set_weapon(weapon, stats={}) {
         let prev_angle
         if (typeof(this.weapon_object) !== "undefined") {
             prev_angle = this.weapon_object.get_weapon_direction();
@@ -135,25 +196,39 @@ export default class Player extends Phaser.GameObjects.Container{
         }
         this.remove(this.weapon_object,true);
         this.weapon_name = weapon;
-        this.weapon_object = new part_converter[weapon](this.scene);
+        this.weapon_object = new part_converter[weapon](this.scene, stats);
         this.weapon_object.set_weapon_direction(prev_angle);
         this.add(this.weapon_object);
         this.refresh_player_parts();
     }
     refresh_player_parts(){
-        if (typeof(this.body_object) !== 'undefined' && typeof(this.weapon_object) !== 'undefined' && typeof(this.leg_object) !== 'undefined') {
+        if (defined(this.body_object) && defined(this.weapon_object) && defined(this.leg_object)) {
             this.bringToTop(this.weapon_object);
             this.sendToBack(this.leg_object);
+            this.bringToTop(this.name_text);
             this.weapon_object.set_scale(this.body_object.get_scale_multiplier());
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
+            this.refresh_stats();
+
+            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13);
+            if (defined(this.name_backing)) {
+                this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
+            }
         }
+    }
+    refresh_stats() {
+        this.part_stat_manager.set_parts(this.leg_object, this.body_object, this.weapon_object);
+        this.set_health(this.health, this.part_stat_manager.get_health())
+        this.speed = this.part_stat_manager.get_speed();
+        this.passive_healing_rate = this.part_stat_manager.get_passive_healing_rate();
     }
 
     get_dead() {
         return (this.health<=0)
     }
     die() {
+        this.death_count += 1;
         this.dead = true;
         this.visible = false;
         this.set_coins(0);
@@ -162,9 +237,11 @@ export default class Player extends Phaser.GameObjects.Container{
         this.dead = false;
         this.visible = true;
     }
-    take_damage(damage, speed, angle, source) {
+    take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
-            this.health -= damage;
+            this.passive_healing_timer = this.passive_healing_hit_timer;
+            this.add_health(-damage)
+            this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
             if (source !== null) {
                 this.last_damage_source = source;
             }
@@ -176,6 +253,18 @@ export default class Player extends Phaser.GameObjects.Container{
             this.kill_count += 1;
             this.player_score += enemy.coin_value;
             this.set_coins(this.coins+enemy.coin_value);
+        }
+    }
+    keep_in_map() {
+        if (this.body.x < 0) {
+            this.body.position.x = 0
+        } else if (this.body.x+this.body.width > this.scene.level.displayWidth) {
+            this.body.position.x = this.scene.level.displayWidth-this.body.width
+        }
+        if (this.body.y < 0) {
+            this.body.position.y = 0
+        } else if (this.body.y+this.body.height > this.scene.level.displayHeight) {
+            this.body.position.y = this.scene.level.displayHeight-this.body.height
         }
     }
     key_input(data) {
@@ -212,8 +301,22 @@ export default class Player extends Phaser.GameObjects.Container{
             let new_tower = null;
             if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
                 if (data.Tower_Stats.cost <= this.coins) {
-                    new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
-                    this.set_coins(this.coins - data.Tower_Stats.cost);
+                    if (!this.scene.level.check_path_collision(this.x, this.y, 30)) {
+                        new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
+                        if (new_tower.get_overlap_other_towers()) {
+                            new_tower.destroy()
+                            new_tower = null
+                            this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place towers on top of each other!"})
+                        } else {
+                            // buy the tower
+                            this.set_coins(this.coins - data.Tower_Stats.cost);
+                            this.towers_placed += 1;
+                        }
+                    } else {
+                        this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place a tower on the path!"})
+                    }
+                } else {
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this tower!"})
                 }
             }
             this.prev_tower_button_direction = data.Direction;
@@ -224,24 +327,58 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     pickup_item(dropped_item) {
         this.add_to_inventory(dropped_item);
+        this.items_picked_up += 1;
         // this.set_part(dropped_item.item_name, dropped_item.item_type);
     }
-    set_part(item_name, item_type) {
+    set_part(item_name, item_type, stats={}) {
         switch (item_type) {
             case 'leg':
-                this.set_leg(item_name);
+                this.set_leg(item_name, stats);
                 break;
             case 'body':
-                this.set_body(item_name);
+                this.set_body(item_name, stats);
                 break;
             case 'weapon':
-                this.set_weapon(item_name);
+                this.set_weapon(item_name, stats);
                 break;
         }
     }
     set_coins(coins) {
+        if (coins < this.coins) {
+            this.coins_spent += this.coins-coins;
+        }
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+        this.scene.level.player_info_display.update_list_text()
+    }
+    set_health(health, max_health) {
+        if (health !== this.health || max_health !== this.max_health || true) {
+            if (health > max_health) {
+                health = max_health;
+            } else if (health < 0) {
+                health = 0;
+            }
+            if (max_health === this.max_health) {
+                if (health < this.health) {
+                    this.damage_taken += this.health-health;
+                } else {
+                    this.health_healed += health-this.health;
+                }
+            }
+            this.health = health;
+            this.max_health = max_health;
+            if (this.player_id !== 'UI_PLAYER_DISPLAY') {
+                this.scene.output_data(this.player_id, {
+                    type: 'Set_Health',
+                    health: this.health,
+                    max_health: this.max_health
+                });
+                this.scene.level.player_info_display.update_list_text()
+            }
+        }
+    }
+    add_health(health_change) {
+        this.set_health(this.health+health_change, this.max_health);
     }
     save_inventory() {
         if (this.player_id !== 'UI_PLAYER_DISPLAY') {
@@ -259,10 +396,13 @@ export default class Player extends Phaser.GameObjects.Container{
             this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
         this.save_inventory()
+        if (this.player_id === "TempPlayerID") {
+            this.equip_part(item.item_name, {health:1000, speed: 10, damage:1000, target_distance:300})
+        }
     }
-    equip_part(item_name) {
+    equip_part(item_name, stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
-            this.set_part(item_name, this.inventory[item_name].type);
+            this.set_part(item_name, this.inventory[item_name].type, stats);
             for (let key of Object.keys(this.inventory)) {
                 if (this.inventory[key].type === this.inventory[item_name].type) {
                     this.inventory[key].equipped = false;
@@ -271,5 +411,34 @@ export default class Player extends Phaser.GameObjects.Container{
             this.inventory[item_name].equipped = true;
             this.save_inventory();
         }
+    }
+    upgrade_part(item_name, new_stats) {
+        if (Object.keys(this.inventory).includes(item_name)) {
+            if (this.inventory[item_name].count >= new_stats.upgrade_number) {
+                if (this.coins >= new_stats.upgrade_cost) {
+                    this.inventory[item_name].count -= new_stats.upgrade_number;
+                    this.inventory[item_name].level += 1;
+                    this.set_coins(this.coins - new_stats.upgrade_cost)
+                    if (this.inventory[item_name].equipped) {
+                        this.equip_part(item_name, new_stats);
+                    } else {
+                        this.save_inventory();
+                    }
+                } else {
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this upgrade!"})
+                }
+            } else {
+                let diff = new_stats.upgrade_number - this.inventory[item_name].count
+                let item_output = item_name.replace("_", " ")
+                if (diff > 1) {
+                    item_output += "'s"
+                }
+                this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You need "+diff+" more "+item_output+" for this upgrade!"})
+            }
+        }
+    }
+    destroy(fromScene) {
+        this.removeAll(true);
+        super.destroy(fromScene);
     }
 }

@@ -80,6 +80,11 @@ export default class Button extends Phaser.GameObjects.Container {
         this.enabled = true;
         this.refresh_tint()
     }
+    set_enabled(enabled) {
+        this.enabled = enabled;
+        this.refresh_tint();
+        return this;
+    }
 
     button_down(pointer) {
         if (!this.button_pressed) {

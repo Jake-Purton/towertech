@@ -6,7 +6,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture, projectile_class,
                 {range=100, fire_rate=3, damage=1, pierce_count=0,
                     fire_distance=100, projectile_min_speed=0.5, projectile_no_drag_distance=80,
-                    projectile_auto_aim_range=1000, projectile_auto_aim_strength=1,
+                    projectile_auto_aim_range=1000, projectile_auto_aim_strength=0,
                     fire_spread=0, fire_distance_spread=10, fire_velocity=10,
                     max_turn_speed=10, passive_turn_speed=0.5,
                     target_type='Closest', stay_on_same_target=false,
@@ -47,13 +47,16 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         this.max_turn_speed = max_turn_speed; // measured in degrees
         this.target_type = target_type; // can be one of "Closest", "Furthest", "Front", "Back", "MostHealth", "LeastHealth"
         this.stay_on_same_target = stay_on_same_target; // if true will keep attacking same target even if new target appears, e.g. a new closest target
+
+        // stats
+        this.shots_fired = 0;
     }
     game_tick(delta_time) {
         this.shoot_cooldown -= delta_time/this.scene.target_fps;
         this.time_since_attacking += delta_time/this.scene.target_fps;
     }
     check_target(enemies) {
-        if (!this.stay_on_same_target || get_removed(this.target)) {
+        if (!this.stay_on_same_target || get_removed(this.target) || get_removed(this.target.scene)) {
             this.locate_target(enemies);
         } else {
             if (this.get_relative_pos(this.target).length()>this.range){
@@ -109,6 +112,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         return false;
     }
     shoot(effects) {
+        this.shots_fired += 1;
         // create a new projectile object and add it to projectiles list
         let angle = random_gauss(this.get_weapon_direction(), this.fire_spread, this.fire_spread*3);
         let fire_distance = random_gauss(this.fire_distance, this.fire_distance_spread);
@@ -124,8 +128,8 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
                 no_drag_distance:this.projectile_no_drag_distance}));
     }
     get_projectile_source_position() {
-        return new Vec(this.x + this.width*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
-            this.y + this.width*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
+        return new Vec(this.x + this.displayWidth*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
+            this.y + this.displayWidth*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
     }
     get_projectile_source() {
         return this

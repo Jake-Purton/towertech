@@ -41,8 +41,15 @@ export default function Home() {
                 onClick={handleLogout}
                 className="text-orange-600 hover:text-orange-700 underline"
               >
-                Sign out?
+                Sign out
               </button>
+              <p>/</p>
+              <a
+                className="text-orange-600 hover:text-orange-700 underline"
+                href="/profile"
+              >
+                View Profile
+              </a>
             </>
           ) : (
             <ul>

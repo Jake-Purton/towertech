@@ -15,6 +15,7 @@ class Tower extends ProjectileShooter {
             properties[stat] = tower_stats[stat];
         }
         super(scene, x, y, tower_type + '_base', projectile_class, properties);
+        this.setDepth(1);
 
         this.base_scale = base_scale;
         this.setScale(this.base_scale);
@@ -23,6 +24,7 @@ class Tower extends ProjectileShooter {
         this.gun = new Phaser.Physics.Arcade.Sprite(scene, x, y, tower_type + '_gun');
         scene.add.existing(this.gun);
         scene.physics.add.existing(this.gun);
+        this.gun.setDepth(1.5);
 
         // create range highlighter
         this.graphics = scene.add.graphics();
@@ -104,7 +106,7 @@ class Tower extends ProjectileShooter {
     get_dead() {
         return (this.health<=0)
     }
-    take_damage(damage, speed, angle, source) {
+    take_damage(damage, speed, angle, knockback, source) {
         this.health -= damage;
     }
     get_kill_credit(enemy) {
@@ -128,6 +130,14 @@ class Tower extends ProjectileShooter {
     }
     enable_tower(){
         this.enabled = true;
+    }
+    get_overlap_other_towers() {
+        for (let tower of this.scene.towers) {
+            if (this.scene.physics.overlap(this, tower)) {
+                return true
+            }
+        }
+        return false
     }
 }
 
