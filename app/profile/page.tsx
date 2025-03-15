@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = useState({ name: "", email: "" });
@@ -59,19 +60,19 @@ const ProfilePage: React.FC = () => {
         setIsEditing(false);
         setMessage("Username updated successfully.");
       }
-    } catch (error) {
+    } catch {
       setMessage("An error occurred while updating the username.");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
-        <a
+        <Link
             href="/"
             className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
         >
             Back to Home
-        </a>
+        </Link>
       {!isLoading && (
         <div className="absolute top-4 left-4 flex gap-4">
           {user.name ? (
@@ -85,9 +86,9 @@ const ProfilePage: React.FC = () => {
               </button>
             </>
           ) : (
-            <a href="/login" className="text-orange-600 hover:text-orange-700 underline">
+            <Link href="/login" className="text-orange-600 hover:text-orange-700 underline">
               Login
-            </a>
+            </Link>
           )}
         </div>
       )}

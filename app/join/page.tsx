@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { JoinRoomMessage } from "../src/messages";
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from "next/link";
 
 async function verifyToken(token: string) {
     try {
@@ -120,7 +121,7 @@ const JoinPage: React.FC = () => {
 
     const dataSender = (code: string, username: string) => {
         if (socket.id) {
-            var join_message = new JoinRoomMessage(socket.id, code, username);
+            const join_message = new JoinRoomMessage(socket.id, code, username);
             socket.emit("JOIN_ROOM", join_message);
         } else {
             setMessage("Socket ID is undefined");
@@ -136,12 +137,12 @@ const JoinPage: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
-            <a
+            <Link
                 href="/"
                 className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
             >
                 Back to Home
-            </a>
+            </Link>
             {!isLoading && (
                 <div className="absolute top-4 left-4 flex gap-4">
                 {isLoggedIn ? (
@@ -157,14 +158,14 @@ const JoinPage: React.FC = () => {
                 ) : (
                     <ul>
                     <li>
-                        <a href="/login" className="text-orange-600 hover:text-orange-700 underline">
-                        Login
-                        </a>
+                        <Link href="/login" className="text-orange-600 hover:text-orange-700 underline">
+                            Login
+                        </Link>
                     </li> 
                     <li>
-                        <a href="/register" className="text-orange-600 hover:text-orange-700 underline">
-                        Register
-                        </a>
+                        <Link href="/register" className="text-orange-600 hover:text-orange-700 underline">
+                            Register
+                        </Link>
                     </li>
                     </ul>
                 )}
