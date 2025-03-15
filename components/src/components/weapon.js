@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import {CannonBall, Rocket, Bullet, PlasmaShot, FireProjectile, EffectAOE } from '../projectile.js';
+import {CannonBall, Rocket, PlasmaShot} from '../projectile.js';
 import {modulo } from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
 import {PartStats} from './part_stat_manager.js';

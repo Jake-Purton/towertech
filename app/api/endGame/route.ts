@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     }
 
     try {
-      const decoded = jwt.verify(data.roomToken, JWT_SECRET);
+      jwt.verify(data.roomToken, JWT_SECRET);
 
       try {
         // Insert game data into the database
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
           
           for (const player of data.gameData.player_data) {
             // console.log(player);
-            const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}) RETURNING *`;
+            await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}) RETURNING *`;
             // console.log(playerResult);
           }
         } catch (error) {
@@ -50,10 +50,10 @@ export async function POST(req: Request) {
         console.log(error)
         return NextResponse.json({ valid: false, error: "Error inserting game data" }, { status: 401 });
       }
-    } catch (error) {
+    } catch {
       return NextResponse.json({ valid: false, error: "Invalid token" }, { status: 401 });
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Token verification failed" }, { status: 500 });
   }
 }

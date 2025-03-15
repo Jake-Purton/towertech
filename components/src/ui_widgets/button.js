@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {RGBtoHEX} from "../utiles.js";
-const Vec = Phaser.Math.Vector2;
 
 export default class Button extends Phaser.GameObjects.Container {
     // x and y are the center point of the object
@@ -58,7 +57,7 @@ export default class Button extends Phaser.GameObjects.Container {
             this.button_up(pointer);
         }
     }
-    mouse_hovered(pointer) {
+    mouse_hovered() {
         this.mouse_hovering = true;
         this.refresh_tint()
     }

@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { socket } from "../../src/socket";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 const JoinRoomPage = () => {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [inRoom, setInRoom] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  type User = { userID: String, username: String };
+  type User = { userID: string, username: string };
   
   useEffect(() => {
     // Listen for updates to the user list
@@ -20,7 +21,7 @@ const JoinRoomPage = () => {
       }
       setUsers(userList);
     });
-    socket.on("gameStarted", (message) =>{
+    socket.on("gameStarted", () =>{
       // route to a different page
       router.push("/game_controller");
     });
@@ -63,7 +64,7 @@ const JoinRoomPage = () => {
         ):(
           <>
             <h1 className="text-4xl font-bold text-orange-600 drop-shadow-md">You are not in a room</h1>
-            <p><a className="text-orange-600 hover:text-orange-700 underline" href='/join'>Join a room</a> or <a className="text-orange-600 hover:text-orange-700 underline" href='/'>go back to home</a></p>
+            <p><Link className="text-orange-600 hover:text-orange-700 underline" href='/join'>Join a room</Link> or <Link className="text-orange-600 hover:text-orange-700 underline" href='/'>go back to home</Link></p>
           </>
         )}
       </>

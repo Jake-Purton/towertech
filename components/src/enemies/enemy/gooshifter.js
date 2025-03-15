@@ -32,6 +32,7 @@ export default class Gooshifter extends Enemy{
             let direction = this.relative_position(this.target);
             let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
             change.add(this.velocity);
+            this.velocity.setLength(this.velocity.length()*0.9);
             this.melee_hit(delta_time);
             this.setTexture('gooshifter');
             this.play('gooshifter_walk');

@@ -1,6 +1,3 @@
-import * as Phaser from 'phaser';
-const Vec = Phaser.Math.Vector2;
-import Game from './game.js';
 import { spawn_enemy } from './enemies/enemy/enemy.js';
 import Wave from './wave.js'
 

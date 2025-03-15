@@ -1,5 +1,4 @@
 import * as Phaser from 'phaser';
-const Vec = Phaser.Math.Vector2;
 import {PartStats} from './part_stat_manager.js';
 import {random_choice, random_range} from "../utiles.js";
 

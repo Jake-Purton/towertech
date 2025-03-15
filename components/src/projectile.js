@@ -49,7 +49,7 @@ class Projectile extends Entity {
         this.physics_tick(delta_time);
         this.make_trail_particles(delta_time);
     }
-    make_trail_particles(_) {}
+    make_trail_particles() {}
     follow_target() {
         if (this.target !== null && typeof(this.target.scene) !== "undefined") {
             let prev_length = this.velocity.length()

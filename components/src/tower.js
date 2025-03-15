@@ -1,10 +1,9 @@
 import * as Phaser from 'phaser';
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js';
-import {random_gauss, modulo, get_removed } from './utiles.js';
+import {get_removed } from './utiles.js';
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 import ProjectileShooter from './projectile_shooter.js';
-const Vec = Phaser.Math.Vector2;
 
 class Tower extends ProjectileShooter {
     // range is in pixels
@@ -106,7 +105,7 @@ class Tower extends ProjectileShooter {
     get_dead() {
         return (this.health<=0)
     }
-    take_damage(damage, speed, angle, knockback, source) {
+    take_damage(damage) {
         this.health -= damage;
     }
     get_kill_credit(enemy) {
@@ -223,11 +222,11 @@ class SlowingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, EffectAOE, tower_stats, {gun_center:[0.5,0.5]}, {fire_rate:10});
     }
-    shoot(effects) {
+    shoot() {
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
     }
-    rotate_gun(delta_time) {
+    rotate_gun() {
         this.ready_to_shoot = true;
     }
 }
@@ -236,11 +235,11 @@ class HealingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, EffectAOE, tower_stats, {gun_center:[0.5,0.5]}, {fire_rate:10,});
     }
-    shoot(effects) {
+    shoot() {
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
     }
-    rotate_gun(delta_time) {
+    rotate_gun() {
         this.ready_to_shoot = true;
     }
 }
@@ -249,11 +248,11 @@ class BuffingTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, EffectAOE, tower_stats, {gun_center:[0.5,0.5]}, {fire_rate:10});
     }
-    shoot(effects) {
+    shoot() {
         this.scene.projectiles.push(new this.projectile_class(
             this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
     }
-    rotate_gun(delta_time) {
+    rotate_gun() {
         this.ready_to_shoot = true;
     }
 }

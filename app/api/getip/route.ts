@@ -19,7 +19,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ ip: ipAddress });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get IP address' },
       { status: 500 }

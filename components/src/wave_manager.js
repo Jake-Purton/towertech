@@ -1,5 +1,3 @@
-import * as Phaser from 'phaser';
-const Vec = Phaser.Math.Vector2;
 import Wave from './wave.js';
 import BossWave from './wave_boss.js';
 

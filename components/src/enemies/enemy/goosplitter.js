@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
 import { spawn_enemy } from './enemy.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goosplitter extends Enemy{
     constructor(scene, x, y, path, difficulty,

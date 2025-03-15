@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
-import {random_choice } from './utiles.js';
 import Level from "./level.js";
 
 export default class Game extends Phaser.Scene{

@@ -1,5 +1,4 @@
-import * as Phaser from 'phaser';
-import {get_distance, random_range, get_item_type, clamp, RGBtoHEX} from './utiles.js';
+import {get_distance, random_range, get_item_type, clamp} from './utiles.js';
 import Entity from './entity.js';
 
 export default class DroppedItem extends Entity {
