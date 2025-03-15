@@ -5,7 +5,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
     // holding value gets passed an x and y value, which each scale from -1 to 1
     constructor(scene, x, y, {joystick_base='joystick_base',joystick_head='joystick_head',
         base_size=200, head_size=80, max_drag_distance=50, press_tint=16777215, shrink_ratio=1, disable_super_pointermove=false,
-            holding_command=(x, y) => void 0, release_command=() => void 0,
+            holding_command=() => void 0, release_command=() => void 0,
     }={}) {
         super(scene, x, y, []);
         scene.add.existing(this);
@@ -65,7 +65,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.joystick_head.setScale(this.shrink_ratio);
         this.mouse_move(pointer);
     }
-    button_up = (pointer) => {
+    button_up = () => {
         this.holding = false;
         this.active_pointer_id = null;
         this.joystick_head.setPosition(0,0);

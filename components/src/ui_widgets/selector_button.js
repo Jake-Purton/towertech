@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {RGBtoHEX, clamp, modulo} from "../utiles.js";
+import {clamp} from "../utiles.js";
 import {create_tower } from '../tower.js';
 import DroppedItem from '../dropped_item.js';
 import Button from "./button.js";

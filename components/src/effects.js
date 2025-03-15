@@ -1,4 +1,4 @@
-import {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle } from './particle.js';
+import {FireParticle, HeartParticle, SpeedParticle, SlowParticle } from './particle.js';
 
 export default class Effects{
     constructor(scene) {

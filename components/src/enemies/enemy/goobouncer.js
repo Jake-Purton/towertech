@@ -1,7 +1,5 @@
-import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
 import {GoobouncerProjectile } from '../../projectile.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goobouncer extends Enemy{
     constructor(scene, x, y, path, {move_speed=0.5, health=10, coin_value=1, 

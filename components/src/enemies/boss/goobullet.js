@@ -1,8 +1,6 @@
-import * as Phaser from 'phaser';
 import Enemy from '../enemy/default_enemy.js';
 import {random_int } from '../../utiles.js';
 import {GoobulletProjectile } from '../../projectile.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goobullet extends Enemy{
     constructor(scene, x, y, path, {move_speed=0.8, health=100, coin_value=1, melee_damage=1, 

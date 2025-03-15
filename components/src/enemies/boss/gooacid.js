@@ -1,6 +1,4 @@
-import * as Phaser from 'phaser';
 import Enemy from '../enemy/default_enemy.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Gooacid extends Enemy{
     constructor(scene, x, y, path, {move_speed=0.3, health=100, coin_value=1, melee_damage=1, 

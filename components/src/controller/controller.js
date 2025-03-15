@@ -278,7 +278,7 @@ export default class Controller extends Phaser.Scene{
         }
     }
 
-    update(time, delta) {
+    update() {
         if (!this.player_created) {
             // tell server to create a player
             this.player_username = localStorage.getItem('player_username')
@@ -615,7 +615,10 @@ export default class Controller extends Phaser.Scene{
     }
     create_tower_upgrade_menu(container_rect) {
         this.upgrade_menu_ui_objects = [
-
+            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+30,
+                "Tower Upgrades", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:30, align:"center",fontStyle:"bold"}}),
+            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
+                "You are not near any towers", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}}),
         ]
     }
     create_player_parts_menu(container_rect) {
