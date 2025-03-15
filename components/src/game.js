@@ -23,7 +23,7 @@ export default class Game extends Phaser.Scene{
         // gameplay info
         this.game_over = false;
         this.score = 0;
-        this.health = 1;
+        this.health = 10;
 
     }
     preload() {
@@ -36,16 +36,13 @@ export default class Game extends Phaser.Scene{
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
         this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
-        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
         // wheels
-        this.load.image('basic_wheel','/game_images/player_sprites/legs/basic_wheel.png');
-        this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('speedster_wheel','/game_images/player_sprites/legs/speedster_wheel.png');
         this.load.image('floating_wheel','/game_images/player_sprites/legs/floating_wheel.png');
-        this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('tank_treads','/game_images/player_sprites/legs/tank_treads.png');
 
         // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');
@@ -194,6 +191,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // create Level (map info and enemy path)
+        console.log(localStorage.getItem('gameMap'))
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
 
         // game objects

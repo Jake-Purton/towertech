@@ -58,19 +58,9 @@ class Leg extends Phaser.GameObjects.Container{
 }
 
 
-class StripedLeg extends Leg {
-    constructor(scene, stats={}) {
-        super(scene, 'striped_leg', {height:25, stats:stats});
-    }
-}
 class RobotLeg extends Leg {
     constructor(scene, stats={}) {
         super(scene, 'robot_leg', {height:23, stats:stats});
-    }
-}
-class LightLeg extends Leg {
-    constructor(scene, stats={}) {
-        super(scene, 'light_leg', {height:23, stats:stats});
     }
 }
 class ArmoredWalker extends Leg {
@@ -126,4 +116,4 @@ class SpiderLeg extends Phaser.GameObjects.Container {
     }
 }
 
-export {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg };
+export {RobotLeg, ArmoredWalker, SpiderLeg };

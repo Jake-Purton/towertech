@@ -5,7 +5,7 @@ export default class Wave
 
     static currentWave = null;
 
-    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty)
     {
         this.game = game;
         Wave.currentWave = this;
@@ -38,17 +38,22 @@ export default class Wave
         // Initialise time, duration, and spawning timer variables.
         this.duration = length * this.game.target_fps;
         this.remainingTime = length * this.game.target_fps;
+        this.timeBetweenWaves = 5 * this.game.target_fps;
 
         this.spawnDelay = spawnDelay * this.game.target_fps;
         this.nextSpawn = spawnDelay * this.game.target_fps;
         this.numEnemies = numEnemies;
+        this.totalEnemies = this.numEnemies;
 
+        this.difficulty = difficulty;
     }
 
     game_tick(deltaTime)
     {
         // Subtract deltaTime from the remaining time.
-        this.remainingTime -= deltaTime;
+        if (this.game.enemies.length <= 0) {
+            this.timeBetweenWaves -= deltaTime;
+        }
         this.nextSpawn -= deltaTime;
 
         // When it's time to spawn a new enemy,
@@ -59,12 +64,7 @@ export default class Wave
             // and reset the timer.
             this.nextSpawn = this.spawnDelay;
         }
-
-        if (this.remainingTime <= 0)
-        {
-            // do stuff - likely communicate to start the next wave.
-            this.game.level.wave_manager.next_wave();
-        }
+        return (this.remainingTime <= 0 || this.timeBetweenWaves <= 0)
     }
 
     find_enemy_to_spawn()
@@ -98,7 +98,7 @@ export default class Wave
     #spawn_enemy(enemyName)
     {
         // spawn the enemy
-        let enemy = spawn_enemy(this.game, -50, -50, enemyName, this.game.level.enemy_path);
+        let enemy = spawn_enemy(this.game, -50, -50, enemyName, this.game.level.enemy_path, this.difficulty);
         this.game.enemies.push(enemy);
         return enemy;
         // this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));

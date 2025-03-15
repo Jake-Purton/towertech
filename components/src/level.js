@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import WaveManager from "./wave_manager.js";
+import WavesJson from "./waves.json" assert {type: 'json'};
 import PlayerInfoDisplay from "./ui_widgets/player_info_display.js";
 const Vec = Phaser.Math.Vector2;
 
@@ -59,15 +60,7 @@ constructor(scene, map_name, screen_width, screen_height) {
 
         this.wave_manager = new WaveManager(this.scene);
 
-        let wave_data = {
-            "waves":[
-                {"type":"wave", "length":30, "spawnDelay":1,
-                "enemyList":["goober", "goobouncer", "goocaster", "goocrab", "goolime", "gooshifter", "gooslinger", "goosniper", "goosplitter"],//, "goowalker", "goodropper", "goofly"],
-                "enemyWeights":[5,5,5,5,5,5,5,5,5], "enemyCount": 30}
-            ],
-            "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}
-
-        this.wave_manager.load_waves(wave_data)
+        this.wave_manager.load_waves(WavesJson)
     }
     game_tick(delta_time) {
         this.wave_manager.game_tick(delta_time);

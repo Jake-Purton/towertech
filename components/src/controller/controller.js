@@ -41,139 +41,124 @@ export default class Controller extends Phaser.Scene{
                     {level:3, cost:5, damage:1, fire_rate:2, range:180},
                 ]},
             "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:10, range:180},
-                    {level:2, cost:5, damage:1, fire_rate:10, range:180},
-                    {level:3, cost:5, damage:1, fire_rate:10, range:180},
+                    {level:1, cost:25, damage:0.3, fire_rate:10, range:180},
+                    {level:2, cost:40, damage:0.5, fire_rate:10, range:180},
+                    {level:3, cost:60, damage:0.8, fire_rate:10, range:180},
                 ]},
             "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:380},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:380},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:380},
+                    {level:1, cost:10, damage:8, fire_rate:0.5, range:380},
+                    {level:2, cost:15, damage:10, fire_rate:0.8, range:380},
+                    {level:3, cost:25, damage:12, fire_rate:1.4, range:380},
                 ]},
             "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:280},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:280},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:280},
+                    {level:1, cost:40, damage:0.1, fire_rate:8, range:280},
+                    {level:2, cost:50, damage:0.12, fire_rate:10, range:280},
+                    {level:3, cost:60, damage:0.15, fire_rate:12, range:280},
                 ]},
             "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:180},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:180},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:280},
+                    {level:1, cost:20, damage:4, fire_rate:1.5, range:180},
+                    {level:2, cost:30, damage:5, fire_rate:2, range:180},
+                    {level:3, cost:40, damage:6, fire_rate:2.5, range:280},
                 ]},
             "HealingTower":{title:"Healer", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:80},
+                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
+                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
+                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
             "WeakeningTower":{title:"Weakener", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:80},
+                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
+                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
+                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
             "SlowingTower":{title:"Slower", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:80},
+                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
+                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
+                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
             "BuffingTower":{title:"Buffing", description:"its not a cannon", level_stats:[
-                    {level:1, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:2, cost:5, damage:1, fire_rate:2, range:80},
-                    {level:3, cost:5, damage:1, fire_rate:2, range:80},
+                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
+                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
+                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
             }
         this.parts_data = {
             "robot_body":{title:"Robot Body", description:"A standard robotic frame that gets the job done without extras.", level_stats:[
                     {health:10, speed:5},
-                    {health:12, speed:7, upgrade_cost:5, upgrade_number:3},
-                    {health:15, speed:10, upgrade_cost:5, upgrade_number:3},
+                    {health:12, speed:7, upgrade_cost:8, upgrade_number:3},
+                    {health:15, speed:10, upgrade_cost:10, upgrade_number:3},
                 ]},
             "lightweight_frame":{title:"Lightweight Frame", description:"A lightweight frame built for speed at the cost of durability.", level_stats:[
                     {health:5, speed:12},
-                    {health:7, speed:15, upgrade_cost:5, upgrade_number:3},
-                    {health:10, speed:18, upgrade_cost:5, upgrade_number:3},
+                    {health:7, speed:15, upgrade_cost:12, upgrade_number:3},
+                    {health:10, speed:18, upgrade_cost:16, upgrade_number:3},
                 ]},
             "tank_frame":{title:"Tank Frame", description:"A heavily armored frame designed to absorb damage and protect the player.", level_stats:[
                     {health:20, speed:2},
-                    {health:25, speed:3, upgrade_cost:5, upgrade_number:3},
-                    {health:30, speed:4, upgrade_cost:5, upgrade_number:3},
+                    {health:25, speed:3, upgrade_cost:12, upgrade_number:3},
+                    {health:30, speed:4, upgrade_cost:16, upgrade_number:3},
                 ]},
             "energy_core_frame":{title:"Energy Core Frame", description:"A futuristic frame that enhances buff durations but leaves the user vulnerable to burst attacks.", level_stats:[
                     {health:8, speed:6},
-                    {health:12, speed:8, upgrade_cost:5, upgrade_number:3},
-                    {health:16, speed:10, upgrade_cost:5, upgrade_number:3},
+                    {health:12, speed:8, upgrade_cost:10, upgrade_number:3},
+                    {health:16, speed:10, upgrade_cost:15, upgrade_number:3},
                 ]},
 
             "robot_leg":{title:"Robot Legs", description:"A basic set of robotic legs, simple and reliable.", level_stats:[
                     {health:7, speed:8},
-                    {health:9, speed:10, upgrade_cost:5, upgrade_number:3},
-                    {health:11, speed:12, upgrade_cost:5, upgrade_number:3},
-                ]},
-            "striped_leg":{title:"Striped Legs", description:"icl i think we should remove these i dont like em", level_stats:[
-                    {health:7, speed:8},
-                    {health:9, speed:10, upgrade_cost:5, upgrade_number:3},
-                    {health:11, speed:12, upgrade_cost:5, upgrade_number:3},
+                    {health:9, speed:10, upgrade_cost:8, upgrade_number:3},
+                    {health:11, speed:12, upgrade_cost:10, upgrade_number:3},
                 ]},
             "armored_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
-                    {health:10, speed:5},
-                    {health:15, speed:6, upgrade_cost:5, upgrade_number:3},
-                    {health:20, speed:7, upgrade_cost:5, upgrade_number:3},
-                ]},
-            "light_leg":{title:"Light Legs", description:"robotic legs for quick movement but limited durability.", level_stats:[
-                    {health:-2, speed:14},
-                    {health:-4, speed:18, upgrade_cost:5, upgrade_number:3},
-                    {health:-6, speed:22, upgrade_cost:5, upgrade_number:3},
+                    {health:10, speed:6},
+                    {health:20, speed:6, upgrade_cost:10, upgrade_number:3},
+                    {health:30, speed:6, upgrade_cost:15, upgrade_number:3},
                 ]},
             "spider_leg":{title:"Spider Legs", description:"abdullah u didnt do a description for this one", level_stats:[
-                    {health:5, speed:10},
-                    {health:8, speed:13, upgrade_cost:5, upgrade_number:3},
-                    {health:10, speed:16, upgrade_cost:5, upgrade_number:3},
+                    {health:8, speed:10},
+                    {health:12, speed:13, upgrade_cost:10, upgrade_number:3},
+                    {health:16, speed:16, upgrade_cost:15, upgrade_number:3},
                 ]},
 
-            "basic_wheel":{title:"Basic Wheel", description:"A balanced, no-frills wheel option for stable performance.", level_stats:[
-                    {health:5, speed:10},
-                    {health:6, speed:12, upgrade_cost:5, upgrade_number:3},
-                    {health:8, speed:14, upgrade_cost:5, upgrade_number:3},
-                ]},
             "speedster_wheel":{title:"Speedster Wheel", description:"High-speed wheels for those who want to outrun enemies but risk losing control.", level_stats:[
-                    {health:7, speed:8},
-                    {health:9, speed:10, upgrade_cost:5, upgrade_number:3},
-                    {health:11, speed:12, upgrade_cost:5, upgrade_number:3},
+                    {health:7, speed:14},
+                    {health:9, speed:20, upgrade_cost:10, upgrade_number:3},
+                    {health:11, speed:25, upgrade_cost:15, upgrade_number:3},
                 ]},
             "floating_wheel":{title:"Floating Wheel", description:"Hovering movement lets you glide over obstacles but makes you an easy airborne target.", level_stats:[
-                    {health:-3, speed:12},
-                    {health:-5, speed:15, upgrade_cost:5, upgrade_number:3},
-                    {health:-7, speed:18, upgrade_cost:5, upgrade_number:3},
+                    {health:-3, speed:14},
+                    {health:-5, speed:15, upgrade_cost:4, upgrade_number:3},
+                    {health:-7, speed:18, upgrade_cost:8, upgrade_number:3},
                 ]},
             "tank_treads":{title:"Tank Treads", description:"Heavy-duty treads that offer durability at the cost of speed.", level_stats:[
-                    {health:12, speed:2},
-                    {health:16, speed:3, upgrade_cost:5, upgrade_number:3},
-                    {health:20, speed:4, upgrade_cost:5, upgrade_number:3},
+                    {health:20, speed:3},
+                    {health:35, speed:4, upgrade_cost:15, upgrade_number:3},
+                    {health:45, speed:6, upgrade_cost:20, upgrade_number:3},
                 ]},
 
             "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
-                    {damage:6, fire_rate:3, fire_distance:100},
-                    {damage:8, fire_rate:4, fire_distance:130, upgrade_cost:5, upgrade_number:3},
-                    {damage:10, fire_rate:5, fire_distance:160, upgrade_cost:5, upgrade_number:3},
+                    {damage:3, fire_rate:3, fire_distance:100},
+                    {damage:5, fire_rate:4, fire_distance:130, upgrade_cost:10, upgrade_number:3},
+                    {damage:8, fire_rate:5, fire_distance:160, upgrade_cost:15, upgrade_number:3},
                 ]},
             "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay.", level_stats:[
-                    {damage:8, fire_rate:5, fire_distance:150},
-                    {damage:12, fire_rate:6, fire_distance:180, upgrade_cost:5, upgrade_number:3},
-                    {damage:16, fire_rate:8, fire_distance:210, upgrade_cost:5, upgrade_number:3},
+                    {damage:6, fire_rate:5, fire_distance:150},
+                    {damage:7, fire_rate:6, fire_distance:180, upgrade_cost:15, upgrade_number:3},
+                    {damage:8, fire_rate:8, fire_distance:210, upgrade_cost:20, upgrade_number:3},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
-                    {damage:25, fire_rate:1, fire_distance:300},
-                    {damage:30, fire_rate:1.5, fire_distance:350, upgrade_cost:5, upgrade_number:3},
-                    {damage:35, fire_rate:2, fire_distance:400, upgrade_cost:5, upgrade_number:3},
+                    {damage:25, fire_rate:0.3, fire_distance:300},
+                    {damage:35, fire_rate:0.5, fire_distance:350, upgrade_cost:30, upgrade_number:3},
+                    {damage:50, fire_rate:0.8, fire_distance:400, upgrade_cost:40, upgrade_number:3},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
-                    {damage:10, fire_rate:8, fire_distance:140},
-                    {damage:13, fire_rate:10, fire_distance:190, upgrade_cost:5, upgrade_number:3},
-                    {damage:16, fire_rate:14, fire_distance:250, upgrade_cost:5, upgrade_number:3},
+                    {damage:7, fire_rate:8, fire_distance:140},
+                    {damage:11, fire_rate:10, fire_distance:190, upgrade_cost:30, upgrade_number:3},
+                    {damage:15, fire_rate:14, fire_distance:250, upgrade_cost:40, upgrade_number:3},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
                     {damage:15, fire_rate:10, fire_distance:200},
-                    {damage:18, fire_rate:10, fire_distance:250, upgrade_cost:5, upgrade_number:3},
-                    {damage:22, fire_rate:10, fire_distance:300, upgrade_cost:5, upgrade_number:3},
+                    {damage:18, fire_rate:10, fire_distance:250, upgrade_cost:40, upgrade_number:3},
+                    {damage:22, fire_rate:10, fire_distance:300, upgrade_cost:50, upgrade_number:3},
                 ]},
             }
     }
@@ -187,16 +172,13 @@ export default class Controller extends Phaser.Scene{
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
-        this.load.image('light_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
         this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
-        this.load.image('striped_leg','/game_images/player_sprites/legs/striped_leg.png');
 
         // wheels
-        this.load.image('basic_wheel','/game_images/player_sprites/legs/basic_wheel.png');
-        this.load.image('speedster_wheel','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('speedster_wheel','/game_images/player_sprites/legs/speedster_wheel.png');
         this.load.image('floating_wheel','/game_images/player_sprites/legs/floating_wheel.png');
-        this.load.image('tank_treads','/game_images/player_sprites/legs/wheel.png');
+        this.load.image('tank_treads','/game_images/player_sprites/legs/tank_treads.png');
 
         // weapons
         this.load.image('pistol_weapon','/game_images/player_sprites/weapons/pistol.png');

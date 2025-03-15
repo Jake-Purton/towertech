@@ -8,14 +8,14 @@ import DroppedItem from "../../dropped_item.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path,
+    constructor(scene, x, y, type, path, difficulty,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
-                    melee_attack_speed=1, leave_path=1, target=null, damage=1, knockback_resistance=1,
+                    melee_attack_speed=1, leave_path=1, target=null, damage=0, knockback_resistance=1,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:5, drops:{
                             'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1,
-                            'robot_leg':1, 'light_leg':1, 'armored_walker':1, 'spider_leg':1, 'striped_leg':1,
-                            'basic_wheel':1, 'speedster_wheel':1, 'floating_wheel':1, 'tank_treads':1,
+                            'robot_leg':1, 'armored_walker':1, 'spider_leg':1,
+                            'speedster_wheel':1, 'floating_wheel':1, 'tank_treads':1,
                             'pistol_weapon':1, 'plasma_blaster':1, 'rocket_launcher':1, 'tesla_rifle':1, 'laser_cannon':1,
                     }}) {
         super(scene, x, y, type);
@@ -26,13 +26,13 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path = path;
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
-
+        this.type = type;
         // stats and info
         this.move_speed = move_speed;
         this.velocity = new Vec(0,0);
-        this.health = health;
+        this.health = Math.floor(health * (1 + difficulty));
         this.coin_value = coin_value;
-        this.melee_damage = melee_damage;
+        this.melee_damage = Math.floor(melee_damage * (1 + difficulty/5));
         this.knockback_resistance = knockback_resistance;
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
@@ -43,9 +43,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.cooldown = cooldown;
         this.max_cooldown = max_cooldown;
         this.shoot_angle = shoot_angle;
-        this.damage = damage;
-        this.max_health = health;
+        this.damage = Math.floor(damage * (1 + difficulty/2));
+        this.max_health = this.health;
         this.loot_table = loot_table;
+        this.difficulty = difficulty;
 
         // effects info
         this.effects = new Effects(scene);
@@ -238,12 +239,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, this.melee_damage));
+            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, null, this.melee_damage, this.type));
         }
     }
     return_to_path(delta_time){
+        this.target = this.path.getPoint(this.path_t);
         let direction = this.relative_position(this.target);
-        this.melee_hit(delta_time);
         if (direction.length() <= delta_time * this.move_speed){
             this.on_path = true
             return this.setPosition(this.target.x, this.target.y);
