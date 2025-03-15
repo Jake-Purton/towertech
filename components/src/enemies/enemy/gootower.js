@@ -1,8 +1,5 @@
-import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import {random_range } from '../../utiles.js';
 import {GootowerProjectile} from '../../projectile.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Gootower extends Enemy{
     constructor(scene, x, y, path, difficulty,

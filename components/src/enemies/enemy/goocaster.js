@@ -1,7 +1,5 @@
-import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
 import {GoocasterProjectile } from '../../projectile.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goocaster extends Enemy{
     constructor(scene, x, y, path, difficulty, 

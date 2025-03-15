@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { socket } from "../src/socket";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from 'qrcode.react';
+import Link from "next/link";
 
 type User = { userID: string; username: string };
 
@@ -64,7 +65,7 @@ const HostPage = () => {
   // Create the URL for the QR code
   const joinUrl = ipAddress ? `http://${ipAddress}:3000/join?roomCode=${roomCode}` : '';
 
-  const startGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+  const startGame = (): void => {
     if (users.length > 0 && !gameStarted) {
       setGameStarted(true);
       router.push("/game");
@@ -193,12 +194,12 @@ const HostPage = () => {
             </>
           )}
           <div className="flex gap-4 mt-6">
-            <a
+            <Link
               href="/"
               className="px-4 py-2 rounded-lg shadow-md transition-all bg-black hover:bg-orange-900 text-white text-2xl"
             >
               Back to Home
-            </a>
+            </Link>
             <button
               className={`px-4 py-2 rounded-lg shadow-md transition-all ${
                 users.length === 0 || gameStarted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
