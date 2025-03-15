@@ -248,18 +248,34 @@ export default class Controller extends Phaser.Scene{
 
     }
     create() {
-
-        window.addEventListener('resize', () => {this.create_ui()});
-
+        this.scale.setGameSize(window.innerWidth, window.innerHeight);
+        
         if (this.mobile_device) {
-            this.prompt_tap_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 'Tap to Start');
-            this.input.once('pointerup',function() {this.init_fullscreen()},this);
+            this.resized();
+            
+            this.prompt_tap_text = this.add.text(-1000, -1000, '', {
+                fontSize: '32px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: { x: 15, y: 8 },
+                align: 'center'
+            }).setOrigin(0.5).setDepth(1000).setVisible(false);
+            
+            this.time.delayedCall(500, () => {
+                this.init_fullscreen();
+            }, [], this);
+            
+
+            this.input.once('pointerup', this.init_fullscreen, this);
         } else {
+            window.addEventListener('resize', () => {
+                this.scale.setGameSize(window.innerWidth, window.innerHeight);
+                this.create_ui();
+            });
             this.create_ui();
+            this.input.keyboard.on('keydown', this.key_pressed, this);
+            this.input.keyboard.on('keyup', this.key_pressed, this);
         }
-        // setup keyboard inputs
-        this.input.keyboard.on('keydown', this.key_pressed, this);
-        this.input.keyboard.on('keyup', this.key_pressed, this);
     }
 
     update(time, delta) {
@@ -309,26 +325,157 @@ export default class Controller extends Phaser.Scene{
         }
     }
     init_fullscreen = () => {
-        this.prompt_tap_text.destroy();
-        this.scale.startFullscreen();
-        // the function screen.orientation.lock doesnt exist sometimes
-        // change this so that it works on those devices
-        screen.orientation.lock('landscape').then(
-            () => {
-                this.create_ui();
-            }
-        )
-        this.print('game started!')
+        if (this.prompt_tap_text) {
+            this.prompt_tap_text.destroy();
+            this.prompt_tap_text = null;
+        }
 
+        if (this.orientation_text) {
+            this.orientation_text.destroy();
+            this.orientation_text = null;
+        }
+
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen()
+                .catch(err => console.warn('Request Fullscreen Failed:', err));
+        }
+
+        this.orientation_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 
+            'LANDSCAPE', {
+            fontSize: '32px',
+            color: '#ffffff',
+            backgroundColor: '#000000',
+            padding: { x: 15, y: 8 },
+            align: 'center'
+        }).setOrigin(0.5).setDepth(2000); 
+        this.orientation_text.setVisible(false);
+
+        window.addEventListener('resize', () => this.handleOrientation());
+        window.addEventListener('orientationchange', () => this.handleOrientation());
+
+        this.handleOrientation();
+
+        this.input.keyboard.on('keydown', this.key_pressed, this);
+        this.input.keyboard.on('keyup', this.key_pressed, this);
     }
-    create_ui = () => {
 
-        this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
-        this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
-        // this.print(this.screen_width+"-"+this.screen_height);
+    handleOrientation = () => {
+        setTimeout(() => {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            if (isPortrait) {
+                this.hideAllUIElements();
+                
+                if (this.orientation_text) {
+                    this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
+                    this.orientation_text.setVisible(true);
+                    this.orientation_text.setDepth(2000);  
+                }
+            } else {
+                if (this.orientation_text) {
+                    this.orientation_text.setVisible(false);
+                }
+                
+
+                if (!this.ui_objects) {
+                    this.create_ui();
+                } else {
+                    this.showAllUIElements();
+                }
+            }
+            
+            this.resized();
+        }, 100);
+    }
+
+    hideAllUIElements = () => {
+        if (this.ui_objects) {
+            this.ui_objects.forEach(obj => obj.setVisible(false));
+        }
+        if (this.sub_menu_ui_objects) {
+            this.sub_menu_ui_objects.forEach(obj => obj.setVisible(false));
+        }
+        if (this.tower_buy_ui_objects) {
+            this.tower_buy_ui_objects.forEach(obj => obj.setVisible(false));
+        }
+        if (this.player_parts_ui_objects) {
+            this.player_parts_ui_objects.forEach(obj => obj.setVisible(false));
+        }
+        if (this.browse_parts_ui_objects) {
+            this.browse_parts_ui_objects.forEach(obj => obj.setVisible(false));
+        }
+        if (this.specific_part_ui_objects) {
+            this.specific_part_ui_objects.forEach(obj => obj.setVisible(false));
+        }
+        if (this.coins_ui_text) {
+            this.coins_ui_text.setVisible(false);
+        }
+    }
+
+    showAllUIElements = () => {
+        if (this.ui_objects) {
+            this.ui_objects.forEach(obj => obj.setVisible(true));
+        }
+        if (this.sub_menu_ui_objects) {
+            this.sub_menu_ui_objects.forEach(obj => obj.setVisible(true));
+        }
+        if (this.tower_buy_ui_objects) {
+            this.tower_buy_ui_objects.forEach(obj => obj.setVisible(true));
+        }
+        if (this.player_parts_ui_objects) {
+            this.player_parts_ui_objects.forEach(obj => obj.setVisible(true));
+        }
+        if (this.browse_parts_ui_objects) {
+            this.browse_parts_ui_objects.forEach(obj => obj.setVisible(true));
+        }
+        if (this.specific_part_ui_objects) {
+            this.specific_part_ui_objects.forEach(obj => obj.setVisible(true));
+        }
+        if (this.coins_ui_text) {
+            this.coins_ui_text.setVisible(true);
+        }
+    }
+
+    resized = () => {
+        const computeScreenSize = () => {
+            if (this.mobile_device && window.innerHeight > window.innerWidth) {
+                return {
+                    width: window.innerHeight,
+                    height: window.innerWidth
+                };
+            }
+            return {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        };
+
+        this.exactScreenSize = computeScreenSize();
+    }
+
+    create_ui = () => {
+        this.resized();
+        
+        if (this.mobile_device) {
+            // Mobile limits
+            this.screen_width = Math.min(this.exactScreenSize.width, this.max_screen_width);
+            this.screen_height = Math.min(this.exactScreenSize.height, this.max_screen_height);
+        } else {
+            this.screen_width = this.exactScreenSize.width;
+            this.screen_height = this.exactScreenSize.height;
+        }
+
         this.destroy_ui_list(this.ui_objects);
 
-        this.sub_menu_container = {x:240, y:56, width:this.screen_width-480, height:this.screen_height-66}
+        this.sub_menu_ui_objects = [];
+        const TOP_MARGIN = this.mobile_device ? 50 : 10;
+        this.sub_menu_container = {
+            x: 240, 
+            y: TOP_MARGIN + 46,
+            width: this.screen_width-480, 
+            height: this.screen_height-(TOP_MARGIN + 56)
+        }
+
         this.background_color = RGBtoHEX([32, 44, 49]);
 
         this.ui_objects = [
@@ -336,8 +483,8 @@ export default class Controller extends Phaser.Scene{
             new Rectangle(this, 0, 0, this.screen_width, this.screen_height, RGBtoHEX([32, 44, 49]), {z_index:-10}),
 
             // 3 main tab rects
-            new Rectangle(this, 10, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:3}),
-            new Rectangle(this, this.screen_width-230, 10, 220, this.screen_height-20, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:3}),
+            new Rectangle(this, 10, TOP_MARGIN, 220, this.screen_height-(TOP_MARGIN + 10), RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:3}),
+            new Rectangle(this, this.screen_width-230, TOP_MARGIN, 220, this.screen_height-(TOP_MARGIN + 10), RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:3}),
             new Rectangle(this, this.sub_menu_container.x, this.sub_menu_container.y,
                 this.sub_menu_container.width, this.sub_menu_container.height, RGBtoHEX([49, 60, 74]), {rounded_corners:10, z_index:-1}),
 
@@ -368,7 +515,7 @@ export default class Controller extends Phaser.Scene{
         let tab_buttons = ['Player', 'Tower', 'Upgrade'];
         let select_buttons = [];
         for (let i=0;i<tab_buttons.length;i++) {
-            select_buttons.push(new Button(this, this.sub_menu_container.x+this.sub_menu_container.width/2-162+110*i, 10, {
+            select_buttons.push(new Button(this, this.sub_menu_container.x+this.sub_menu_container.width/2-162+110*i, TOP_MARGIN, {
                 text:tab_buttons[i], center:false, width:104, height:40, select_tint: RGBtoHEX([160,160,160]),
                 press_command:()=>this.move_sub_menu(tab_buttons[i],this.sub_menu_container)}).setDepth(4))
             if (tab_buttons[i] === this.current_selected_sub_menu) {
