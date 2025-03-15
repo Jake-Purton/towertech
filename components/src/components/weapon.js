@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import {CannonBall, Bullet, FireProjectile, EffectAOE } from '../projectile.js';
+import {CannonBall, Rocket, Bullet, PlasmaShot, FireProjectile, EffectAOE } from '../projectile.js';
 import {modulo } from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
 import {PartStats} from './part_stat_manager.js';
@@ -11,7 +11,6 @@ class Weapon extends ProjectileShooter {
         properties.max_turn_speed = 200;
         properties.passive_turn_speed = 0;
         stats.range = 1000;
-        properties.auto_aim_stength = 0;
         super(scene, 0, 0, texture, projectile_class, properties);
         this.stats = new PartStats(stats);
 
@@ -71,8 +70,8 @@ class Weapon extends ProjectileShooter {
         return new Vec(enemy.x-this.parentContainer.x, enemy.y-this.parentContainer.y);
     }
     get_projectile_source_position() {
-        return new Vec(this.parentContainer.x + this.width*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
-            this.parentContainer.y + this.width*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
+        return new Vec(this.parentContainer.x + this.displayWidth*this.projectile_spawn_location*Math.cos(this.get_weapon_direction()/180*Math.PI),
+            this.parentContainer.y + this.displayWidth*this.projectile_spawn_location*Math.sin(this.get_weapon_direction()/180*Math.PI))
     }
     get_projectile_source() {
         return this.parentContainer;
@@ -80,27 +79,33 @@ class Weapon extends ProjectileShooter {
 }
 class PistolWeapon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'pistol_weapon', CannonBall, {stats:stats}, stats);
+        super(scene, 'pistol_weapon', CannonBall, {stats:stats, length:20}, stats);
     }
 }
 class PlasmaBlaster extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'plasma_blaster', CannonBall, {stats:stats}, stats);
+        super(scene, 'plasma_blaster', PlasmaShot, {stats:stats, length:30, hold_distance:40}, stats);
+    }
+    get_projectile_texture_name() {
+        return "plasma_blaster_projectile"
     }
 }
 class RocketLauncher extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'rocket_launcher', CannonBall, {stats:stats}, stats);
+        super(scene, 'rocket_launcher', Rocket, {stats:stats, length:50, hold_distance:30}, stats);
+    }
+    get_projectile_texture_name() {
+        return "rocket_projectile"
     }
 }
 class TeslaRifle extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'tesla_rifle', CannonBall, {stats:stats}, stats);
+        super(scene, 'tesla_rifle', CannonBall, {stats:stats, length:30, hold_distance:60}, stats);
     }
 }
 class LaserCannon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'laser_cannon', CannonBall, {stats:stats}, stats);
+        super(scene, 'laser_cannon', CannonBall, {stats:stats, length:40, hold_distance:60}, stats);
     }
 }
 
