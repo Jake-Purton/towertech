@@ -190,6 +190,12 @@ const HostPage = () => {
             </>
           )}
           <div className="flex gap-4 mt-6">
+            <a
+              href="/"
+              className="px-4 py-2 rounded-lg shadow-md transition-all bg-black hover:bg-orange-900 text-white text-2xl"
+            >
+              Back to Home
+            </a>
             <button
               className={`px-4 py-2 rounded-lg shadow-md transition-all ${
                 users.length === 0 || gameStarted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
@@ -199,12 +205,6 @@ const HostPage = () => {
             >
               Start the Game
             </button>
-            <a
-              href="/"
-              className="px-4 py-2 rounded-lg shadow-md transition-all bg-orange-600 hover:bg-orange-700 text-white text-2xl"
-            >
-              Back to Home
-            </a>
           </div>
         </div>
       </div>
