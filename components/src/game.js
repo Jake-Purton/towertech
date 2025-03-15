@@ -60,7 +60,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('plasma_blaster_projectile','/game_images/projectiles/plasma_blaster_projectile.png');
 
         //// background
-        this.load.image('background','/game_images/background.png');
+        this.load.image('background_1','/game_images/background_1.png');
         this.load.image('background_2','/game_images/background_2.png');
         this.load.image('background_3','/game_images/background_3.png');
 
@@ -195,7 +195,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // create Level (map info and enemy path)
-        this.level = new Level(this, 'level 2', this.scale.width, this.scale.height);
+        this.level = new Level(this, 'level 1', this.scale.width, this.scale.height);
 
         // game objects
         this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
