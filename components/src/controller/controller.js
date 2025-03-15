@@ -158,22 +158,23 @@ export default class Controller extends Phaser.Scene{
         this.scale.setGameSize(window.innerWidth, window.innerHeight);
         
         if (this.mobile_device) {
-            // TAP TO START
             this.resized();
-            const width = window.innerWidth;
-            const height = window.innerHeight;
             
-            this.prompt_tap_text = this.add.text(width/2, height/2, 'TAP TO START', {
+            this.prompt_tap_text = this.add.text(-1000, -1000, '', {
                 fontSize: '32px',
                 color: '#ffffff',
                 backgroundColor: '#000000',
                 padding: { x: 15, y: 8 },
                 align: 'center'
-            }).setOrigin(0.5).setDepth(1000);
+            }).setOrigin(0.5).setDepth(1000).setVisible(false);
             
+            this.time.delayedCall(500, () => {
+                this.init_fullscreen();
+            }, [], this);
+            
+
             this.input.once('pointerup', this.init_fullscreen, this);
         } else {
-            // PC
             window.addEventListener('resize', () => {
                 this.scale.setGameSize(window.innerWidth, window.innerHeight);
                 this.create_ui();
@@ -212,19 +213,21 @@ export default class Controller extends Phaser.Scene{
         }
     }
     init_fullscreen = () => {
-        // Remove TAP TO START
         if (this.prompt_tap_text) {
             this.prompt_tap_text.destroy();
             this.prompt_tap_text = null;
         }
 
-        // Try to enter fullscreen mode
+        if (this.orientation_text) {
+            this.orientation_text.destroy();
+            this.orientation_text = null;
+        }
+
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen()
                 .catch(err => console.warn('Request Fullscreen Failed:', err));
         }
 
-        // Create landscape text
         this.orientation_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 
             'LANDSCAPE', {
             fontSize: '32px',
@@ -232,7 +235,7 @@ export default class Controller extends Phaser.Scene{
             backgroundColor: '#000000',
             padding: { x: 15, y: 8 },
             align: 'center'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(2000); 
         this.orientation_text.setVisible(false);
 
         window.addEventListener('resize', () => this.handleOrientation());
@@ -249,17 +252,19 @@ export default class Controller extends Phaser.Scene{
             const isPortrait = window.innerHeight > window.innerWidth;
             
             if (isPortrait) {
-                // Portrait
                 this.hideAllUIElements();
                 
-                // LANDSCAPE!
-                this.orientation_text.setVisible(true);
-                this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
+                if (this.orientation_text) {
+                    this.orientation_text.setPosition(window.innerWidth/2, window.innerHeight/2);
+                    this.orientation_text.setVisible(true);
+                    this.orientation_text.setDepth(2000);  
+                }
             } else {
-                // Landscape
-                this.orientation_text.setVisible(false);
+                if (this.orientation_text) {
+                    this.orientation_text.setVisible(false);
+                }
                 
-                // If UI not created, create UI
+
                 if (!this.ui_objects) {
                     this.create_ui();
                 } else {
@@ -267,7 +272,6 @@ export default class Controller extends Phaser.Scene{
                 }
             }
             
-            // Update screen size
             this.resized();
         }, 100);
     }
