@@ -14,9 +14,14 @@ const HostPage = () => {
   const [ipAddress, setIpAddress] = useState<string>("");
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("Medium");
+  const [selectedMap, setSelectedMap] = useState<string>("background_1.png");
 
   const handleDifficultyClick = (difficulty: string) => {
     setSelectedDifficulty(difficulty);
+  };
+
+  const handleMapClick = (map: string) => {
+    setSelectedMap(map);
   };
   
   useEffect(() => {
@@ -98,10 +103,59 @@ const HostPage = () => {
             Hard
           </button>
         </div>
-        <p className="text-lg font-medium text-center text-gray-300 mb-4 ">
+        <p className="text-lg font-medium text-center text-gray-300 mb-4">
           Select Map
         </p>
-        
+        <div className="flex flex-col gap-2 mt-2 mb-2 justify-center items-center">
+          <div className="relative w-full h-24">
+            <button
+              className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
+                selectedMap === "background_1.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+              }`}
+              style={{ backgroundImage: "url('/game_images/background_1.png')" }}
+              onClick={() => handleMapClick("background_1.png")}
+            >
+            </button>
+            <p 
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+              onClick={() => handleMapClick("background_1.png")}
+            >
+              Level 1
+            </p>
+          </div>
+          <div className="relative w-full h-24">
+            <button
+              className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
+                selectedMap === "background_2.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+              }`}
+              style={{ backgroundImage: "url('/game_images/background_2.png')" }}
+              onClick={() => handleMapClick("background_2.png")}
+            >
+            </button>
+            <p 
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+              onClick={() => handleMapClick("background_2.png")}
+            >
+              Level 2
+            </p>
+          </div>
+          <div className="relative w-full h-24">
+            <button
+              className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
+                selectedMap === "background_3.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+              }`}
+              style={{ backgroundImage: "url('/game_images/background_3.png')" }}
+              onClick={() => handleMapClick("background_3.png")}
+            >
+            </button>
+            <p 
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+              onClick={() => handleMapClick("background_3.png")}
+            >
+              Level 3
+            </p>
+          </div>
+        </div>
       </div>
       {/* MIDDLE */}
       <div className="flex-grow max-w-2xl bg-gray-800/95 p-8 rounded-2xl shadow-2xl border-y-8 border-orange-600 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
