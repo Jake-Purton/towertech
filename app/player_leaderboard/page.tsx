@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import React from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -13,13 +13,13 @@ interface Game {
   playerscore: number;
 }
 
-export default function PlayerLeaderboard() {
+const PlayerLeaderboardContent: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchUser, setSearchUser] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
-  const userid = searchParams.get("userid");
+  const userid = searchParams ? searchParams.get("userid") : null;
 
   useEffect(() => {
     const fetchPlayerLeaderboard = async () => {
@@ -119,3 +119,13 @@ export default function PlayerLeaderboard() {
     </div>
   );
 }
+
+const PlayerLeaderboard: React.FC = () => {
+    return (
+        <Suspense fallback={<p>Loading...</p>}>
+            <PlayerLeaderboardContent />
+        </Suspense>
+    );
+};
+
+export default PlayerLeaderboard;

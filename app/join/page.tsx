@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { socket } from "../src/socket";
 import { JoinRoomMessage } from "../src/messages";
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -24,7 +24,7 @@ async function verifyToken(token: string) {
     }
 }
 
-const JoinPage: React.FC = () => {
+const JoinPageContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,11 +35,12 @@ const JoinPage: React.FC = () => {
     const [username, setUsername] = useState<string>("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     
-    
     useEffect(() => {
-        const roomCode = searchParams.get('roomCode');
-        if (roomCode) {
-            setNumber(roomCode);
+        if (searchParams) {
+            const roomCode = searchParams.get('roomCode');
+            if (roomCode) {
+                setNumber(roomCode);
+            }
         }
 
         const checkToken = async () => {
@@ -56,7 +57,7 @@ const JoinPage: React.FC = () => {
             setIsLoading(false);
         };
       
-          checkToken();
+        checkToken();
         
         function onMessage(msg: string) {
             setMessage(msg);
@@ -211,6 +212,14 @@ const JoinPage: React.FC = () => {
                 </button>
             </form>
         </div>
+    );
+};
+
+const JoinPage: React.FC = () => {
+    return (
+        <Suspense fallback={<p>Loading...</p>}>
+            <JoinPageContent />
+        </Suspense>
     );
 };
 
