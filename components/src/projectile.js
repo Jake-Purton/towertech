@@ -164,17 +164,24 @@ class GootowerProjectile extends Projectile {
     }
 }
 class GoobulletProjectile extends Projectile {
-    constructor(scene, x, y, angle, target=null, {speed=5, damage=1, auto_aim_strength=0} = {}) {
+    constructor(scene, x, y, angle, target=null, {speed=3, damage=1, auto_aim_strength=0} = {}) {
         super(scene, x, y, 'goobullet_projectile', speed, angle, 'Enemy',
             {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
     }
 }
+class GoodroneProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, {speed=10, damage=1, auto_aim_strength=0} = {}) {
+        super(scene, x, y, 'goodrone_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
+    }
+}
 class GooMeleeDamage extends Projectile {
-    constructor(scene, x, y, target=null, damage=1) {
-        super(scene, x, y, 'goo_melee', 0, 0, 'Enemy',
+    constructor(scene, x, y, target=null, damage=1, type) {
+        super(scene, x, y, type, 0, 0, 'Enemy',
             {target:target, auto_aim_strength:0, damage:damage},{initial_alpha:0, target_distance:5, time_to_live:0.1});
     }
 }
 
 export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile, 
-        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile};
+        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile,
+        GoodroneProjectile};

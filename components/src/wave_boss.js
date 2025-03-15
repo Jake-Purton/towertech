@@ -6,16 +6,18 @@ import Wave from './wave.js'
 
 export default class BossWave extends Wave
 {
-    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty)
     {
         let waveEnemies = enemyArray.slice(1);
         let waveWeights = enemyWeights.slice(1);
 
         super(game, length, spawnDelay, waveEnemies, waveWeights, numEnemies);
 
-        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path);
+        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path, difficulty);
         game.enemies.push(this.bossEnemy);
         this.nextSpawn += 5 * this.game.target_fps;
+
+        this.difficulty = difficulty;
     }
 
     game_tick(deltaTime)
@@ -31,10 +33,8 @@ export default class BossWave extends Wave
         {
             if (this.bossEnemy != null)
             {
-                alert("boss dead");
                 this.bossEnemy = null;
             }
-            console.log(this.remainingTime);
         }
     }
 

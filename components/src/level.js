@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import WaveManager from "./wave_manager.js";
+import WavesJson from "./waves.json" assert {type: 'json'};
 
 export default class Level extends Phaser.Physics.Arcade.Sprite {
     static map_data = {
@@ -43,9 +44,10 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
 
         this.wave_manager = new WaveManager(this.scene);
 
-        let test = '{"waves":[ {"type":"wave", "length":30, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter","goocaster","goocrab","goobouncer","goobuilder","gooacid","goobullet"], "enemyWeights":[5,5,5,5,5,5,5,5,5,5,5,5], "enemyCount": 30} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
+        //let test = '{"waves":[ {"type":"wave", "length":30, "spawnDelay":1, "enemyList":["goolime", "goober","gooshifter","gooslinger","goosniper","goosplitter","goocaster","goocrab","goobouncer","goobuilder","gooacid","goobullet"], "enemyWeights":[5,5,5,5,5,5,5,5,5,5,5,5], "enemyCount": 30} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober"], "enemyWeights":[10, 5], "enemyCount": 5, "maxCount":1}}'
+        let test = '{"waves":[ {"type":"wave", "length":5, "spawnDelay":1, "enemyList":["goodropper"], "enemyWeights":[5], "enemyCount": 5}, {"type":"wave", "length":5, "spawnDelay":1, "enemyList":["goober"], "enemyWeights":[5], "enemyCount": 5} ],  "waveTemplate":{"length":20, "spawnDelay":1, "enemyList":["goolime", "goober", "goosniper", "gooshifter", "goobouncer"], "enemyWeights":[5, 5, 5, 5, 5], "enemyCount": 5, "maxCount":1}}'
 
-        this.wave_manager.load_waves(test)
+        this.wave_manager.load_waves(WavesJson)
     }
     game_tick(delta_time) {
         this.wave_manager.game_tick(delta_time);

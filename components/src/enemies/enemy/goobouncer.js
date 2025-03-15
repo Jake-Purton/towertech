@@ -4,11 +4,12 @@ import {GoobouncerProjectile } from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goobouncer extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.5, health=10, coin_value=1, 
-                                    melee_damage=1, melee_attack_speed=1, 
-                                    target=null, cooldown=10, max_cooldown=10, 
-                                    shoot_angle=0, damage=2} = {}) {
-        super(scene, x, y, 'goobouncer', path, 
+    constructor(scene, x, y, path, difficulty,
+                 {move_speed=0.5, health=15, coin_value=4, 
+                    melee_damage=1, melee_attack_speed=1, 
+                    target=null, cooldown=10, max_cooldown=10, 
+                    shoot_angle=0, damage=15} = {}) {
+        super(scene, x, y, 'goobouncer', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, 
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown, 

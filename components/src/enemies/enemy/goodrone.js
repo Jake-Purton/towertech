@@ -1,15 +1,15 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-import {GooslingerProjectile } from '../../projectile.js';
+import {GoodroneProjectile } from '../../projectile.js';
 const Vec = Phaser.Math.Vector2;
 
-export default class Gooslinger extends Enemy{
-    constructor(scene, x, y, path, difficulty,
-                {move_speed=0.6, health=13, coin_value=3,
+export default class Goodrone extends Enemy{
+    constructor(scene, x, y, path, difficulty, 
+                {move_speed=0.4, health=10, coin_value=1,
                     melee_damage=1, melee_attack_speed=1,
-                    target=null, cooldown=2, max_cooldown=2,
-                    shoot_angle=0, damage=1} = {}) {
-        super(scene, x, y, 'gooslinger', path, difficulty,
+                    target=null, cooldown=3, max_cooldown=3,
+                    shoot_angle=0, damage=2} = {}) {
+        super(scene, x, y, 'goodrone', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown,
@@ -26,7 +26,7 @@ export default class Gooslinger extends Enemy{
     }
     shoot_projectile(players, towers){
         if (this.find_target(players, towers)) {
-            this.scene.projectiles.push(new GooslingerProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target, {damage:this.damage}));
+            this.scene.projectiles.push(new GoodroneProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target, {damage:this.damage}));
         }
     }
     find_target(players, towers){

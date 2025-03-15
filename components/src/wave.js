@@ -8,7 +8,7 @@ export default class Wave
 
     static currentWave = null;
 
-    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty)
     {
         this.game = game;
         Wave.currentWave = this;
@@ -46,6 +46,7 @@ export default class Wave
         this.nextSpawn = spawnDelay * this.game.target_fps;
         this.numEnemies = numEnemies;
 
+        this.difficulty = difficulty;
     }
 
     game_tick(deltaTime)
@@ -101,7 +102,7 @@ export default class Wave
     #spawn_enemy(enemyName)
     {
         // spawn the enemy
-        let enemy = spawn_enemy(this.game, -50, -50, enemyName, this.game.level.enemy_path);
+        let enemy = spawn_enemy(this.game, -50, -50, enemyName, this.game.level.enemy_path, this.difficulty);
         this.game.enemies.push(enemy);
         return enemy;
         // this.game.enemies.push(new Enemy(this.game, -50, -50, enemyName, this.game.enemy_path));

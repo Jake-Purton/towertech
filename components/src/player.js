@@ -160,6 +160,7 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.last_damage_source = source;
             }
         }
+        
     }
     get_kill_credit(enemy) {
         this.scene.score += enemy.coin_value;

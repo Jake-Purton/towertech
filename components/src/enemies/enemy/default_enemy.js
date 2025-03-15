@@ -8,9 +8,9 @@ import DroppedItem from "../../dropped_item.js";
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path,
+    constructor(scene, x, y, type, path, difficulty,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
-                    melee_attack_speed=1, leave_path=1, target=null, damage=1,
+                    melee_attack_speed=1, leave_path=1, target=null, damage=0,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:3, drops:{
                         'default_body':1, 'default_leg':1, 'default_weapon':1,
@@ -22,12 +22,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path = path;
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
-
+        this.type = type;
         // stats and info
         this.move_speed = move_speed;
-        this.health = health;
+        this.health = Math.floor(health * (1 + difficulty / 5));
         this.coin_value = coin_value;
-        this.melee_damage = melee_damage;
+        this.melee_damage = Math.floor(melee_damage * (1 + difficulty / 5));
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
         this.on_path = true;
@@ -37,9 +37,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.cooldown = cooldown;
         this.max_cooldown = max_cooldown;
         this.shoot_angle = shoot_angle;
-        this.damage = damage;
+        this.damage = Math.floor(damage * (1 + difficulty / 5));
         this.max_health = health;
         this.loot_table = loot_table;
+        this.difficulty = difficulty;
 
         // effects info
         this.effects = new Effects(scene);
@@ -193,12 +194,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, this.melee_damage));
+            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, null, this.melee_damage, this.type));
         }
     }
     return_to_path(delta_time){
+        this.target = this.path.getPoint(this.path_t);
         let direction = this.relative_position(this.target);
-        this.melee_hit(delta_time);
         if (direction.length() <= delta_time * this.move_speed){
             this.on_path = true
             return this.setPosition(this.target.x, this.target.y);

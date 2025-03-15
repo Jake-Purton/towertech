@@ -4,10 +4,11 @@ import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Gooshifter extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.8, health=8, coin_value=1, melee_damage=1,
-                                    melee_attack_speed=1, leave_path=random_range(0.1,0.6),
-                                    target=null, changed=false} = {}) {
-        super(scene, x, y, 'goober', path,
+    constructor(scene, x, y, path, difficulty,
+                {move_speed=1, health=15, coin_value=3, melee_damage=4,
+                    melee_attack_speed=1, leave_path=random_range(0.1,0.6),
+                    target=null, changed=false} = {}) {
+        super(scene, x, y, 'goober', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, melee_damage:melee_damage,
                 melee_attack_speed:melee_attack_speed, leave_path:leave_path, target:target,
                 changed:changed});

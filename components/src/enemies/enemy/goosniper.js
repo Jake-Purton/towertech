@@ -5,11 +5,12 @@ import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goosniper extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.5, health=10, coin_value=1, melee_damage=1,
-                                    melee_attack_speed=1, leave_path=random_range(0.2,0.53),
-                                    target=null, changed=false, cooldown=5, max_cooldown=5,
-                                    shoot_angle=0, damage=4} = {}) {
-        super(scene, x, y, 'goosniper', path,
+    constructor(scene, x, y, path, difficulty,
+                {move_speed=0.5, health=8, coin_value=4, melee_damage=1,
+                    melee_attack_speed=1, leave_path=random_range(0.2,0.53),
+                    target=null, changed=false, cooldown=5, max_cooldown=5,
+                    shoot_angle=0, damage=5} = {}) {
+        super(scene, x, y, 'goosniper', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
                 leave_path:leave_path, target:target, changed:changed, cooldown:cooldown,
@@ -20,9 +21,6 @@ export default class Goosniper extends Enemy{
         this.shoot_angle = 0;
         this.leave_path = random_range(0.2,0.53);
         this.changed = false;
-    }
-    get_dead(){
-        return (this.path_t >= 1 || this.health<=0)
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;

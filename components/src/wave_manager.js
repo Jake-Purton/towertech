@@ -36,8 +36,8 @@ export default class WaveManager
             this.reset_waves();
         }
 
-        let parsedJson = JSON.parse(jsonString);
-
+        // let parsedJson = JSON.parse(jsonString);
+        let parsedJson = jsonString;
 
         // do stuff
         // basically: unparsed json goes in, array of wave data comes out.
@@ -50,7 +50,7 @@ export default class WaveManager
         this.next_wave();
     }
 
-    generate_wave()
+    generate_wave(difficulty)
     {
         // number of enemies increases by 3 with each wave.
         let numEnemies = this.waveTemplateData.enemyCount + 2 * (this.wave_index - this.waveData.length);
@@ -89,7 +89,9 @@ export default class WaveManager
             }
         }
 
-        return new Wave(this.game, length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies);
+        console.log(enemyList)
+
+        return new Wave(this.game, length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies, difficulty);
 
 
 
@@ -105,6 +107,11 @@ export default class WaveManager
         // increment the wave index.
         this.wave_index ++;
 
+        // increases difficulty by number of players every 5 waves
+        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * Object.keys(this.game.players).length;
+        let waveinfo = {wave:this.wave_index + 1, difficulty:difficulty}
+        console.log(waveinfo)
+        
         let newWave = null;
         if (this.wave_index < this.waveData.length)
         {
@@ -114,10 +121,10 @@ export default class WaveManager
             switch(wave.type)
             {
                 case "wave":
-                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
+                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount, difficulty);
                     break;
                 case "boss":
-                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
+                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount, difficulty);
                     break;
                     // break;
                 default:
@@ -129,7 +136,7 @@ export default class WaveManager
         {
             // if there is none (wave_index > the number of waves),
             // then generate a new wave - using the wave index as the difficulty.
-            newWave = this.generate_wave()
+            newWave = this.generate_wave(difficulty)
         }
         // set the new wave.
         this.current_wave = newWave;

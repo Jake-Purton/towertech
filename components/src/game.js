@@ -293,7 +293,6 @@ export default class Game extends Phaser.Scene{
     }
 
     take_input(input){
-        console.log(this.players,input);
         if (Object.keys(this.players).includes(input.PlayerID)) {
             switch (input.type) {
                 case 'Key_Input':

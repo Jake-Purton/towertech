@@ -11,6 +11,8 @@ class Weapon extends ProjectileShooter {
         properties.passive_turn_speed = 0;
         super(scene, 0, 0, texture, projectile_class, properties);
 
+        this.damage = 3
+
         this.x_offset = x_offset;
         this.y_offset = y_offset;
         this.hold_distance = hold_distance;
