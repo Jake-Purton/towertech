@@ -13,6 +13,16 @@ const HostPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [ipAddress, setIpAddress] = useState<string>("");
   const [gameStarted, setGameStarted] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("Medium");
+  const [selectedMap, setSelectedMap] = useState<string>("background_1.png");
+
+  const handleDifficultyClick = (difficulty: string) => {
+    setSelectedDifficulty(difficulty);
+  };
+
+  const handleMapClick = (map: string) => {
+    setSelectedMap(map);
+  };
   
   useEffect(() => {
     // Get IP address
@@ -58,41 +68,146 @@ const HostPage = () => {
     }
   };
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
-      <a
-        href="/"
-        className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
-      >
-        Back to Home
-      </a>
-      <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
-
-      <div className="flex flex-col items-center gap-10 w-full max-w-lg mt-10 bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-700">
-        {roomCode && (
-          <>
-            <div className="w-full text-center">
-              <div className="mt-2 p-5 border border-gray-600 rounded-xl bg-gray-900 text-3xl font-semibold tracking-widest text-orange-500 shadow-sm">
-                {roomCode}
-              </div>
-            </div>
-            
-            {/* QR Code Section */}
-            {ipAddress && (
-              <div className="bg-white p-4 rounded-xl">
-                <QRCodeSVG
-                  value={joinUrl}
-                  size={200}
-                  level="L"
-                />
-              </div>
-            )}
-            
-            <p className="text-sm text-gray-400">
-              Join URL: {joinUrl}
+    <div className="flex items-stretch justify-center min-h-screen bg-gradient-to-br from-black-900 to-black text-white p-8 gap-8">
+      {/* LEFT */}
+      <div className="flex-1 max-w-md bg-gray-800/90 p-6 rounded-l-2xl shadow-2xl border-l-8 border-orange-600 backdrop-blur-sm">
+        <h2 className="text-2xl font-semibold text-orange-500 mb-4 text-center border-b pb-2 border-gray-600">
+          Level Modifiers
+        </h2>
+        <p className="text-lg font-medium text-center text-gray-300 mb-4">
+          Select Difficulty
+        </p>
+        <div className="flex gap-0 mt-2 mb-2 justify-center">
+          <button
+            className={`px-4 py-2 rounded-l-lg shadow-md transition-all bg-black hover:bg-gray-700 text-white text-lg border-2 ${
+              selectedDifficulty === "Easy" ? "border-orange-600" : "border-transparent"
+            }`}
+            onClick={() => handleDifficultyClick("Easy")}
+          >
+            Easy
+          </button>
+          <button
+            className={`px-4 py-2 shadow-md transition-all bg-black hover:bg-gray-700 text-white text-lg border-2 ${
+              selectedDifficulty === "Medium" ? "border-orange-600" : "border-transparent"
+            }`}
+            onClick={() => handleDifficultyClick("Medium")}
+          >
+            Medium
+          </button>
+          <button
+            className={`px-4 py-2 rounded-r-lg shadow-md transition-all bg-black hover:bg-gray-700 text-white text-lg border-2 ${
+              selectedDifficulty === "Hard" ? "border-orange-600" : "border-transparent"
+            }`}
+            onClick={() => handleDifficultyClick("Hard")}
+          >
+            Hard
+          </button>
+        </div>
+        <p className="text-lg font-medium text-center text-gray-300 mb-4">
+          Select Map
+        </p>
+        <div className="flex flex-col gap-2 mt-2 mb-2 justify-center items-center">
+          <div className="relative w-full h-24">
+            <button
+              className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
+                selectedMap === "background_1.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+              }`}
+              style={{ backgroundImage: "url('/game_images/background_1.png')" }}
+              onClick={() => handleMapClick("background_1.png")}
+            >
+            </button>
+            <p 
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+              onClick={() => handleMapClick("background_1.png")}
+            >
+              Level 1
             </p>
-          </>
-        )}
+          </div>
+          <div className="relative w-full h-24">
+            <button
+              className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
+                selectedMap === "background_2.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+              }`}
+              style={{ backgroundImage: "url('/game_images/background_2.png')" }}
+              onClick={() => handleMapClick("background_2.png")}
+            >
+            </button>
+            <p 
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+              onClick={() => handleMapClick("background_2.png")}
+            >
+              Level 2
+            </p>
+          </div>
+          <div className="relative w-full h-24">
+            <button
+              className={`w-full h-full bg-cover bg-center rounded-lg shadow-md transition-all ${
+                selectedMap === "background_3.png" ? "border-2 border-orange-600" : "border-2 border-transparent"
+              }`}
+              style={{ backgroundImage: "url('/game_images/background_3.png')" }}
+              onClick={() => handleMapClick("background_3.png")}
+            >
+            </button>
+            <p 
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+              onClick={() => handleMapClick("background_3.png")}
+            >
+              Level 3
+            </p>
+          </div>
+        </div>
+      </div>
+      {/* MIDDLE */}
+      <div className="flex-grow max-w-2xl bg-gray-800/95 p-8 rounded-2xl shadow-2xl border-y-8 border-orange-600 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+        
+        <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
 
+        <div className="flex flex-col items-center gap-10 w-full max-w-lg mt-10">
+          {roomCode && (
+            <>
+              <div className="w-full text-center">
+                <div className="mt-2 p-5 border border-gray-600 rounded-xl bg-gray-900 text-3xl font-semibold tracking-widest text-orange-500 shadow-sm">
+                  {roomCode}
+                </div>
+              </div>
+              
+              {/* QR Code Section */}
+              {ipAddress && (
+                <div className="bg-white p-4 rounded-xl">
+                  <QRCodeSVG
+                    value={joinUrl}
+                    size={300}
+                    level="L"
+                  />
+                </div>
+              )}
+              
+              <p className="text-sm text-gray-400">
+                Join URL: {joinUrl}
+              </p>
+            </>
+          )}
+          <div className="flex gap-4 mt-6">
+            <button
+              className={`px-4 py-2 rounded-lg shadow-md transition-all ${
+                users.length === 0 || gameStarted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
+              } text-white text-2xl`} // Further increased font size
+              disabled={users.length === 0 || gameStarted}
+              onClick={startGame}
+            >
+              Start the Game
+            </button>
+            <a
+              href="/"
+              className="px-4 py-2 rounded-lg shadow-md transition-all bg-orange-600 hover:bg-orange-700 text-white text-2xl"
+            >
+              Back to Home
+            </a>
+          </div>
+        </div>
+      </div>
+      {/* RIGHT */}
+      <div className="flex-1 max-w-md bg-gray-800/90 p-6 rounded-r-2xl shadow-2xl border-r-8 border-orange-600 backdrop-blur-sm">
         <div className="w-full">
           <h2 className="text-2xl font-semibold text-orange-500 mb-4 text-center border-b pb-2 border-gray-600">
             Connected Users
@@ -112,15 +227,6 @@ const HostPage = () => {
             )}
           </ul>
         </div>
-        <button
-          className={`mt-6 px-4 py-2 rounded-lg shadow-md transition-all ${
-            users.length === 0 || gameStarted ? "bg-gray-600 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"
-          } text-white`}
-          disabled={users.length === 0 || gameStarted}
-          onClick={startGame}
-        >
-          Start the Game
-        </button>
       </div>
     </div>
   );
