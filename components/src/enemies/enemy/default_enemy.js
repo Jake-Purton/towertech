@@ -13,10 +13,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
                     melee_attack_speed=1, leave_path=1, target=null, damage=0, knockback_resistance=1,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:5, drops:{
-                            'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1,
-                            'robot_leg':1, 'armored_walker':1, 'spider_leg':1,
+                            'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1, 'titan_core':1,
+                            'robot_leg':1, 'armored_walker':1, 'spider_leg':1, 'phantom_step':1,
                             'speedster_wheel':1, 'floating_wheel':1, 'tank_treads':1,
-                            'pistol_weapon':1, 'plasma_blaster':1, 'rocket_launcher':1, 'tesla_rifle':1, 'laser_cannon':1,
+                            'pistol_weapon':1, 'plasma_blaster':1, 'rocket_launcher':1, 'tesla_rifle':1, 'laser_cannon':1, 'sword_of_void':1,
                     }}) {
         super(scene, x, y, type);
         scene.add.existing(this);
@@ -130,7 +130,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     take_damage = (damage, speed=3, angle=null, knockback=0, source=null) => {
         this.add_health(-damage);
-        this.make_hit_particles(damage, speed, angle);
+        this.make_hit_particles(Math.ceil(2*(damage**0.5)), speed, angle);
         this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
         if (source !== null) {
             this.last_damage_source = source;

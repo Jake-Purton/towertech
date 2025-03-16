@@ -102,6 +102,11 @@ export default class Controller extends Phaser.Scene{
                     {health:12, speed:8, upgrade_cost:10, upgrade_number:3},
                     {health:16, speed:10, upgrade_cost:15, upgrade_number:3},
                 ]},
+            "titan_core":{title:"Titan Core", description:"An impenetrable core that grants immense defense but severely limits movement.", level_stats:[
+                    {health:25, speed:5},
+                    {health:30, speed:6, upgrade_cost:30, upgrade_number:1},
+                    {health:40, speed:7, upgrade_cost:40, upgrade_number:2},
+                ]},
 
             "robot_leg":{title:"Robot Legs", description:"A basic set of robotic legs, simple and reliable.", level_stats:[
                     {health:7, speed:8},
@@ -117,6 +122,11 @@ export default class Controller extends Phaser.Scene{
                     {health:8, speed:10},
                     {health:12, speed:13, upgrade_cost:10, upgrade_number:3},
                     {health:16, speed:16, upgrade_cost:15, upgrade_number:3},
+                ]},
+            "phantom_step":{title:"Phantom Step", description:"A mysterious set of legs that allows players to phase out of danger momentarily, but mistiming can leave them exposed.", level_stats:[
+                    {health:12, speed:9},
+                    {health:16, speed:12, upgrade_cost:20, upgrade_number:1},
+                    {health:20, speed:16, upgrade_cost:30, upgrade_number:2},
                 ]},
 
             "speedster_wheel":{title:"Speedster Wheel", description:"High-speed wheels for those who want to outrun enemies but risk losing control.", level_stats:[
@@ -160,6 +170,11 @@ export default class Controller extends Phaser.Scene{
                     {damage:18, fire_rate:10, fire_distance:250, upgrade_cost:40, upgrade_number:3},
                     {damage:22, fire_rate:10, fire_distance:300, upgrade_cost:50, upgrade_number:3},
                 ]},
+            "sword_of_void":{title:"Sword of Void", description:"A void-infused blade capable of tearing through bosses, but ineffective against enemies that multiply.", level_stats:[
+                    {damage:40, fire_rate:3, fire_distance:200},
+                    {damage:55, fire_rate:3, fire_distance:250, upgrade_cost:60, upgrade_number:1},
+                    {damage:70, fire_rate:3, fire_distance:300, upgrade_cost:80, upgrade_number:2},
+                ]},
             }
     }
     preload() {
@@ -169,11 +184,13 @@ export default class Controller extends Phaser.Scene{
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
         this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
         this.load.image('energy_core_frame','/game_images/player_sprites/bodies/energy_core_frame.png');
+        this.load.image('titan_core','/game_images/player_sprites/bodies/titan_core.png');
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
         this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
+        this.load.image('phantom_step','/game_images/player_sprites/legs/phantom_step.png');
 
         // wheels
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/speedster_wheel.png');
@@ -186,6 +203,7 @@ export default class Controller extends Phaser.Scene{
         this.load.image('rocket_launcher','/game_images/player_sprites/weapons/rocket_launcher.png');
         this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
         this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
+        this.load.image('sword_of_void','/game_images/player_sprites/weapons/sword_of_void.png');
 
         // ui images
         this.load.image('button','/game_images/UI/tab_button.png');

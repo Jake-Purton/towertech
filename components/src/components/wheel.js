@@ -39,7 +39,7 @@ class FloatingWheel extends Wheel{
 }
 class TankTreads extends Wheel{
     constructor(scene, stats={}) {
-        super(scene, 'tank_treads', {width:35, rotates:false, stats:stats});
+        super(scene, 'tank_treads', {width:28, rotates:false, stats:stats});
     }
 }
 

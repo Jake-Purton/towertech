@@ -33,11 +33,13 @@ export default class Game extends Phaser.Scene{
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
         this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
         this.load.image('energy_core_frame','/game_images/player_sprites/bodies/energy_core_frame.png');
+        this.load.image('titan_core','/game_images/player_sprites/bodies/titan_core.png');
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
         this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
+        this.load.image('phantom_step','/game_images/player_sprites/legs/phantom_step.png');
 
         // wheels
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/speedster_wheel.png');
@@ -50,6 +52,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('rocket_launcher','/game_images/player_sprites/weapons/rocket_launcher.png');
         this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
         this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
+        this.load.image('sword_of_void','/game_images/player_sprites/weapons/sword_of_void.png');
 
         // weapon projectiles
         this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import {CannonBall, Rocket, PlasmaShot} from '../projectile.js';
+import {CannonBall, Rocket, PlasmaShot, EffectAOE} from '../projectile.js';
 import {modulo } from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
 import {PartStats} from './part_stat_manager.js';
@@ -108,5 +108,41 @@ class LaserCannon extends Weapon{
         super(scene, 'laser_cannon', CannonBall, {stats:stats, length:40, hold_distance:60}, stats);
     }
 }
+class SwordOfVoid extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'sword_of_void', EffectAOE, {stats:stats, length:40, hold_distance:60}, stats);
 
-export {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon };
+        this.sword_animation_length = 0.3
+    }
+    game_tick(delta_time) {
+        super.game_tick(delta_time);
+        this.sword_animation_timer -= delta_time/this.scene.target_fps;
+        this.animate_sword()
+    }
+    animate_sword() {
+        if (this.sword_animation_timer > 0) {
+            let progress = this.sword_animation_timer/this.sword_animation_length;
+            let angle_diff = (progress**0.5-0.5)*140
+            this.setOrigin(0.1,0.9);
+            this.setAngle(this.get_weapon_direction()+angle_diff)
+        } else {
+            this.setOrigin(0.5,0.5);
+            this.set_weapon_direction(this.get_weapon_direction())
+        }
+    }
+    shoot(effects) {
+        this.shots_fired += 1;
+
+        let damage = this.damage * effects.get_damage_multiplier();
+        let shoot_pos = this.get_projectile_source_position();
+        this.sword_animation_timer = this.sword_animation_length;
+
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, shoot_pos.x, shoot_pos.y, 'Tower', null, this.body.halfWidth*1.5, this.body.halfWidth,
+            {damage: damage, time_to_live:0.1, source: this.get_projectile_source()},
+            {time_to_live:0.3}
+        ))
+    }
+}
+
+export {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon, SwordOfVoid };

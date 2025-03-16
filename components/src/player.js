@@ -1,10 +1,17 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
 
-import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame } from './components/body.js';
-import {RobotLeg, ArmoredWalker, SpiderLeg } from './components/leg.js';
+import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame, TitanCore} from './components/body.js';
+import {RobotLeg, ArmoredWalker, SpiderLeg, PhantomStep} from './components/leg.js';
 import {SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
-import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
+import {
+    PistolWeapon,
+    PlasmaBlaster,
+    RocketLauncher,
+    TeslaRifle,
+    LaserCannon,
+    SwordOfVoid
+} from './components/weapon.js';
 import Effects from './effects.js';
 import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
@@ -16,6 +23,7 @@ const part_converter = {
     'robot_leg':RobotLeg,
     'armored_walker':ArmoredWalker,
     'spider_leg':SpiderLeg,
+    'phantom_step':PhantomStep,
 
     'speedster_wheel':SpeedsterWheel,
     'floating_wheel':FloatingWheel,
@@ -25,12 +33,14 @@ const part_converter = {
     'lightweight_frame':LightweightFrame,
     'tank_frame':TankFrame,
     'energy_core_frame':EnergyCoreFrame,
+    'titan_core':TitanCore,
 
     'pistol_weapon':PistolWeapon,
     'plasma_blaster': PlasmaBlaster,
     'rocket_launcher': RocketLauncher,
     'tesla_rifle': TeslaRifle,
     'laser_cannon': LaserCannon,
+    'sword_of_void':SwordOfVoid,
 }
 
 export default class Player extends Phaser.GameObjects.Container{
@@ -161,12 +171,12 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.body_object.movement_animation(this.velocity);
             }
             if (defined(this.weapon_object)) {
-                this.weapon_object.game_tick(delta_time);
                 if (this.key_inputs.Attack) {
                     this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
                 } else {
                     this.weapon_object.attack_button_up();
                 }
+                this.weapon_object.game_tick(delta_time);
             }
         }
     }

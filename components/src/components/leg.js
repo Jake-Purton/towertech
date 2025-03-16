@@ -68,6 +68,11 @@ class ArmoredWalker extends Leg {
         super(scene, 'armored_walker', {height:30, x_offset:10, stats:stats});
     }
 }
+class PhantomStep extends Leg {
+    constructor(scene, stats={}) {
+        super(scene, 'phantom_step', {height:30, x_offset:10, stats:stats});
+    }
+}
 class SpiderLeg extends Phaser.GameObjects.Container {
     constructor(scene, stats={}) {
         super(scene, 0, 10, []);
@@ -116,4 +121,4 @@ class SpiderLeg extends Phaser.GameObjects.Container {
     }
 }
 
-export {RobotLeg, ArmoredWalker, SpiderLeg };
+export {RobotLeg, ArmoredWalker, SpiderLeg, PhantomStep };
