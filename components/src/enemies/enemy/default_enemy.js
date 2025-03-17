@@ -180,7 +180,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     find_near_tower(towers){
         let nearest_tower = null;
         let distance = Infinity;
-        for (let tower of towers){
+        for (let tower of Object.values(towers)){
             let new_distance = this.relative_position(tower).length();
             if (new_distance < distance){
                 distance = new_distance;

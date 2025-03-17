@@ -333,7 +333,7 @@ export default class Player extends Phaser.GameObjects.Container{
             }
             this.prev_tower_button_direction = data.Direction;
             if (new_tower != null) {
-                this.scene.towers.push(new_tower);
+                this.scene.towers[new_tower.tower_id] = new_tower;
             }
         }
     }

@@ -8,7 +8,7 @@ export default class Game extends Phaser.Scene{
 
         // game object containers
         this.players = {};
-        this.towers = [];
+        this.towers = {};
         this.projectiles = [];
         this.particles = [];
         this.enemies = [];
@@ -228,7 +228,7 @@ export default class Game extends Phaser.Scene{
         }
 
         /// handle towers
-        for (let tower of this.towers){
+        for (let tower of Object.values(this.towers)){
             tower.game_tick(delta, this.enemies, this.players);
         }
 
