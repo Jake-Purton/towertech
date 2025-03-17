@@ -63,7 +63,14 @@ const GameController = () => {
           }
         });
     
-        socket.emit('getUsers');
+        const indexToken = localStorage.getItem('indexToken');
+        if (indexToken) {
+          socket.emit('getUsers', indexToken);
+          console.log("111");
+        } else {
+          socket.emit('getUsers');
+          console.log("222");
+        }
 
         return () => {
           socket.off("output_from_game_to_client");

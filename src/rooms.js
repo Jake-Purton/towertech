@@ -1,3 +1,9 @@
+// a user in room is 
+// userID -> socket id
+// username
+// usersUserID -> Database id
+// the index in the list which is another way they can be identified
+
 // Represents a room
 class Room {
   // Creates a room with a given name
@@ -6,9 +12,14 @@ class Room {
     this.roomName = name; // name of the room
   }
 
-  // Adds a user to the room
+  // Adds a user to the room, returns the index in the room list
   addUser(userID, username, usersUserID) {
-    this.users.push({userID, username, usersUserID});
+    const i = this.users.push({userID, username, usersUserID});
+    return i-1;
+  }
+
+  swapSocketID(index, newID) {
+    this.users[index].userID = newID;
   }
 
   // Removes a user from the room
@@ -63,19 +74,25 @@ class RoomManager {
 
   addUserToRoom(userId, roomName, username) {
     if (this.rooms[roomName]) {
-      this.rooms[roomName].addUser(userId, username, null);
+      return this.rooms[roomName].addUser(userId, username, null);
     }
   }
 
   addUserToRoomAuth(userId, roomName, username, usersUserID) {
     if (this.rooms[roomName]) {
-      this.rooms[roomName].addUser(userId, username, usersUserID);
+      return this.rooms[roomName].addUser(userId, username, usersUserID);
     }
   }
 
   removeUserFromRoom(userId, roomName) {
     if (this.rooms[roomName]) {
       this.rooms[roomName].removeUser(userId);
+    }
+  }
+
+  swapSocketID(index, roomName, newID) {
+    if (this.rooms[roomName]) {
+      this.rooms[roomName].swapSocketID(index, newID)
     }
   }
 

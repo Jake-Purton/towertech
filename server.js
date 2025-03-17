@@ -31,7 +31,7 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     socket.on("MESSAGE", handleMessage(socket));
-    socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
+    socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager, JWT_SECRET));
     // socket.on("disconnect", handleDisconnect(socket, roomManager));
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();
@@ -47,11 +47,24 @@ app.prepare().then(() => {
       console.log("room created with code: ", roomCode);
       socket.join(roomCode);
     });
-    socket.on("getUsers", () => {
+
+    socket.on("getUsers", (indexToken) => {
+      if (indexToken) {
+        console.log("here2")
+        try {
+          const decoded = jwt.verify(indexToken, JWT_SECRET);
+          console.log(decoded)
+          roomManager.swapSocketID(decoded.uIndex, decoded.roomId, socket.id)
+          socket.join(decoded.roomCode)
+        } catch {
+          console.log("error with decoding index token")
+        }
+      }
 
       const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
       socket.emit("updateUsers", users);
     });
+
     socket.on("getUsersHost", (code) => {
 
       const users = roomManager.getUsersInRoom(code);
@@ -118,14 +131,22 @@ app.prepare().then(() => {
           const usersUserID = result.rows[0].id;
           const usersUserName = result.rows[0].name;
 
-          roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
+          const uIndex = roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
           socket.join(roomCode);
     
           console.log(userId, "joined room", roomCode);
           const users = roomManager.getUsersInRoom(roomCode);
           socket.to(roomCode).emit("updateUsers", users);
     
-          socket.emit("roomJoinSuccess", "Successfully joined room " + roomCode);
+          const tokenOptions = { expiresIn: '1d' };
+          jwt.sign({ uIndex, roomCode }, JWT_SECRET, tokenOptions, (err, indexToken) => {
+            if (err) {
+              console.error("Error creating token:", err);
+              return;
+            }
+            socket.emit("roomJoinSuccess", indexToken);
+          });
+
         } else {
           socket.emit("RoomErr", "Room number " + roomCode + " does not exist");
         }

@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 function handleMessage(socket) {
   return () => {
     // console.log("Received message:", msg);
@@ -5,7 +7,7 @@ function handleMessage(socket) {
   };
 }
 
-function handleJoinRoom(socket, roomManager) {
+function handleJoinRoom(socket, roomManager, secret) {
   return ({ userId, roomId, username }) => {
     console.log(userId, "attempting to join room", roomId, "with username", username);
 
@@ -18,14 +20,22 @@ function handleJoinRoom(socket, roomManager) {
     }
 
     if (roomManager.getRoom(roomId)) {
-      roomManager.addUserToRoom(userId, roomId, username);
+      const uIndex = roomManager.addUserToRoom(userId, roomId, username);
       socket.join(roomId);
 
       console.log(userId, "joined room", roomId);
       var users = roomManager.getUsersInRoom(roomId);
       socket.to(roomId).emit("updateUsers", users);
 
-      socket.emit("roomJoinSuccess", "Successfully joined room " + roomId);
+      const tokenOptions = { expiresIn: '1d' };
+      jwt.sign({ uIndex, roomId }, secret, tokenOptions, (err, indexToken) => {
+        if (err) {
+          console.error("Error creating token:", err);
+          return;
+        }
+        socket.emit("roomJoinSuccess", indexToken);
+      });
+
     } else {
       socket.emit("RoomErr", "Room number " + roomId + " does not exist");
     }

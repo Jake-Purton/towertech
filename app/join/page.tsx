@@ -69,7 +69,9 @@ const JoinPageContent: React.FC = () => {
             setIsSubmitted(false);
         }
 
-        function onSuccess() {
+        function onSuccess(indexToken) {
+            // index is their index in the list
+            localStorage.setItem("indexToken", indexToken)
             router.push('/join/room');
         }
 
