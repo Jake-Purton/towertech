@@ -17,7 +17,7 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
                 [0.9,0.08,0.03],[0.9,0.78,0.03],[0.59,0.78,0.03],[0.59,0.64,0.03],[0.82,0.64,0.03],[0.82,0.5,0.03],
                 [0.525,0.5,0.03],[0.525,0.79,0.03],[0.285,0.79,0.03],[0.285,0.64,0.03],[0.41,0.64,0.03],[0.41,0.285,0.03],[0.735,0.285]]}}
 
-constructor(scene, map_name, screen_width, screen_height) {
+    constructor(scene, map_name, screen_width, screen_height) {
         let info = Level.map_data[map_name];
         super(scene, 0, 0, info.map_texture);
         scene.add.existing(this);
@@ -32,29 +32,29 @@ constructor(scene, map_name, screen_width, screen_height) {
         this.texture_width = info.width;
         this.texture_height = info.height;
 
-        let texture_ratio = this.texture_width/this.texture_height;
-        if (screen_width/screen_height > texture_ratio) {
-            this.display_width = screen_height*texture_ratio;
+        let texture_ratio = this.texture_width / this.texture_height;
+        if (screen_width / screen_height > texture_ratio) {
+            this.display_width = screen_height * texture_ratio;
             this.display_height = screen_height;
         } else {
             this.display_width = screen_width;
-            this.display_height = screen_width/texture_ratio;
+            this.display_height = screen_width / texture_ratio;
         }
-        this.scene.cameras.main.setZoom(this.display_width/this.texture_width, this.display_height/this.texture_height);
-        this.scene.cameras.main.setScroll((this.texture_width-this.display_width)/2,(this.texture_height-this.display_height)/2);
-        this.scene.cameras.main.setViewport((screen_width-this.display_width)/2, (screen_height-this.display_height)/2, this.display_width, this.display_height);
+        this.scene.cameras.main.setZoom(this.display_width / this.texture_width, this.display_height / this.texture_height);
+        this.scene.cameras.main.setScroll((this.texture_width - this.display_width) / 2, (this.texture_height - this.display_height) / 2);
+        this.scene.cameras.main.setViewport((screen_width - this.display_width) / 2, (screen_height - this.display_height) / 2, this.display_width, this.display_height);
 
         this.path_radius = info.path_radius;
         this.enemy_path = this.load_path(info.enemy_path);
         this.depth = -10;
 
-        this.setScale(this.texture_width/this.width, this.texture_height/this.height);
-        this.setPosition(this.texture_width/2, this.texture_height/2);
+        this.setScale(this.texture_width / this.width, this.texture_height / this.height);
+        this.setPosition(this.texture_width / 2, this.texture_height / 2);
 
         // game ui
         this.player_info_display = new PlayerInfoDisplay(scene, this.texture_width, 0)
-
-
+    }
+    init_waves() {
         // wave stuf
         this.current_wave = null;
 

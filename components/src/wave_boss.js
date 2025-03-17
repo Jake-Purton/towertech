@@ -3,14 +3,14 @@ import Wave from './wave.js'
 
 export default class BossWave extends Wave
 {
-    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty, title, sub_title)
     {
         let waveEnemies = enemyArray.slice(1);
         let waveWeights = enemyWeights.slice(1);
 
         super(game, length, spawnDelay, waveEnemies, waveWeights, numEnemies);
 
-        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path, difficulty);
+        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path, difficulty, title, sub_title);
         game.enemies.push(this.bossEnemy);
         this.nextSpawn += 5 * this.game.target_fps;
 

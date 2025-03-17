@@ -5,7 +5,7 @@ export default class Wave
 
     static currentWave = null;
 
-    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty, title, sub_title)
     {
         this.game = game;
         Wave.currentWave = this;
@@ -46,6 +46,19 @@ export default class Wave
         this.totalEnemies = this.numEnemies;
 
         this.difficulty = difficulty;
+
+        // create wave titles
+        this.title_obj = this.game.add.text(
+            this.game.level.texture_width/2, this.game.level.texture_height/2-30, title,
+            {fontStyle: 'bold', fontSize:50, color:'#111111'}).setOrigin(0.5).setDepth(100)
+        this.sub_title_obj = this.game.add.text(
+            this.game.level.texture_width/2, this.game.level.texture_height/2+30, sub_title,
+            {fontSize:30, color:'#333333'}).setOrigin(0.5).setDepth(100)
+        console.log(this, title);
+        this.game.time.delayedCall(3000, () => {
+            this.title_obj.destroy()
+            this.sub_title_obj.destroy()
+        }, [], this.game);
     }
 
     game_tick(deltaTime)

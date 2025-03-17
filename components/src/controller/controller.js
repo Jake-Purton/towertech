@@ -37,13 +37,13 @@ export default class Controller extends Phaser.Scene{
         this.tower_data = {
             "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
                     {level:1, cost:5, damage:4, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
-                    {level:2, cost:10, damage:7, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
-                    {level:3, cost:15, damage:11, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                    {level:2, cost:10, damage:7, fire_rate:2.2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                    {level:3, cost:15, damage:11, fire_rate:2.5, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                 ]},
             "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
-                    {level:1, cost:10, damage:10, fire_rate:0.5, range:380},
-                    {level:2, cost:15, damage:18, fire_rate:0.8, range:380},
-                    {level:3, cost:25, damage:28, fire_rate:1.4, range:380},
+                    {level:1, cost:10, damage:20, fire_rate:0.5, range:380},
+                    {level:2, cost:15, damage:30, fire_rate:0.8, range:380},
+                    {level:3, cost:25, damage:40, fire_rate:1.4, range:380},
                 ]},
             "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
                     {level:1, cost:20, damage:6, fire_rate:1.5, range:180},
@@ -51,9 +51,9 @@ export default class Controller extends Phaser.Scene{
                     {level:3, cost:40, damage:20, fire_rate:2.5, range:280},
                 ]},
             "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
-                    {level:1, cost:25, damage:0.3, fire_rate:10, range:180},
-                    {level:2, cost:40, damage:0.8, fire_rate:10, range:180},
-                    {level:3, cost:60, damage:1.5, fire_rate:10, range:180},
+                    {level:1, cost:25, damage:3, fire_rate:10, range:180},
+                    {level:2, cost:40, damage:6, fire_rate:10, range:180},
+                    {level:3, cost:60, damage:10, fire_rate:10, range:180},
                 ]},
             "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
                     {level:1, cost:40, damage:0.1, fire_rate:8, range:280},
@@ -152,8 +152,8 @@ export default class Controller extends Phaser.Scene{
                 ]},
             "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay.", level_stats:[
                     {damage:6, fire_rate:5, fire_distance:150},
-                    {damage:7, fire_rate:6, fire_distance:180, upgrade_cost:8, upgrade_number:3},
-                    {damage:8, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
+                    {damage:8, fire_rate:6, fire_distance:180, upgrade_cost:8, upgrade_number:3},
+                    {damage:10, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
                     {damage:50, fire_rate:0.6, fire_distance:300},
@@ -166,9 +166,9 @@ export default class Controller extends Phaser.Scene{
                     {damage:15, fire_rate:14, fire_distance:250, upgrade_cost:15, upgrade_number:3},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
-                    {damage:15, fire_rate:10, fire_distance:200},
-                    {damage:18, fire_rate:10, fire_distance:250, upgrade_cost:20, upgrade_number:3},
-                    {damage:22, fire_rate:10, fire_distance:300, upgrade_cost:25, upgrade_number:3},
+                    {damage:6, fire_rate:10, fire_distance:200},
+                    {damage:12, fire_rate:10, fire_distance:250, upgrade_cost:20, upgrade_number:3},
+                    {damage:20, fire_rate:10, fire_distance:300, upgrade_cost:25, upgrade_number:3},
                 ]},
             "sword_of_void":{title:"Sword of Void", description:"A void-infused blade capable of tearing through bosses, but ineffective against enemies that multiply.", level_stats:[
                     {damage:40, fire_rate:3, fire_distance:200},
