@@ -43,7 +43,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.cooldown = cooldown;
         this.max_cooldown = max_cooldown;
         this.shoot_angle = shoot_angle;
-        this.damage = Math.floor(damage * (1 + difficulty/2));
+        this.damage = Math.floor(damage * (1 + difficulty**0.5));
         this.max_health = this.health;
         this.loot_table = loot_table;
         this.difficulty = difficulty;
@@ -130,7 +130,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     take_damage = (damage, speed=3, angle=null, knockback=0, source=null) => {
         this.add_health(-damage);
-        this.make_hit_particles(Math.ceil(2*(damage**0.5)), speed, angle);
+        this.make_hit_particles(Math.ceil(2*(damage**0.5-1)), speed, angle);
         this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
         if (source !== null) {
             this.last_damage_source = source;

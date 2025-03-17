@@ -110,7 +110,7 @@ export default class WaveManager
         this.wave_index ++;
 
         // increases difficulty by number of players every 5 waves
-        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
+        let difficulty = (Math.floor((this.wave_index + 1) / 2) + 1) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
 
         let newWave = null;
         if (this.wave_index < this.waveData.length)

@@ -143,7 +143,7 @@ class Tower extends ProjectileShooter {
 class CannonTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, CannonBall, tower_stats,
-            {range:80, fire_distance:100, projectile_no_drag_distance:0,
+            {range:80, fire_distance:100, projectile_no_drag_distance:0, projectile_auto_aim_strength:10,
                 fire_rate:2, projectile_spawn_location:0.5});
     }
 }

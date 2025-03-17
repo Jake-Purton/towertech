@@ -36,29 +36,29 @@ export default class Controller extends Phaser.Scene{
         // constants
         this.tower_data = {
             "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
-                    {level:1, cost:5, damage:3, fire_rate:2, range:180},
-                    {level:2, cost:10, damage:5, fire_rate:2, range:180},
-                    {level:3, cost:15, damage:8, fire_rate:2, range:180},
+                    {level:1, cost:5, damage:4, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                    {level:2, cost:10, damage:7, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                    {level:3, cost:15, damage:11, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                ]},
+            "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
+                    {level:1, cost:10, damage:10, fire_rate:0.5, range:380},
+                    {level:2, cost:15, damage:18, fire_rate:0.8, range:380},
+                    {level:3, cost:25, damage:28, fire_rate:1.4, range:380},
+                ]},
+            "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
+                    {level:1, cost:20, damage:6, fire_rate:1.5, range:180},
+                    {level:2, cost:30, damage:12, fire_rate:2, range:180},
+                    {level:3, cost:40, damage:20, fire_rate:2.5, range:280},
                 ]},
             "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
                     {level:1, cost:25, damage:0.3, fire_rate:10, range:180},
-                    {level:2, cost:40, damage:0.5, fire_rate:10, range:180},
-                    {level:3, cost:60, damage:0.8, fire_rate:10, range:180},
-                ]},
-            "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
-                    {level:1, cost:10, damage:8, fire_rate:0.5, range:380},
-                    {level:2, cost:15, damage:10, fire_rate:0.8, range:380},
-                    {level:3, cost:25, damage:12, fire_rate:1.4, range:380},
+                    {level:2, cost:40, damage:0.8, fire_rate:10, range:180},
+                    {level:3, cost:60, damage:1.5, fire_rate:10, range:180},
                 ]},
             "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
                     {level:1, cost:40, damage:0.1, fire_rate:8, range:280},
-                    {level:2, cost:50, damage:0.12, fire_rate:10, range:280},
-                    {level:3, cost:60, damage:0.15, fire_rate:12, range:280},
-                ]},
-            "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
-                    {level:1, cost:20, damage:4, fire_rate:1.5, range:180},
-                    {level:2, cost:30, damage:5, fire_rate:2, range:180},
-                    {level:3, cost:40, damage:6, fire_rate:2.5, range:280},
+                    {level:2, cost:50, damage:0.22, fire_rate:10, range:280},
+                    {level:3, cost:60, damage:0.35, fire_rate:12, range:280},
                 ]},
             "HealingTower":{title:"Healer", description:"its not a cannon", level_stats:[
                     {level:1, cost:10, damage:1, fire_rate:10, range:120},
@@ -71,14 +71,14 @@ export default class Controller extends Phaser.Scene{
                     {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
             "SlowingTower":{title:"Slower", description:"its not a cannon", level_stats:[
-                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
-                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
-                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
+                    {level:1, cost:15, damage:1, fire_rate:10, range:120},
+                    {level:2, cost:20, damage:1, fire_rate:10, range:160},
+                    {level:3, cost:25, damage:1, fire_rate:10, range:200},
                 ]},
             "BuffingTower":{title:"Buffing", description:"its not a cannon", level_stats:[
-                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
-                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
-                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
+                    {level:1, cost:15, damage:1, fire_rate:10, range:120},
+                    {level:2, cost:20, damage:1, fire_rate:10, range:160},
+                    {level:3, cost:25, damage:1, fire_rate:10, range:200},
                 ]},
             }
         this.parts_data = {
@@ -147,33 +147,33 @@ export default class Controller extends Phaser.Scene{
 
             "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
                     {damage:3, fire_rate:3, fire_distance:100},
-                    {damage:5, fire_rate:4, fire_distance:130, upgrade_cost:10, upgrade_number:3},
-                    {damage:8, fire_rate:5, fire_distance:160, upgrade_cost:15, upgrade_number:3},
+                    {damage:5, fire_rate:4, fire_distance:130, upgrade_cost:2, upgrade_number:3},
+                    {damage:8, fire_rate:5, fire_distance:160, upgrade_cost:5, upgrade_number:3},
                 ]},
             "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay.", level_stats:[
                     {damage:6, fire_rate:5, fire_distance:150},
-                    {damage:7, fire_rate:6, fire_distance:180, upgrade_cost:15, upgrade_number:3},
-                    {damage:8, fire_rate:8, fire_distance:210, upgrade_cost:20, upgrade_number:3},
+                    {damage:7, fire_rate:6, fire_distance:180, upgrade_cost:8, upgrade_number:3},
+                    {damage:8, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
-                    {damage:25, fire_rate:0.3, fire_distance:300},
-                    {damage:35, fire_rate:0.5, fire_distance:350, upgrade_cost:30, upgrade_number:3},
-                    {damage:50, fire_rate:0.8, fire_distance:400, upgrade_cost:40, upgrade_number:3},
+                    {damage:50, fire_rate:0.6, fire_distance:300},
+                    {damage:80, fire_rate:0.8, fire_distance:350, upgrade_cost:15, upgrade_number:3},
+                    {damage:120, fire_rate:1, fire_distance:400, upgrade_cost:20, upgrade_number:3},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
                     {damage:7, fire_rate:8, fire_distance:140},
-                    {damage:11, fire_rate:10, fire_distance:190, upgrade_cost:30, upgrade_number:3},
-                    {damage:15, fire_rate:14, fire_distance:250, upgrade_cost:40, upgrade_number:3},
+                    {damage:11, fire_rate:10, fire_distance:190, upgrade_cost:10, upgrade_number:3},
+                    {damage:15, fire_rate:14, fire_distance:250, upgrade_cost:15, upgrade_number:3},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
                     {damage:15, fire_rate:10, fire_distance:200},
-                    {damage:18, fire_rate:10, fire_distance:250, upgrade_cost:40, upgrade_number:3},
-                    {damage:22, fire_rate:10, fire_distance:300, upgrade_cost:50, upgrade_number:3},
+                    {damage:18, fire_rate:10, fire_distance:250, upgrade_cost:20, upgrade_number:3},
+                    {damage:22, fire_rate:10, fire_distance:300, upgrade_cost:25, upgrade_number:3},
                 ]},
             "sword_of_void":{title:"Sword of Void", description:"A void-infused blade capable of tearing through bosses, but ineffective against enemies that multiply.", level_stats:[
                     {damage:40, fire_rate:3, fire_distance:200},
-                    {damage:55, fire_rate:3, fire_distance:250, upgrade_cost:60, upgrade_number:1},
-                    {damage:70, fire_rate:3, fire_distance:300, upgrade_cost:80, upgrade_number:2},
+                    {damage:55, fire_rate:3, fire_distance:250, upgrade_cost:30, upgrade_number:1},
+                    {damage:70, fire_rate:3, fire_distance:300, upgrade_cost:40, upgrade_number:2},
                 ]},
             }
     }
@@ -321,13 +321,12 @@ export default class Controller extends Phaser.Scene{
             this.apply_fullscreen()
         }, this)
 
-        this.orientation_text = this.add.text(window.innerWidth/2, window.innerHeight/2, 
+        this.orientation_text = this.add.text(window.innerWidth/2, window.innerHeight/2,
             'Please change\nto Landscape', {
-            fontSize: 64,
-            font: 'Tahoma',
+            fontSize: 35,
             color: '#ffffff',
             align: 'center',
-        }).setOrigin(0.5).setDepth(2000); 
+        }).setOrigin(0.5).setDepth(2000);
         this.orientation_text.setVisible(false);
 
         window.addEventListener('resize', () => this.handleOrientation());
@@ -524,7 +523,7 @@ export default class Controller extends Phaser.Scene{
         this.sub_menu_ui_objects[0].setScale(3);
     }
     create_tower_menu(container_rect) {
-        let towers = ["CannonTower", "LaserTower", "SniperTower", "FlamethrowerTower", "BallistaTower", "HealingTower", "SlowingTower", "BuffingTower"];
+        let towers = ["CannonTower", "SniperTower", "BallistaTower", "HealingTower", "LaserTower", "SlowingTower", "FlamethrowerTower", "BuffingTower"];
         this.tower_menu_ui_objects = [];
         for (let i=0;i<towers.length;i++) {
             this.tower_menu_ui_objects.push(new SelectorButton(this,
