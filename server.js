@@ -59,7 +59,8 @@ app.prepare().then(() => {
           if (swap) {
             // tell the game to swap the playerid
             socket.to(decoded.roomId).emit("swapSocketID", {oldID: swap.oldID, newID: swap.newID})
-            socket.join(decoded.roomCode)
+            console.log("HERE rc" + decoded.roomId)
+            socket.join(decoded.roomId)
           }
         } catch {
           console.log("error with decoding index token")
@@ -144,7 +145,7 @@ app.prepare().then(() => {
           socket.to(roomCode).emit("updateUsers", users);
     
           const tokenOptions = { expiresIn: '1d' };
-          jwt.sign({ uIndex, roomCode }, JWT_SECRET, tokenOptions, (err, indexToken) => {
+          jwt.sign({ uIndex, roomId: roomCode }, JWT_SECRET, tokenOptions, (err, indexToken) => {
             if (err) {
               console.error("Error creating token:", err);
               return;
@@ -176,6 +177,7 @@ app.prepare().then(() => {
 
     socket.on("output_from_game_to_client", (data) => {
       // console.log("output_from_game_to_client", data);
+      console.log(roomManager.getUserRoom(data.PlayerID));
       // send data to the client
       socket.to(roomManager.getUserRoom(data.PlayerID)).emit("output_from_game_to_client", data);
       // socket.emit("output_from_game_to_client", data);

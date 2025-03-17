@@ -329,10 +329,17 @@ export default class Game extends Phaser.Scene{
         console.log(this.players);
         if (this.players[oldID]) {
             console.log("SWAPPED old: " + oldID + "new: " + newID);
+            console.log(this.players)
             this.players[newID] = this.players[oldID];
             this.players[newID].player_id = newID;
             delete this.players[oldID];
+            console.log(this.players)
+
         }
+
+        this.players[newID].save_inventory();
+        this.players[newID].set_coins(this.players[newID].coins);
+        this.players[newID].set_health(this.players[newID].health, this.players[newID].max_health);
     }
 
     take_input(input){
