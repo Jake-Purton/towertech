@@ -8,11 +8,12 @@ export default class Goosniper extends Enemy{
                     melee_attack_speed=1, leave_path=random_range(0.2,0.53),
                     target=null, changed=false, cooldown=5, max_cooldown=5,
                     shoot_angle=0, damage=5} = {}) {
+        let loot_table = {drop_chance:1,drops:{'laser_cannon':4}}
         super(scene, x, y, 'goosniper', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
                 leave_path:leave_path, target:target, changed:changed, cooldown:cooldown,
-                max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage});
+                max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage}, loot_table);
         this.cooldown = 100;
         this.max_cooldown = 100;
         this.target = null;

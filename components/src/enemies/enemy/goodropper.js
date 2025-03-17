@@ -9,11 +9,12 @@ export default class Goodropper extends Enemy{
                     melee_damage=3, melee_attack_speed=1, 
                     target=null, cooldown=8, max_cooldown=8, 
                     damage=5, leave_path=1} = {}) {
+        let loot_table = {drop_chance:1.5,drops:{'lightweight_frame':3, 'floating_wheel':3, 'plasma_blaster':2}}
         super(scene, x, y, 'Goodropper', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, 
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown, 
-                damage:damage, leave_path:leave_path});
+                damage:damage, leave_path:leave_path}, loot_table);
         this.on_path = false;
         this.path_t = random_range(0.2,0.6);
         this.health = Math.floor(this.health / 2)

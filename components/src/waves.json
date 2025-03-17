@@ -24,7 +24,7 @@
                 "length":12, 
                 "spawnDelay":1,
                 "enemyList":["goolime","goober","gooslinger"], 
-                "enemyWeights":[3,3,2], 
+                "enemyWeights":[3,3,1],
                 "enemyCount":8
             },
 

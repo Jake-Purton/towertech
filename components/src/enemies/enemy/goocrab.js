@@ -8,11 +8,12 @@ export default class Goocrab extends Enemy{
                     melee_damage=1, melee_attack_speed=1, 
                     target=null, cooldown=8, max_cooldown=8, 
                     damage=5, leave_path=1} = {}) {
+        let loot_table = {drop_chance:1,drops:{'tank_frame':2,'laser_cannon':3}}
         super(scene, x, y, 'goocrab', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, 
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown, 
-                damage:damage, leave_path:leave_path});
+                damage:damage, leave_path:leave_path}, loot_table);
         
         this.on_tower = false;
     }
