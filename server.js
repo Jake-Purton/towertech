@@ -54,8 +54,13 @@ app.prepare().then(() => {
         try {
           const decoded = jwt.verify(indexToken, JWT_SECRET);
           console.log(decoded)
-          roomManager.swapSocketID(decoded.uIndex, decoded.roomId, socket.id)
-          socket.join(decoded.roomCode)
+          const swap = roomManager.swapSocketID(decoded.uIndex, decoded.roomId, socket.id);
+          // if the swap actually needed to happen
+          if (swap) {
+            // tell the game to swap the playerid
+            socket.to(decoded.roomId).emit("swapSocketID", {oldID: swap.oldID, newID: swap.newID})
+            socket.join(decoded.roomCode)
+          }
         } catch {
           console.log("error with decoding index token")
         }

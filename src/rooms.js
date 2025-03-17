@@ -91,8 +91,19 @@ class RoomManager {
   }
 
   swapSocketID(index, roomName, newID) {
+    console.log("swapping")
     if (this.rooms[roomName]) {
-      this.rooms[roomName].swapSocketID(index, newID)
+      console.log("here 200")
+      const oldID = this.rooms[roomName].users[index].userID;
+      if (oldID === newID) {
+        console.log("NULLNULL rooms.js")
+        return null;
+      } else {
+        console.log("YESYES rooms.js")
+
+        this.rooms[roomName].swapSocketID(index, newID);
+        return { oldID, newID };
+      }
     }
   }
 

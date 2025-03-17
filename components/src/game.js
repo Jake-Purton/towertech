@@ -191,7 +191,7 @@ export default class Game extends Phaser.Scene{
         });
 
         // create Level (map info and enemy path)
-        console.log(localStorage.getItem('gameMap'))
+        // console.log(localStorage.getItem('gameMap'))
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
 
         // game objects
@@ -319,8 +319,20 @@ export default class Game extends Phaser.Scene{
         this.end_game_output(game_data);
 
         this.game_over = true;
-        console.log('GAME OVER', game_data);
+        // console.log('GAME OVER', game_data);
 
+    }
+
+    swapSocketID(oldID, newID) {
+        console.log("HERE JAKE");
+        console.log("old: " + oldID + "new: " + newID);
+        console.log(this.players);
+        if (this.players[oldID]) {
+            console.log("SWAPPED old: " + oldID + "new: " + newID);
+            this.players[newID] = this.players[oldID];
+            this.players[newID].player_id = newID;
+            delete this.players[oldID];
+        }
     }
 
     take_input(input){
