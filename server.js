@@ -52,6 +52,11 @@ app.prepare().then(() => {
       const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
       socket.emit("updateUsers", users);
     });
+    socket.on("getUsersHost", (code) => {
+
+      const users = roomManager.getUsersInRoom(code);
+      socket.emit("updateUsers", users);
+    });
 
     socket.on("end_game", (data) => {
 
