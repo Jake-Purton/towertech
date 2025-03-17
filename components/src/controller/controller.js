@@ -415,8 +415,14 @@ export default class Controller extends Phaser.Scene{
         // this.screen_width = Math.min(this.exactScreenSize.width, this.max_screen_width);
         // this.screen_height = Math.min(this.exactScreenSize.height, this.max_screen_height);
 
-        this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
-        this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
+        if (window.innerWidth > window.innerHeight) {
+            this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
+            this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
+        } else {
+            this.screen_width = Math.min(window.innerHeight, this.max_screen_width);
+            this.screen_height = Math.min(window.innerWidth, this.max_screen_height);
+        }
+
 
         // this.print(new Date().toTimeString()+' screen width/height - '+this.screen_width+'/'+this.screen_height)
 
@@ -523,7 +529,7 @@ export default class Controller extends Phaser.Scene{
         this.sub_menu_ui_objects[0].setScale(3);
     }
     create_tower_menu(container_rect) {
-        let towers = ["CannonTower", "SniperTower", "BallistaTower", "HealingTower", "LaserTower", "SlowingTower", "FlamethrowerTower", "BuffingTower"];
+        let towers = ["CannonTower", "SniperTower", "HealingTower", "BallistaTower", "BuffingTower", "LaserTower", "SlowingTower", "FlamethrowerTower"];
         this.tower_menu_ui_objects = [];
         for (let i=0;i<towers.length;i++) {
             this.tower_menu_ui_objects.push(new SelectorButton(this,

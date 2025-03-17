@@ -7,7 +7,7 @@ export default class Gooslinger extends Enemy{
                     melee_damage=1, melee_attack_speed=1,
                     target=null, cooldown=2, max_cooldown=2,
                     shoot_angle=0, damage=1} = {}) {
-        let loot_table = {drop_chance:1,drops:{'pistol_weapon':4, 'plasma_blaster':3}}
+        let loot_table = {drop_chance:1.5,drops:{'pistol_weapon':1, 'plasma_blaster':3}}
         super(scene, x, y, 'gooslinger', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,

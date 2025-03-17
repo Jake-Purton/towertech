@@ -7,8 +7,8 @@
                 "sub_title":"Goobers",
                 "length":15, 
                 "spawnDelay":2, 
-                "enemyList":["goober"], 
-                "enemyWeights":[5], 
+                "enemyList":["goober"],
+                "enemyWeights":[5],
                 "enemyCount":5
             }, 
 
@@ -29,7 +29,7 @@
                 "sub_title":"Goobers, Goolimes and Gooslingers",
                 "length":12, 
                 "spawnDelay":1,
-                "enemyList":["goolime","goober","gooslinger"], 
+                "enemyList":["goolime","goober","gooslinger"],
                 "enemyWeights":[3,3,2],
                 "enemyCount":8
             },

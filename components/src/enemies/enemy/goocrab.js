@@ -45,6 +45,7 @@ export default class Goocrab extends Enemy{
                 return this.setPosition(this.target.x, this.target.y);
             }
             let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
+            this.velocity.setLength(this.velocity.length()*0.9);
             change.add(this.velocity);
             return this.setPosition(this.x + change.x,this.y + change.y);
         }
