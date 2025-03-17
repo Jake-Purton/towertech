@@ -24,9 +24,9 @@ export default class WaveManager
 
 
         let difficulties = {
-            Easy:1,
-            Medium:2,
-            Hard:3}
+            Easy:0.6,
+            Medium:1.6,
+            Hard:2.6}
         let diff = localStorage.getItem("gameDifficulty")
         this.base_difficulty = difficulties[diff];
 
@@ -104,7 +104,9 @@ export default class WaveManager
     {
         if (this.current_wave.game_tick(deltaTime)) {
             this.next_wave();
+            return true
         }
+        return false
     }
 
     next_wave()

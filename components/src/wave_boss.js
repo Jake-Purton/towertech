@@ -8,9 +8,9 @@ export default class BossWave extends Wave
         let waveEnemies = enemyArray.slice(1);
         let waveWeights = enemyWeights.slice(1);
 
-        super(game, length, spawnDelay, waveEnemies, waveWeights, numEnemies);
+        super(game, length, spawnDelay, waveEnemies, waveWeights, numEnemies, difficulty, title, sub_title);
 
-        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path, difficulty, title, sub_title);
+        this.bossEnemy = spawn_enemy(game, -50, -50, enemyArray[0], game.level.enemy_path, difficulty);
         game.enemies.push(this.bossEnemy);
         this.nextSpawn += 5 * this.game.target_fps;
 
@@ -19,7 +19,7 @@ export default class BossWave extends Wave
 
     game_tick(deltaTime)
     {
-        super.game_tick(deltaTime);
+        return super.game_tick(deltaTime);
         //If the boss enemy is still alive,
         if (this.bossEnemy != null && this.bossEnemy.health > 0)
         {

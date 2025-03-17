@@ -63,7 +63,9 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
         this.wave_manager.load_waves(WavesJson)
     }
     game_tick(delta_time) {
-        this.wave_manager.game_tick(delta_time);
+        if (this.wave_manager.game_tick(delta_time)) {
+            this.respawn_players()
+        }
     }
     load_path(points){
         let path = new Phaser.Curves.Path(
@@ -107,5 +109,10 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
             }
         }
         return false
+    }
+    respawn_players() {
+        for (let player of Object.values(this.scene.players)) {
+            player.respawn()
+        }
     }
 }

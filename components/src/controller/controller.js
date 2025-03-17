@@ -84,65 +84,65 @@ export default class Controller extends Phaser.Scene{
         this.parts_data = {
             "robot_body":{title:"Robot Body", description:"A standard robotic frame that gets the job done without extras.", level_stats:[
                     {health:10, speed:5},
-                    {health:12, speed:7, upgrade_cost:8, upgrade_number:3},
-                    {health:15, speed:10, upgrade_cost:10, upgrade_number:3},
+                    {health:15, speed:7, upgrade_cost:3, upgrade_number:3},
+                    {health:20, speed:10, upgrade_cost:6, upgrade_number:3},
                 ]},
             "lightweight_frame":{title:"Lightweight Frame", description:"A lightweight frame built for speed at the cost of durability.", level_stats:[
-                    {health:5, speed:12},
-                    {health:7, speed:15, upgrade_cost:12, upgrade_number:3},
-                    {health:10, speed:18, upgrade_cost:16, upgrade_number:3},
+                    {health:8, speed:12},
+                    {health:13, speed:15, upgrade_cost:6, upgrade_number:3},
+                    {health:18, speed:18, upgrade_cost:10, upgrade_number:3},
                 ]},
             "tank_frame":{title:"Tank Frame", description:"A heavily armored frame designed to absorb damage and protect the player.", level_stats:[
                     {health:20, speed:2},
-                    {health:25, speed:3, upgrade_cost:12, upgrade_number:3},
-                    {health:30, speed:4, upgrade_cost:16, upgrade_number:3},
+                    {health:35, speed:3, upgrade_cost:8, upgrade_number:3},
+                    {health:50, speed:4, upgrade_cost:12, upgrade_number:3},
                 ]},
             "energy_core_frame":{title:"Energy Core Frame", description:"A futuristic frame that enhances buff durations but leaves the user vulnerable to burst attacks.", level_stats:[
-                    {health:8, speed:6},
-                    {health:12, speed:8, upgrade_cost:10, upgrade_number:3},
-                    {health:16, speed:10, upgrade_cost:15, upgrade_number:3},
+                    {health:10, speed:6},
+                    {health:16, speed:8, upgrade_cost:6, upgrade_number:3},
+                    {health:24, speed:10, upgrade_cost:20, upgrade_number:3},
                 ]},
             "titan_core":{title:"Titan Core", description:"An impenetrable core that grants immense defense but severely limits movement.", level_stats:[
                     {health:25, speed:5},
-                    {health:30, speed:6, upgrade_cost:30, upgrade_number:1},
-                    {health:40, speed:7, upgrade_cost:40, upgrade_number:2},
+                    {health:40, speed:6, upgrade_cost:20, upgrade_number:1},
+                    {health:60, speed:7, upgrade_cost:40, upgrade_number:2},
                 ]},
 
             "robot_leg":{title:"Robot Legs", description:"A basic set of robotic legs, simple and reliable.", level_stats:[
                     {health:7, speed:8},
-                    {health:9, speed:10, upgrade_cost:8, upgrade_number:3},
-                    {health:11, speed:12, upgrade_cost:10, upgrade_number:3},
+                    {health:12, speed:10, upgrade_cost:1, upgrade_number:3},
+                    {health:17, speed:12, upgrade_cost:3, upgrade_number:3},
                 ]},
             "armored_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
-                    {health:10, speed:6},
-                    {health:20, speed:6, upgrade_cost:10, upgrade_number:3},
-                    {health:30, speed:6, upgrade_cost:15, upgrade_number:3},
+                    {health:14, speed:6},
+                    {health:25, speed:7, upgrade_cost:8, upgrade_number:3},
+                    {health:40, speed:8, upgrade_cost:12, upgrade_number:3},
                 ]},
             "spider_leg":{title:"Spider Legs", description:"abdullah u didnt do a description for this one", level_stats:[
-                    {health:8, speed:10},
-                    {health:12, speed:13, upgrade_cost:10, upgrade_number:3},
-                    {health:16, speed:16, upgrade_cost:15, upgrade_number:3},
+                    {health:10, speed:10},
+                    {health:18, speed:13, upgrade_cost:10, upgrade_number:3},
+                    {health:25, speed:16, upgrade_cost:15, upgrade_number:3},
                 ]},
             "phantom_step":{title:"Phantom Step", description:"A mysterious set of legs that allows players to phase out of danger momentarily, but mistiming can leave them exposed.", level_stats:[
                     {health:12, speed:9},
-                    {health:16, speed:12, upgrade_cost:20, upgrade_number:1},
-                    {health:20, speed:16, upgrade_cost:30, upgrade_number:2},
+                    {health:16, speed:12, upgrade_cost:15, upgrade_number:1},
+                    {health:20, speed:16, upgrade_cost:20, upgrade_number:2},
                 ]},
 
             "speedster_wheel":{title:"Speedster Wheel", description:"High-speed wheels for those who want to outrun enemies but risk losing control.", level_stats:[
                     {health:7, speed:14},
-                    {health:9, speed:20, upgrade_cost:10, upgrade_number:3},
-                    {health:11, speed:25, upgrade_cost:15, upgrade_number:3},
+                    {health:9, speed:20, upgrade_cost:4, upgrade_number:3},
+                    {health:11, speed:25, upgrade_cost:8, upgrade_number:3},
                 ]},
             "floating_wheel":{title:"Floating Wheel", description:"Hovering movement lets you glide over obstacles but makes you an easy airborne target.", level_stats:[
-                    {health:-3, speed:14},
-                    {health:-5, speed:15, upgrade_cost:4, upgrade_number:3},
-                    {health:-7, speed:18, upgrade_cost:8, upgrade_number:3},
+                    {health:3, speed:14},
+                    {health:5, speed:15, upgrade_cost:4, upgrade_number:3},
+                    {health:7, speed:18, upgrade_cost:8, upgrade_number:3},
                 ]},
             "tank_treads":{title:"Tank Treads", description:"Heavy-duty treads that offer durability at the cost of speed.", level_stats:[
                     {health:20, speed:3},
-                    {health:35, speed:4, upgrade_cost:15, upgrade_number:3},
-                    {health:45, speed:6, upgrade_cost:20, upgrade_number:3},
+                    {health:35, speed:4, upgrade_cost:8, upgrade_number:3},
+                    {health:50, speed:5, upgrade_cost:12, upgrade_number:3},
                 ]},
 
             "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
@@ -156,9 +156,9 @@ export default class Controller extends Phaser.Scene{
                     {damage:10, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
-                    {damage:50, fire_rate:0.6, fire_distance:300},
-                    {damage:80, fire_rate:0.8, fire_distance:350, upgrade_cost:15, upgrade_number:3},
-                    {damage:120, fire_rate:1, fire_distance:400, upgrade_cost:20, upgrade_number:3},
+                    {damage:50, fire_rate:0.6, fire_distance:300, projectile_auto_aim_strength:10},
+                    {damage:80, fire_rate:0.8, fire_distance:350, upgrade_cost:15, upgrade_number:3, projectile_auto_aim_strength:10},
+                    {damage:120, fire_rate:1, fire_distance:400, upgrade_cost:20, upgrade_number:3, projectile_auto_aim_strength:10},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
                     {damage:7, fire_rate:8, fire_distance:140},
@@ -336,7 +336,7 @@ export default class Controller extends Phaser.Scene{
     }
 
     handleOrientation = () => {
-        this.print(new Date().toTimeString()+' INNER width/height - '+window.innerWidth+'/'+window.innerHeight)
+        // this.print(new Date().toTimeString()+' INNER width/height - '+window.innerWidth+'/'+window.innerHeight)
         setTimeout(() => {
 
             const isPortrait = window.innerHeight > window.innerWidth;
@@ -418,7 +418,7 @@ export default class Controller extends Phaser.Scene{
         this.screen_width = Math.min(window.innerWidth, this.max_screen_width);
         this.screen_height = Math.min(window.innerHeight, this.max_screen_height);
 
-        this.print(new Date().toTimeString()+' screen width/height - '+this.screen_width+'/'+this.screen_height)
+        // this.print(new Date().toTimeString()+' screen width/height - '+this.screen_width+'/'+this.screen_height)
 
         this.destroy_ui_list(this.ui_objects);
 

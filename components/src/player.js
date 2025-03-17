@@ -157,10 +157,8 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
             }
 
-            let speed_multiplier =  this.effects.get_speed_multiplier();
-
-            this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
-            this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+            this.body.position.x += this.velocity.x*delta_time;
+            this.body.position.y += this.velocity.y*delta_time;
             this.keep_in_map();
 
             // part management
@@ -241,8 +239,12 @@ export default class Player extends Phaser.GameObjects.Container{
         this.set_coins(0);
     }
     respawn() {
-        this.dead = false;
-        this.visible = true;
+        if (this.dead) {
+            this.dead = false;
+            this.visible = true;
+            this.health = this.max_health;
+        }
+
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
@@ -260,7 +262,9 @@ export default class Player extends Phaser.GameObjects.Container{
             this.scene.score += enemy.coin_value;
             this.kill_count += 1;
             this.player_score += enemy.coin_value;
-            this.set_coins(this.coins+enemy.coin_value);
+            for (let player of Object.values(this.scene.players)) {
+                player.set_coins(player.coins+enemy.coin_value);
+            }
         }
     }
     keep_in_map() {

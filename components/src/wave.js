@@ -54,7 +54,6 @@ export default class Wave
         this.sub_title_obj = this.game.add.text(
             this.game.level.texture_width/2, this.game.level.texture_height/2+30, sub_title,
             {fontSize:30, color:'#333333'}).setOrigin(0.5).setDepth(100)
-        console.log(this, title);
         this.game.time.delayedCall(3000, () => {
             this.title_obj.destroy()
             this.sub_title_obj.destroy()

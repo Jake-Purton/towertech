@@ -121,7 +121,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         let num_drops = float_to_random_int(this.loot_table.drop_chance);
         for (let i=0;i<num_drops;i++) {
             let drop = weighted_random_choice(this.loot_table.drops);
-            this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, drop));
+            this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, drop, Math.floor((num_drops+1)/2)));
         }
 
         if (this.last_damage_source !== null) {
