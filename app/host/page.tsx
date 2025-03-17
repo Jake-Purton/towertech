@@ -51,7 +51,10 @@ const HostPage = () => {
       setRoomCode(data.roomCode);
       localStorage.setItem("roomToken", data.roomToken);
     };
-    const handleUpdateUsers = (userList: User[]) => setUsers(userList);
+    const handleUpdateUsers = (userList: User[]) => {
+      setUsers(userList);
+      localStorage.setItem("usersLen", userList.length.toString())
+    }
 
     socket.on("roomCode", handleRoomCode);
     socket.on("updateUsers", handleUpdateUsers);
