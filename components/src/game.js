@@ -3,7 +3,7 @@ import Player from './player.js';
 import Level from "./level.js";
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func, init_server_func, end_game_output){
+    constructor(output_data_func, init_server_func, end_game_output, target_num_players){
         super('GameScene');
 
         // game object containers
@@ -24,6 +24,8 @@ export default class Game extends Phaser.Scene{
         this.game_over = false;
         this.score = 0;
         this.health = 10;
+        this.target_num_players = target_num_players;
+        this.start_waves_delay = 15;
 
     }
     preload() {
@@ -291,6 +293,10 @@ export default class Game extends Phaser.Scene{
 
         // level(wave) management
         this.level.game_tick(delta);
+        this.start_waves_delay -= delta/this.target_fps;
+        if (this.start_waves_delay < 0) {
+            this.level.start_waves()
+        }
 
         // check game over
         if (this.health <= 0) {
@@ -352,8 +358,15 @@ export default class Game extends Phaser.Scene{
                     break;
             }
         } else if (input.type === "Constructor") {
+            let angle = Math.PI*2*Object.keys(this.players).length/this.target_num_players;
+            let radius = 40 * (this.target_num_players-1);
+            let x_pos = this.level.displayWidth/2 + radius * Math.cos(angle);
+            let y_pos = this.level.displayHeight/2 + radius * Math.sin(angle);
             this.players[input.PlayerID] = new Player(
-                this, 100 * Object.keys(this.players).length, 100, input.PlayerID, {username: input.username});
+                this, x_pos, y_pos, input.PlayerID, {username: input.username});
+            if (Object.values(this.players) >= this.target_num_players) {
+                this.start_waves_delay = 2;
+            }
         }
     }
 

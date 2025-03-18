@@ -11,7 +11,7 @@ const PhaserGame = () => {
   useEffect(() => {
     if (!socket.connected) socket.connect();
 
-    alert(usersLen + " THIS IS PHASERGAMEJS LINE 14, ALSO LOOK AT LINE 9");
+    // alert(usersLen + " THIS IS PHASERGAMEJS LINE 14, ALSO LOOK AT LINE 9");
     
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
@@ -37,7 +37,7 @@ const PhaserGame = () => {
               // debug: true,
             }
           },
-          scene: new Game(output_data, init_server, end_game_output),
+          scene: new Game(output_data, init_server, end_game_output, usersLen),
           backgroundColor: '#000000',
         };
 
