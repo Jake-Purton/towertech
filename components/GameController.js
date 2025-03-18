@@ -9,11 +9,14 @@ const GameController = () => {
   const router = useRouter();
 
   useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+      console.log("HERE THE SOCKET ISNT WORKING", socket.connected)
+    };
 
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
 
-        if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
         socket.on('end_game_client', end_game)
 
@@ -97,7 +100,6 @@ const GameController = () => {
           // console.log('data sent:', data)
           socket.emit("input_from_client_to_game", data);
         }
-
 
       });
     }
