@@ -214,9 +214,13 @@ class GoodroneProjectile extends Projectile {
     }
 }
 class GooMeleeDamage extends Projectile {
-    constructor(scene, x, y, target=null, damage=1, type) {
+    constructor(scene, x, y, target=null, damage=1, type, time_to_live=0.1) {
         super(scene, x, y, type, 0, 0, 'Enemy',
-            {target:target, auto_aim_strength:0, damage:damage},{initial_alpha:0, target_distance:5, time_to_live:0.1});
+            {target:target, auto_aim_strength:0, damage:damage},
+            {initial_alpha:0, target_distance:5, time_to_live:time_to_live});
+    }
+    get_dead() {
+        return (this.time_to_live<0);
     }
 }
 

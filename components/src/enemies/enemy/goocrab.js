@@ -5,7 +5,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Goocrab extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=1.5, health=8, coin_value=1, 
-                    melee_damage=1, melee_attack_speed=1, 
+                    melee_damage=1, melee_attack_speed=0.3,
                     target=null, cooldown=8, max_cooldown=8, 
                     damage=5, leave_path=1} = {}) {
         let loot_table = {drop_chance:1,drops:{'tank_frame':2,'laser_cannon':3}}

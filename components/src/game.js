@@ -74,6 +74,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('slow_particle','/game_images/particles/Slow.png');
         this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
         this.load.image('smoke_particle','/game_images/particles/smoke.png');
+        this.load.image('dust_particle','/game_images/particles/dust.png');
 
         //// Load tower images
         this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');

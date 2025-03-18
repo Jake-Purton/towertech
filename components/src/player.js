@@ -253,6 +253,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.death_count += 1;
         this.dead = true;
         this.visible = false;
+        this.health = 0;
+        this.effects.clear_effects();
         this.set_coins(0);
     }
     respawn() {

@@ -4,7 +4,7 @@ import {GoocasterProjectile } from '../../projectile.js';
 export default class Goocaster extends Enemy{
     constructor(scene, x, y, path, difficulty, 
                     {move_speed=0.8, health=10, coin_value=2, 
-                        melee_damage=1, melee_attack_speed=1, 
+                        melee_damage=1, melee_attack_speed=0.3,
                         target=null, cooldown=8, max_cooldown=8, 
                         shoot_angle=0, damage=12} = {}) {
         let loot_table = {drop_chance:3,drops:{'plasma_blaster':4,'speedster_wheel':2,'robot_leg':1,'robot_body':1}}

@@ -6,7 +6,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Gooshifter extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=1, health=15, coin_value=3, melee_damage=4,
-                    melee_attack_speed=1, leave_path=random_range(0.1,0.6),
+                    melee_attack_speed=0.3, leave_path=random_range(0.1,0.6),
                     target=null, changed=false} = {}) {
         let loot_table = {drop_chance:1.5,drops:{'spider_leg':6}}
         super(scene, x, y, 'goober', path, difficulty,

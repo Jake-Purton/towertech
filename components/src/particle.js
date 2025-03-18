@@ -75,5 +75,13 @@ class SmokeParticle extends Particle {
                 x_offset_spread:5, y_offset_spread:5, drag:0.8});
     }
 }
+class DustParticle extends Particle {
+    constructor(scene, x, y, angle) {
+        super(scene, x, y, 'dust_particle', 3, angle,
+            {initial_scale:1, scale_change:-1, scale_offset_spread:0.5,
+                speed_min_to_kill:-1, alpha_min_to_kill:0,
+                speed_spread:1, drag:0.9, angle_spread:0.3});
+    }
+}
 
-export {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle, LaserDust, SmokeParticle };
+export {GooBlood, FireParticle, HeartParticle, SpeedParticle, SlowParticle, LaserDust, SmokeParticle, DustParticle };

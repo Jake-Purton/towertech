@@ -11,7 +11,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path, difficulty,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
-                    melee_attack_speed=1, leave_path=1, target=null, damage=0, knockback_resistance=0.3,
+                    melee_attack_speed=0.3, leave_path=1, target=null, damage=0, knockback_resistance=0.3,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:5, drops:{
                             'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1, 'titan_core':1,
@@ -231,7 +231,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, null, this.melee_damage, this.type));
+            this.scene.projectiles.push(new GooMeleeDamage(
+                this.scene, this.x, this.y, null, this.melee_damage, this.type, this.melee_attack_speed/2));
         }
     }
     return_to_path(delta_time){

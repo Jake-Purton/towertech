@@ -6,7 +6,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Goodrone extends Enemy{
     constructor(scene, x, y, path, difficulty, 
                 {move_speed=0.4, health=10, coin_value=1,
-                    melee_damage=1, melee_attack_speed=1,
+                    melee_damage=1, melee_attack_speed=0.3,
                     target=null, cooldown=3, max_cooldown=3,
                     shoot_angle=0, damage=8} = {}) {
         let loot_table = {drop_chance:1.5,drops:{'laser_cannon':2,'energy_core_frame':4}}
