@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
 import {random_range, float_to_random_int, weighted_random_choice, defined } from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
-import {GooMeleeDamage} from "../../projectile.js";
+import {EffectAOE, GooMeleeDamage} from "../../projectile.js";
 import DroppedItem from "../../dropped_item.js";
 import HealthBar from "../../health_bar.js";
 
@@ -33,7 +33,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.velocity = new Vec(0,0);
         this.health = Math.floor(health * (1 + difficulty));
         this.coin_value = coin_value;
-        this.melee_damage = damage;
+        this.melee_damage = melee_damage;
         this.knockback_resistance = knockback_resistance;
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
@@ -231,8 +231,11 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new GooMeleeDamage(
-                this.scene, this.x, this.y, null, this.melee_damage, this.type, this.melee_attack_speed/2));
+            this.scene.projectiles.push(new EffectAOE(
+                this.scene, this.x, this.y, 'Enemy', null, this.body.halfWidth, this.body.halfWidth,{damage:this.melee_damage, time_to_live:this.melee_attack_speed/2}
+            ));
+            // this.scene.projectiles.push(new GooMeleeDamage(
+            //     this.scene, this.x, this.y, null, this.melee_damage, this.type, this.melee_attack_speed/2));
         }
     }
     return_to_path(delta_time){
