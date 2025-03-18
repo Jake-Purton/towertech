@@ -96,11 +96,12 @@ class RoomManager {
       // console.log("here 200")
       const oldID = this.rooms[roomName].users[index].userID;
       console.log("roomsjs old: " + oldID)
+      console.log("roomsjs new: " + newID)
       if (oldID === newID) {
-        // console.log("NULLNULL rooms.js")
+        console.log("NULLNULL rooms.js")
         return null;
       } else {
-        // console.log("YESYES rooms.js")
+        console.log("YESYES rooms.js")
         console.log("roomsjs old: " + oldID + " roomsjs new: " + newID);
 
         this.rooms[roomName].swapSocketID(index, newID);
