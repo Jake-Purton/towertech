@@ -22,6 +22,7 @@ export default class Controller extends Phaser.Scene{
 
         // variables
         this.player_created = false;
+        this.ui_active = false;
 
         this.player_coins = 0;
         this.player_health = 5;
@@ -280,7 +281,9 @@ export default class Controller extends Phaser.Scene{
                 break;
             case 'Set_Coins':
                 this.player_coins = input.coins;
-                this.coins_ui_text.setText('Coins: '+this.player_coins);
+                if (this.ui_active) {
+                    this.coins_ui_text.setText('Coins: '+this.player_coins);
+                }
                 break;
             case 'Set_Inventory':
                 this.player_inventory = input.inventory;
@@ -387,6 +390,7 @@ export default class Controller extends Phaser.Scene{
     }
 
     destroy_ui = (destroy_all=true) => {
+        this.ui_active = false;
         if (destroy_all) {
             this.destroy_ui_list(this.ui_objects);
         }
@@ -488,6 +492,7 @@ export default class Controller extends Phaser.Scene{
             item.set_select_group(select_buttons);
             this.ui_objects.push(item);
         }
+        this.ui_active = true;
     }
 
     move_sub_menu = (menu, container_rect) => {
