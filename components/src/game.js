@@ -26,7 +26,7 @@ export default class Game extends Phaser.Scene{
         this.score = 0;
         this.health = 10;
         this.target_num_players = target_num_players;
-        this.start_waves_delay = 15;
+        this.start_waves_delay = 1//15;
 
     }
     preload() {
@@ -153,8 +153,10 @@ export default class Game extends Phaser.Scene{
         // animations
         let animations = {
             'gooacid_walk': {sprite_sheet:'gooacid', frames:4, frameRate:8, repeat:-1},
-            'gooacid_jump': {sprite_sheet:'gooacid', frames:12, startFrame:4, frameRate:8, repeat:1},
-            'gooacid_falling': {sprite_sheet:'gooacid', frames:5, startFrame:16, frameRate:8, repeat:1},
+            'gooacid_jump_start': {sprite_sheet:'gooacid', frames:5, startFrame:4, frameRate:8, repeat:0},
+            'gooacid_jump': {sprite_sheet:'gooacid', frames:4, startFrame:9, frameRate:8, repeat:0},
+            'gooacid_falling': {sprite_sheet:'gooacid', frames:4, startFrame:13, frameRate:8, repeat:0},
+            'gooacid_land': {sprite_sheet:'gooacid', frames:4, startFrame:17, frameRate:8, repeat:0},
             'goobuilder_walk': {sprite_sheet:'goobuilder', frames:4, frameRate:8, repeat:-1},
             'goobuilder_build': {sprite_sheet:'goobuilder', frames:4, startFrame:4, frameRate:8, repeat:-1},
             'goobullet_walk': {sprite_sheet:'goobullet', frames:4, frameRate:16, repeat:-1},
@@ -170,7 +172,7 @@ export default class Game extends Phaser.Scene{
             'goodropper_walk': {sprite_sheet:'goodropper', frames:4, frameRate:8, repeat:-1},
             'goofly_walk': {sprite_sheet:'goofly', frames:4, frameRate:8, repeat:-1},
             'goolime_walk': {sprite_sheet:'goolime', frames:3, frameRate:8, repeat:-1},
-            'gooshifter_shift': {sprite_sheet:'gooshifter', frames:3, frameRate:8, repeat:1},
+            'gooshifter_shift': {sprite_sheet:'gooshifter', frames:3, frameRate:8, repeat:0},
             'gooshifter_walk': {sprite_sheet:'gooshifter', frames:3, startFrame:3, frameRate:8, repeat:-1},
             'gooslinger_walk': {sprite_sheet:'gooslinger', frames:4, frameRate:8, repeat:-1},
             'goosniper_walk': {sprite_sheet:'goosniper', frames:3, frameRate:8, repeat:-1},
