@@ -177,7 +177,7 @@ app.prepare().then(() => {
 
     socket.on("output_from_game_to_client", (data) => {
       // console.log("output_from_game_to_client", data);
-      console.log(roomManager.getUserRoom(data.PlayerID));
+      // console.log(roomManager.getUserRoom(data.PlayerID));
       // send data to the client
       socket.to(roomManager.getUserRoom(data.PlayerID)).emit("output_from_game_to_client", data);
       // socket.emit("output_from_game_to_client", data);
