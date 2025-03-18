@@ -13,6 +13,7 @@ export default class Gooshifter extends Enemy{
             {move_speed:move_speed, health:health, coin_value:coin_value, melee_damage:melee_damage,
                 melee_attack_speed:melee_attack_speed, leave_path:leave_path, target:target,
                 changed:changed}, loot_table);
+        this.shifted = false;
     }
     game_tick(delta_time, players, towers){
         if (this.path_t < this.leave_path){
@@ -29,14 +30,20 @@ export default class Gooshifter extends Enemy{
                 this.target = this.path.getPoint(this.path_t);
             }
         } else {
+            if (!this.shifted) {
+                this.shifted = true;
+                this.setTexture('gooshifter');
+                this.play('gooshifter_shift');
+                this.once('animationcomplete',()=>{
+                    this.play('gooshifter_walk');
+                })
+            }
             this.on_path = false;
             let direction = this.relative_position(this.target);
             let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
             this.velocity.setLength(this.velocity.length()*0.9);
             change.add(this.velocity);
             this.melee_hit(delta_time);
-            this.setTexture('gooshifter');
-            this.play('gooshifter_walk');
             return this.setPosition(this.x + change.x,this.y + change.y);
         }
         return false;

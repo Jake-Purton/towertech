@@ -1,6 +1,22 @@
 {
     "waves":
-        [ 
+        [
+            {
+                "type":"wave",
+                "title":"Wave 0",
+                "sub_title":"good luck",
+                "length":15,
+                "spawnDelay":2,
+                "enemyList":[
+                    "goober","goolime","gooslinger","goosplitter","goosniper","goosprint",
+                    "goodrone","goofly","goocaster","goobouncer","goocharger","goowalker",
+                    "gooshifter","goocrab","goodropper","gootank", "goobullet", "gooacid", "goobuilder"],
+                "enemyWeights":[
+                    1,1,1,1,1,1,
+                    1,1,1,1,1,1,
+                    10,1,1,1,1,1,1],
+                "enemyCount":100
+            },
             {
                 "type":"wave",
                 "title":"Wave 1",

@@ -21,7 +21,7 @@ export default class Gooacid extends Enemy{
         super.game_tick(delta_time, players, towers)
     }
     do_damage(towers){
-        for (let tower of towers){
+        for (let tower of Object.values(towers)){
             tower.take_damage(this.damage)
         }
     }
