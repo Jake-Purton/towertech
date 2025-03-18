@@ -17,8 +17,8 @@ export async function GET(request: Request) {
         COALESCE(gameleaderboard.score, 0) AS gamescore,
         COALESCE(playeringame.playerscore, 0) AS playerscore,
         COALESCE(playeringame.kills, 0) AS kills,
-        COALESCE(playeringame.towers_placed, 0) AS towersPlaced,
-        COALESCE(playeringame.coins_spent, 0) AS coinsSpent,
+        COALESCE(playeringame.towers_placed, 0) AS towers_placed,
+        COALESCE(playeringame.coins_spent, 0) AS coins_spent,
         TO_CHAR(playeringame.game_time, 'HH24:MI:SS') AS time,
         TO_CHAR(playeringame.game_date, 'YYYY-MM-DD') AS date
       FROM 
@@ -45,8 +45,8 @@ export async function GET(request: Request) {
         gamescore: row.gamescore,
         playerscore: row.playerscore,
         kills: row.kills,
-        towersPlaced: row.towersPlaced,
-        coinsSpent: row.coinsSpent,
+        towers_placed: row.towers_placed,
+        coins_spent: row.coins_spent,
         time: row.time,
         date: row.date
       }))

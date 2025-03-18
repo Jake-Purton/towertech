@@ -11,8 +11,8 @@ interface Game {
   gamescore: number;
   playerscore: number;
   kills: number;
-  towersPlaced: number;
-  coinsSpent: number;
+  towers_placed: number;
+  coins_spent: number;
   time: string;
   date: string;
 }
@@ -152,8 +152,8 @@ const PlayerLeaderboardContent: React.FC = () => {
                             <tbody>
                               <tr className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none">
                                 <td className="px-6 py-4 text-lg">{game.kills}</td>
-                                <td className="px-6 py-4 text-lg">{game.towersPlaced || 0}</td>
-                                <td className="px-6 py-4 text-lg">{game.coinsSpent || 0}</td>
+                                <td className="px-6 py-4 text-lg">{game.towers_placed || 0}</td>
+                                <td className="px-6 py-4 text-lg">{game.coins_spent || 0}</td>
                                 <td className="px-6 py-4 text-lg">{game.time}</td>
                                 <td className="px-6 py-4 text-lg">{game.date}</td>
                               </tr>
