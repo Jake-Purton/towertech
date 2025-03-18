@@ -77,6 +77,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path_t = Phaser.Math.Clamp(this.path_t,0,1);
         let position = this.path.getPoint(this.path_t);
 
+        // flip if moving left
+        this.flipX = (position.x < this.x)
+
         this.setPosition(position.x, position.y);
         return this.path_t >= 1;
     }

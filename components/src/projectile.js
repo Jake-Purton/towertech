@@ -172,19 +172,20 @@ class EffectAOE extends Projectile {
 class GoosniperProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=20, damage=4} = {}) {
         super(scene, x, y, 'goosniper_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:0, damage:damage},{target_distance:1000});
+            {target:target, auto_aim_strength:0, damage:damage},{target_distance:1000, rotate_to_direction:true});
     }
 }
 class GooslingerProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=10, damage=2} = {}) {
         super(scene, x, y, 'gooslinger_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:0, damage:damage},{target_distance:300});
+            {target:target, auto_aim_strength:0, damage:damage},{target_distance:300, rotate_to_direction:true,initial_scale:1.5});
     }
 }
 class GoocasterProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=8, damage=5, auto_aim_strength=1} = {}) {
         super(scene, x, y, 'goocaster_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:500});
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},
+            {target_distance:500, initial_angular_velocity:1, angular_drag:1,initial_scale:1.5});
     }
 }
 class GoobouncerProjectile extends Projectile {
@@ -208,7 +209,8 @@ class GoobulletProjectile extends Projectile {
 class GoodroneProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=10, damage=1, auto_aim_strength=0} = {}) {
         super(scene, x, y, 'goodrone_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},
+            {target_distance:1000,no_drag_distance:100000, initial_angular_velocity:3, angular_drag:1});
     }
 }
 class GooMeleeDamage extends Projectile {
