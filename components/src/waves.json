@@ -1,0 +1,289 @@
+{
+    "waves":
+        [ 
+            {
+                "type":"wave",
+                "title":"Wave 1",
+                "sub_title":"Goobers",
+                "length":15, 
+                "spawnDelay":2, 
+                "enemyList":["goober"],
+                "enemyWeights":[5],
+                "enemyCount":5
+            }, 
+
+            {
+                "type":"wave",
+                "title":"Wave 2",
+                "sub_title":"Goolimes",
+                "length":15, 
+                "spawnDelay":2,
+                "enemyList":["goolime"], 
+                "enemyWeights":[5], 
+                "enemyCount":5
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 3",
+                "sub_title":"Goobers, Goolimes and Gooslingers",
+                "length":12, 
+                "spawnDelay":1,
+                "enemyList":["goolime","goober","gooslinger"],
+                "enemyWeights":[3,3,2],
+                "enemyCount":8
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 4",
+                "sub_title":"Goobers and Goosplitters",
+                "length":15, 
+                "spawnDelay":1,
+                "enemyList":["goosplitter","goober"], 
+                "enemyWeights":[5,5], 
+                "enemyCount":10
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 5 - Mini Boss Wave",
+                "sub_title":"Gootank and Gooslingers",
+                "length":30, 
+                "spawnDelay":2,
+                "enemyList":["gootank","gooslinger"], 
+                "enemyWeights":[1,9], 
+                "enemyCount":10
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 6",
+                "sub_title":"Goosnipers, Goosprints and Goobers",
+                "length":30, 
+                "spawnDelay":1,
+                "enemyList":["goosniper","goober","goosprint"], 
+                "enemyWeights":[3,7,5], 
+                "enemyCount":15
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 7",
+                "sub_title":"Goosnipers, Goosprints and Goobers",
+                "length":30, 
+                "spawnDelay":1,
+                "enemyList":["goofly","goodrone"], 
+                "enemyWeights":[10,5], 
+                "enemyCount":15
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 8",
+                "sub_title":"Goocasters, Gooflies and Goobers",
+                "length":40, 
+                "spawnDelay":1,
+                "enemyList":["goocaster","goober","goofly"], 
+                "enemyWeights":[5,9,6], 
+                "enemyCount":20
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 9",
+                "sub_title":"Goocasters, Gooslingers, Goosnipers and Goodrones",
+                "length":40, 
+                "spawnDelay":1,
+                "enemyList":["goocaster","gooslinger","goosniper","goodrone"], 
+                "enemyWeights":[4,4,4,4], 
+                "enemyCount":16
+            },
+
+            {
+                "type":"boss",
+                "title":"Wave 10 - Boss Wave",
+                "sub_title":"Beware the Goobullet",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["goobullet","goober","goolime","gooslinger","goosplitter","goosniper","goosprint","goodrone","goofly","goocaster"], 
+                "enemyWeights":[1,4,4,4,3,3,2,4,3,2], 
+                "enemyCount":30
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 11",
+                "sub_title":"Goobouncers, Gooslingers, Goosnipers, Goobers and Goolimes",
+                "length":40, 
+                "spawnDelay":1,
+                "enemyList":["goober","goolime","gooslinger","goosniper","goobouncer"], 
+                "enemyWeights":[5,5,4,3,3], 
+                "enemyCount":20
+            },
+            
+            {
+                "type":"wave",
+                "title":"Wave 12",
+                "sub_title":"Goochargers, Goosprints, Gooflies and Gooliemes",
+                "length":40, 
+                "spawnDelay":1,
+                "enemyList":["goocharger","goosprint","goolime","goofly"], 
+                "enemyWeights":[3,4,7,6], 
+                "enemyCount":20
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 13",
+                "sub_title":"Goowalkers, Goosprints, Gooflies, Goochargers and Goobers",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["goowalker","goober","goosprint","goofly","goocharger"], 
+                "enemyWeights":[5,7,4,5,4], 
+                "enemyCount":25
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 14",
+                "sub_title":"GooShifters, Gooslingers and Goobers",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["gooshifter","goober","gooslinger"], 
+                "enemyWeights":[10,10,5], 
+                "enemyCount":25
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 15 - Mini Boss",
+                "sub_title":"Gootanks, Goosnipers and Goodrone",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["gootank","goosniper","goodrone"], 
+                "enemyWeights":[2,8,5], 
+                "enemyCount":15
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 16",
+                "sub_title":"Goocrabs, Gooslingers and Goobers",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["goocrab","gooslinger","goober"], 
+                "enemyWeights":[5,5,10], 
+                "enemyCount":20
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 17",
+                "sub_title":"Goocrabs, Goosnipers, Goosprints and Goobouncers",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["goocrab","goosniper","goosprint","goobouncer"], 
+                "enemyWeights":[7,5,5,3], 
+                "enemyCount":20
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 18",
+                "sub_title":"Goodroppers, Gooflies and Goodrone",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["goodropper","goofly","goodrone"], 
+                "enemyWeights":[5,10,5], 
+                "enemyCount":20
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 19",
+                "sub_title":"Goodroppers, Goochargers and Gooshifters",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["goodropper","goocharger","gooshifter"],
+                "enemyWeights":[10,5,5], 
+                "enemyCount":20
+            },
+
+            {
+                "type":"boss",
+                "title":"Wave 20 - Boss Wave",
+                "sub_title":"Beware the Gooacid",
+                "length":50, 
+                "spawnDelay":1,
+                "enemyList":["gooacid","goober","goolime","gooslinger","goosplitter","goosniper","goosprint","goodrone","goofly","goocaster","goobouncer","goocharger","goowalker","gooshifter","goocrab","goodropper"], 
+                "enemyWeights":[1,8,5,5,3,3,3,2,5,3,2,3,5,3,5,3], 
+                "enemyCount":60
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 21",
+                "sub_title":"Goosprints, Goochargers, Gooflies and Goolimes",
+                "length":60, 
+                "spawnDelay":1,
+                "enemyList":["goosprint","goocharger","goofly","goolime"], 
+                "enemyWeights":[10,10,5,5], 
+                "enemyCount":30
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 22",
+                "sub_title":"Goowalkers, Gooshifters, Gooflies and Goolimes",
+                "length":200, 
+                "spawnDelay":1,
+                "enemyList":["goober","goowalker","goosprint","goofly","goolime","gooshifter"],
+                "enemyWeights":[30,20,10,15,15,10], 
+                "enemyCount":100
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 23",
+                "sub_title":"Goosplitters, Goodrone, Goobouncer and Goocrab",
+                "length":100, 
+                "spawnDelay":1,
+                "enemyList":["goosplitter","goodrone","goobouncer","goocharger","goocrab"], 
+                "enemyWeights":[10,10,15,8,7], 
+                "enemyCount":50
+            },
+
+            {
+                "type":"wave",
+                "title":"Wave 24 - Mini Boss",
+                "sub_title":"Gootanks, Goocasters, Goodroppers and Gooslingers",
+                "length":100, 
+                "spawnDelay":1,
+                "enemyList":["gootank","goocaster","gooslinger","goosniper","goodropper"], 
+                "enemyWeights":[3,5,7,5,5],
+                "enemyCount":25
+            },
+
+            {
+                "type":"boss",
+                "title":"Wave 25 - Boss Wave",
+                "sub_title":"Beware the Goobuilder",
+                "length":100, 
+                "spawnDelay":1,
+                "enemyList":["goobuilder","goober","goowalker","goosplitter","goosprint"], 
+                "enemyWeights":[1,10,10,5,5], 
+                "enemyCount":21
+            }
+        ],  
+
+    "waveTemplate":
+        {
+            "length":30, 
+            "spawnDelay":1, 
+            "enemyList":["goober","goolime","gooslinger","goosplitter","goosniper","goosprint","goodrone","goofly","goocaster","goobouncer","goocharger","goowalker","gooshifter","goocrab","goodropper"], 
+            "enemyWeights":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], 
+            "enemyCount": 15, 
+            "maxCount":1
+        }
+}

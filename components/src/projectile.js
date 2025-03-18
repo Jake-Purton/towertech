@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import Entity from './entity.js';
-import {GooBlood, FireParticle} from './particle.js';
+import {GooBlood, FireParticle, SmokeParticle} from './particle.js';
+import {defined, random_range} from "./utiles.js";
 const Vec = Phaser.Math.Vector2;
 
 class Projectile extends Entity {
@@ -10,6 +11,7 @@ class Projectile extends Entity {
     constructor(scene, x, y, texture, speed, angle, team,
                 {target=null, source=null, auto_aim_strength=1, auto_aim_range=100,
                     pierce_count=0, damage=1, knockback=1, inflict_effect=null,
+                    aoe=0,
                 } = {}, entity_properties={}) {
         super(scene, x, y, texture, speed, angle, entity_properties);
         this.setDepth(5);
@@ -25,6 +27,7 @@ class Projectile extends Entity {
         this.inflict_effect = inflict_effect; // in the form {name:"Burning",amplifier:2,duration:3}
         this.auto_aim_range = auto_aim_range;
         this.auto_aim_stength = auto_aim_strength;
+        this.aoe = aoe;
 
         // kill particle info
         this.pierce_count = pierce_count;  // reduces by 1 each time the projectile hits something
@@ -46,7 +49,7 @@ class Projectile extends Entity {
         this.physics_tick(delta_time);
         this.make_trail_particles(delta_time);
     }
-    make_trail_particles(_) {}
+    make_trail_particles() {}
     follow_target() {
         if (this.target !== null && typeof(this.target.scene) !== "undefined") {
             let prev_length = this.velocity.length()
@@ -67,15 +70,30 @@ class Projectile extends Entity {
             if (!entity.dead) {
                 if (this.scene.physics.world.overlap(this, entity) && !this.pierced_enemies.includes(entity)) {
                     this.deal_damage(entity);
+                    if (this.aoe !== 0) {
+                        this.create_aoe()
+                    }
                     return true;
                 }
             }
         }
         return false;
     }
+    create_aoe() {
+        let aoe = new EffectAOE(
+            this.scene, this.x, this.y, this.team,
+            null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05, source: this.source})
+        this.scene.projectiles.push(aoe)
+        for (let i=0;i<20;i++) {
+            this.scene.particles.push(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
+        }
+    }
     deal_damage(entity) {
         this.pierced_enemies.push(entity);
         this.pierce_count -= 1;
+        if (this.source !== null && defined(this.source.damage_dealt)) {
+            this.source.damage_dealt += 1;
+        }
         entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.knockback, this.source);
         this.apply_inflict_effect(entity);
     }
@@ -122,11 +140,27 @@ class FireProjectile extends Projectile {
         }
     }
 }
+class Rocket extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true
+        entity_properties.initial_scale = 0.3
+        properties.aoe = 50;
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+}
+class PlasmaShot extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        entity_properties.initial_scale = 0.6
+        super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+}
+
 class EffectAOE extends Projectile {
-    constructor(scene, x, y, team, effect, radius, base_half_width) {
+    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1, source=null}={}) {
         super(scene, x, y, '', 0, 0, team,
-            {inflict_effect:effect, pierce_count:1000, damage:0},
-            {initial_alpha:0, time_to_live:1, drag:0});
+            {inflict_effect:effect, pierce_count:1000, damage:damage, source:source},
+            {initial_alpha:0, time_to_live:time_to_live, drag:0});
         this.body.setCircle(radius);
         this.body.reset(this.x-radius+base_half_width,this.y-radius+base_half_width);
     }
@@ -166,17 +200,25 @@ class GootowerProjectile extends Projectile {
     }
 }
 class GoobulletProjectile extends Projectile {
-    constructor(scene, x, y, angle, target=null, {speed=5, damage=1, auto_aim_strength=0} = {}) {
+    constructor(scene, x, y, angle, target=null, {speed=3, damage=1, auto_aim_strength=0} = {}) {
         super(scene, x, y, 'goobullet_projectile', speed, angle, 'Enemy',
             {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
     }
 }
+class GoodroneProjectile extends Projectile {
+    constructor(scene, x, y, angle, target=null, {speed=10, damage=1, auto_aim_strength=0} = {}) {
+        super(scene, x, y, 'goodrone_projectile', speed, angle, 'Enemy',
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
+    }
+}
 class GooMeleeDamage extends Projectile {
-    constructor(scene, x, y, target=null, damage=1) {
-        super(scene, x, y, 'goo_melee', 0, 0, 'Enemy',
+    constructor(scene, x, y, target=null, damage=1, type) {
+        super(scene, x, y, type, 0, 0, 'Enemy',
             {target:target, auto_aim_strength:0, damage:damage},{initial_alpha:0, target_distance:5, time_to_live:0.1});
     }
 }
 
-export {CannonBall, Bullet, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile, 
-        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile};
+export {CannonBall, Bullet, Rocket, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile,
+        GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile,
+        PlasmaShot,
+        GoodroneProjectile};

@@ -1,14 +1,17 @@
 import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
+import {random_range } from '../../utiles.js';
 const Vec = Phaser.Math.Vector2;
 
 export default class Goolime extends Enemy{
-    constructor(scene, x, y, path, {move_speed=1, health=3, coin_value=1, melee_damage=1,
-                                    melee_attack_speed=1, leave_path=0.2, target=null} = {}) {
-        super(scene, x, y, 'goolime', path,
+    constructor(scene, x, y, path, difficulty,
+                {move_speed=2, health=4, coin_value=1, melee_damage=2,
+                    melee_attack_speed=1, leave_path=random_range(0.2,0.5), target=null} = {}) {
+        let loot_table = {drop_chance:1.5,drops:{'speedster_wheel':4, 'pistol_weapon':1, 'robot_body':1}}
+        super(scene, x, y, 'goolime', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
-                leave_path:leave_path, target:target});
+                leave_path:leave_path, target:target}, loot_table);
 
     }
     game_tick(delta_time, players, towers){
@@ -33,5 +36,4 @@ export default class Goolime extends Enemy{
             return this.setPosition(this.x + change.x,this.y + change.y);
         }
     }
-
 }

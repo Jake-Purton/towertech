@@ -19,10 +19,10 @@ export async function POST(req: Request) {
       const decoded = jwt.verify(token, JWT_SECRET);
       console.log("✅ Token is valid");
       return NextResponse.json({ valid: true, decoded });
-    } catch (error) {
+    } catch {
       return NextResponse.json({ valid: false, error: "Invalid token" }, { status: 401 });
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Token verification failed" }, { status: 500 });
   }
 }

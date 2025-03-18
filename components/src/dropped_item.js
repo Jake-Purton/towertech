@@ -1,10 +1,10 @@
-import * as Phaser from 'phaser';
-import {get_distance, random_range, get_item_type, clamp, RGBtoHEX} from './utiles.js';
+import {get_distance, random_range, get_item_type, clamp} from './utiles.js';
 import Entity from './entity.js';
 
 export default class DroppedItem extends Entity {
-    constructor(scene, x, y, item, size=25, time_to_live=10) {
-        super(scene, x, y, item, random_range(1,2), random_range(180,-180),
+    constructor(scene, x, y, item, speed_multiplier=1, size=25, time_to_live=30) {
+        let speed = random_range(1,2)*speed_multiplier
+        super(scene, x, y, item, speed, random_range(180,-180),
             {initial_angle: random_range(180,-180),
                 initial_angular_velocity: random_range(-10, 10), angular_drag:0.95, drag:0.9, time_to_live:time_to_live});
         scene.add.existing(this);
@@ -46,7 +46,7 @@ export default class DroppedItem extends Entity {
         super.destroy(fromScene);
     }
     update_flash() {
-        let flash_info = {start:3.25, speed:12}
+        let flash_info = {start:5, speed:12}
 
         let alpha = 1;
         if (this.time_to_live < flash_info.start) {

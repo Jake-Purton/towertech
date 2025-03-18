@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -60,7 +61,7 @@ export default function RegisterPage() {
         setMessageType('error');
         setMessage(data.error);
       }
-    } catch (error) {
+    } catch {
       setMessageType('error');
       setMessage("Something went wrong. Try again.");
     } finally {
@@ -70,6 +71,12 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black-900 text-white">
+      <Link
+        href="/"
+        className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+      >
+        Back to Home
+      </Link>
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         {message && (
           <div className={`mb-4 text-center ${

@@ -1,5 +1,3 @@
-import * as Phaser from 'phaser';
-const Vec = Phaser.Math.Vector2;
 import Wave from './wave.js';
 import BossWave from './wave_boss.js';
 
@@ -25,6 +23,13 @@ export default class WaveManager
         //this.waveSeed = -1;
 
 
+        let difficulties = {
+            Easy:0.6,
+            Medium:1.6,
+            Hard:2.6}
+        let diff = localStorage.getItem("gameDifficulty")
+        this.base_difficulty = difficulties[diff];
+
         this.game = game;
     }
 
@@ -35,9 +40,6 @@ export default class WaveManager
         {
             this.reset_waves();
         }
-
-        // let parsedJson = JSON.parse(jsonString);
-
 
         // do stuff
         // basically: unparsed json goes in, array of wave data comes out.
@@ -50,11 +52,11 @@ export default class WaveManager
         this.next_wave();
     }
 
-    generate_wave()
+    generate_wave(difficulty)
     {
-        // number of enemies increases by 3 with each wave.
-        let numEnemies = this.waveTemplateData.enemyCount + 2 * (this.wave_index - this.waveData.length);
-        let length = this.waveTemplateData.length + 2 * (this.wave_index - this.waveData.length) * this.waveTemplateData.spawnDelay
+        // number of enemies increases by 5 with each wave.
+        let numEnemies = this.waveTemplateData.enemyCount + 5 * (this.wave_index - this.waveData.length);
+        let length = this.waveTemplateData.length + 5 * (this.wave_index - this.waveData.length) * this.waveTemplateData.spawnDelay
 
 
         // Copy pointers to the allEnemies and allWeights arrays
@@ -89,7 +91,10 @@ export default class WaveManager
             }
         }
 
-        return new Wave(this.game, length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies);
+        return new Wave(this.game, length, this.waveTemplateData.spawnDelay,
+            enemyList, enemyWeights, numEnemies, difficulty,
+            "Wave "+(this.wave_index+1), "Literally Everything"
+        );
 
 
 
@@ -97,13 +102,20 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-        this.current_wave.game_tick(deltaTime);
+        if (this.current_wave.game_tick(deltaTime)) {
+            this.next_wave();
+            return true
+        }
+        return false
     }
 
     next_wave()
     {
         // increment the wave index.
         this.wave_index ++;
+
+        // increases difficulty by number of players every 5 waves
+        let difficulty = (((this.wave_index + 1) ** 1.6)/3 + 1) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
 
         let newWave = null;
         if (this.wave_index < this.waveData.length)
@@ -114,10 +126,12 @@ export default class WaveManager
             switch(wave.type)
             {
                 case "wave":
-                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
+                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList,
+                        wave.enemyWeights, wave.enemyCount, difficulty, wave.title, wave.sub_title);
                     break;
                 case "boss":
-                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount);
+                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList,
+                        wave.enemyWeights, wave.enemyCount, difficulty, wave.title, wave.sub_title);
                     break;
                     // break;
                 default:
@@ -129,7 +143,7 @@ export default class WaveManager
         {
             // if there is none (wave_index > the number of waves),
             // then generate a new wave - using the wave index as the difficulty.
-            newWave = this.generate_wave()
+            newWave = this.generate_wave(difficulty)
         }
         // set the new wave.
         this.current_wave = newWave;

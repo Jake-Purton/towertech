@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { socket } from "../app/src/socket";
 import Game from './src/game.js';
@@ -6,12 +6,16 @@ import Game from './src/game.js';
 const PhaserGame = () => {
   const gameRef = useRef(null);
   const router = useRouter();
+  const usersLen = localStorage.getItem("usersLen"); // CHRIS HERE usersLen is a string btw so bear in mind youll have to cast it as an int
 
   useEffect(() => {
+    if (!socket.connected) socket.connect();
+
+    alert(usersLen + " THIS IS PHASERGAMEJS LINE 14, ALSO LOOK AT LINE 9");
+    
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
-
-        if (!socket.connected) socket.connect();
+        
         socket.on("game_input", input_data);
 
         let display_width = Math.min(window.innerWidth-20,3000);
@@ -41,6 +45,7 @@ const PhaserGame = () => {
 
         return () => {
           socket.off("game_input");
+          socket.off("updateUsers")
           game.destroy(true);
         };
 

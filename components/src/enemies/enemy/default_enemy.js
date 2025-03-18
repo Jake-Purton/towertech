@@ -4,19 +4,20 @@ import {random_range, float_to_random_int, weighted_random_choice, defined } fro
 import {GooBlood} from "../../particle.js";
 import {GooMeleeDamage} from "../../projectile.js";
 import DroppedItem from "../../dropped_item.js";
+import HealthBar from "../../health_bar.js";
 
 const Vec = Phaser.Math.Vector2;
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, type, path,
+    constructor(scene, x, y, type, path, difficulty,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
-                    melee_attack_speed=1, leave_path=1, target=null, damage=1, knockback_resistance=1,
+                    melee_attack_speed=1, leave_path=1, target=null, damage=0, knockback_resistance=0.3,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:5, drops:{
-                            'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1,
-                            'robot_leg':1, 'light_leg':1, 'armored_walker':1, 'spider_leg':1, 'striped_leg':1,
-                            'basic_wheel':1, 'speedster_wheel':1, 'floating_wheel':1, 'tank_treads':1,
-                            'pistol_weapon':1, 'plasma_blaster':1, 'rocket_launcher':1, 'tesla_rifle':1, 'laser_cannon':1,
+                            'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1, 'titan_core':1,
+                            'robot_leg':1, 'armored_walker':1, 'spider_leg':1, 'phantom_step':1,
+                            'speedster_wheel':1, 'floating_wheel':1, 'tank_treads':1,
+                            'pistol_weapon':1, 'plasma_blaster':1, 'rocket_launcher':1, 'tesla_rifle':1, 'laser_cannon':1, 'sword_of_void':1,
                     }}) {
         super(scene, x, y, type);
         scene.add.existing(this);
@@ -26,13 +27,13 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path = path;
         this.path_t = 0; // value moves from 0 to 1 when moving along path
         this.play(type+'_walk')
-
+        this.type = type;
         // stats and info
         this.move_speed = move_speed;
         this.velocity = new Vec(0,0);
-        this.health = health;
+        this.health = Math.floor(health * (1 + difficulty));
         this.coin_value = coin_value;
-        this.melee_damage = melee_damage;
+        this.melee_damage = damage;
         this.knockback_resistance = knockback_resistance;
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
@@ -44,25 +45,22 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.max_cooldown = max_cooldown;
         this.shoot_angle = shoot_angle;
         this.damage = damage;
-        this.max_health = health;
+        this.max_health = this.health;
         this.loot_table = loot_table;
+        this.difficulty = difficulty;
 
         // effects info
         this.effects = new Effects(scene);
         this.last_damage_source = null;
 
         // health bar
-        this.health_bar_back = scene.add.sprite(0, 0, 'enemy_health_bar_back').setDepth(3.1);
-        this.health_bar_back.visible = false;
-        this.health_bar = scene.add.sprite(0, 0, 'enemy_health_bar').setDepth(3.1);
-        this.health_bar.visible = false;
-        this.health_bar.setScale(this.displayWidth/this.health_bar_back.displayWidth*1.1);
-        this.health_bar_back.setScale(this.displayWidth/this.health_bar_back.displayWidth*1.1);
-
+        this.health_bar = new HealthBar(
+            scene, 'enemy_health_bar_back', 'enemy_health_bar',
+            this.x, this.y, this.height, this.displayWidth);
 
         // this.game_tick(0); // sets the position to the start of the path
     }
-    game_tick(delta_time, players, towers){
+    game_tick(delta_time){
         let time = delta_time/this.scene.target_fps;
         // handle effects
         this.add_health(this.effects.get_effect("Healing", 0)*time);
@@ -84,8 +82,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     setPosition(x, y, z=0, w=0) {
         if (defined(this.health_bar)) {
-            this.health_bar_back.setPosition(x, y - this.height/2 - 5);
-            this.health_bar.setPosition(x, y - this.height/2 - 5);
+            this.health_bar.set_position(x, y, this.height);
         }
         super.setPosition(x, y, z, w)
         return this;
@@ -96,16 +93,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         } else if (health < 0) {
             health = 0;
         }
-        if (health === max_health) {
-            this.health_bar_back.visible = false;
-            this.health_bar.visible = false;
-        } else {
-            this.health_bar_back.visible = true;
-            this.health_bar.visible = true;
-        }
         this.health = health;
         this.max_health = max_health;
-        this.health_bar.setCrop(0,0,this.health_bar.width*this.health/this.max_health,this.health_bar.height);
+        this.health_bar.set_health(this.health, this.max_health)
     }
     add_health(health_change) {
         this.set_health(this.health+health_change, this.max_health);
@@ -120,7 +110,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         let num_drops = float_to_random_int(this.loot_table.drop_chance);
         for (let i=0;i<num_drops;i++) {
             let drop = weighted_random_choice(this.loot_table.drops);
-            this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, drop));
+            this.scene.dropped_items.push(new DroppedItem(this.scene, this.x, this.y, drop, Math.floor((num_drops+1)/2)));
         }
 
         if (this.last_damage_source !== null) {
@@ -129,7 +119,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     take_damage = (damage, speed=3, angle=null, knockback=0, source=null) => {
         this.add_health(-damage);
-        this.make_hit_particles(damage, speed, angle);
+        this.make_hit_particles(Math.ceil(2*(damage**0.5-1)), speed, angle);
         this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
         if (source !== null) {
             this.last_damage_source = source;
@@ -179,7 +169,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     find_near_tower(towers){
         let nearest_tower = null;
         let distance = Infinity;
-        for (let tower of towers){
+        for (let tower of Object.values(towers)){
             let new_distance = this.relative_position(tower).length();
             if (new_distance < distance){
                 distance = new_distance;
@@ -238,12 +228,12 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, this.melee_damage));
+            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, null, this.melee_damage, this.type));
         }
     }
     return_to_path(delta_time){
+        this.target = this.path.getPoint(this.path_t);
         let direction = this.relative_position(this.target);
-        this.melee_hit(delta_time);
         if (direction.length() <= delta_time * this.move_speed){
             this.on_path = true
             return this.setPosition(this.target.x, this.target.y);
@@ -254,7 +244,6 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     destroy(scene) {
         this.health_bar.destroy()
-        this.health_bar_back.destroy()
         super.destroy(scene);
     }
 }

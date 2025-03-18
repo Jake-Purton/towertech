@@ -1,18 +1,18 @@
-import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
 import {GoobouncerProjectile } from '../../projectile.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goobouncer extends Enemy{
-    constructor(scene, x, y, path, {move_speed=0.5, health=10, coin_value=1, 
-                                    melee_damage=1, melee_attack_speed=1, 
-                                    target=null, cooldown=10, max_cooldown=10, 
-                                    shoot_angle=0, damage=2} = {}) {
-        super(scene, x, y, 'goobouncer', path, 
+    constructor(scene, x, y, path, difficulty,
+                 {move_speed=0.5, health=15, coin_value=4, 
+                    melee_damage=1, melee_attack_speed=1, 
+                    target=null, cooldown=10, max_cooldown=10, 
+                    shoot_angle=0, damage=15} = {}) {
+        let loot_table = {drop_chance:1.5,drops:{'tesla_rifle':2,'floating_wheel':4}}
+        super(scene, x, y, 'goobouncer', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, 
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown, 
-                shoot_angle:shoot_angle, damage:damage});
+                shoot_angle:shoot_angle, damage:damage}, loot_table);
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;

@@ -1,25 +1,31 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
 
-import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame } from './components/body.js';
-import {RobotLeg, StripedLeg, LightLeg, ArmoredWalker, SpiderLeg } from './components/leg.js';
-import {BasicWheel, SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
-import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
+import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame, TitanCore} from './components/body.js';
+import {RobotLeg, ArmoredWalker, SpiderLeg, PhantomStep} from './components/leg.js';
+import {SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
+import {
+    PistolWeapon,
+    PlasmaBlaster,
+    RocketLauncher,
+    TeslaRifle,
+    LaserCannon,
+    SwordOfVoid
+} from './components/weapon.js';
 import Effects from './effects.js';
 import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
+import HealthBar from "./health_bar.js";
 
 const Vec = Phaser.Math.Vector2;
 
 const part_converter = {
     'robot_leg':RobotLeg,
-    'striped_leg':StripedLeg,
-    'light_leg':LightLeg,
     'armored_walker':ArmoredWalker,
     'spider_leg':SpiderLeg,
+    'phantom_step':PhantomStep,
 
-    'basic_wheel':BasicWheel,
     'speedster_wheel':SpeedsterWheel,
     'floating_wheel':FloatingWheel,
     'tank_treads':TankTreads,
@@ -28,12 +34,14 @@ const part_converter = {
     'lightweight_frame':LightweightFrame,
     'tank_frame':TankFrame,
     'energy_core_frame':EnergyCoreFrame,
+    'titan_core':TitanCore,
 
     'pistol_weapon':PistolWeapon,
     'plasma_blaster': PlasmaBlaster,
     'rocket_launcher': RocketLauncher,
     'tesla_rifle': TeslaRifle,
     'laser_cannon': LaserCannon,
+    'sword_of_void':SwordOfVoid,
 }
 
 export default class Player extends Phaser.GameObjects.Container{
@@ -58,10 +66,22 @@ export default class Player extends Phaser.GameObjects.Container{
             this.add(this.name_backing);
         }
 
+        this.health_bar = new HealthBar(
+            scene, 'enemy_health_bar_back', 'enemy_health_bar',
+            0, 0, 0, 30);
+        this.add(this.health_bar)
+
         // game stats
         this.coins = 0;
-        this.kill_count = 0;
         this.player_score = 0;
+        this.towers_placed = 0;
+        this.kill_count = 0;
+        this.damage_dealt = 0;
+        this.damage_taken = 0;
+        this.health_healed = 0;
+        this.coins_spent = 0;
+        this.shots_fired = 0;
+        this.death_count = 0;
         this.inventory = {};
       
         // constants
@@ -72,7 +92,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.pickup_range = 20;
 
         // aliveness
-        this.health = 1000;
+        this.health = 30;
         this.max_health = this.health;
         this.passive_healing_timer = 1;
         this.passive_healing_hit_timer = 3;
@@ -135,14 +155,16 @@ export default class Player extends Phaser.GameObjects.Container{
 
             this.move_direction.scale(this.speed * delta_time);
 
-            this.velocity.add(this.move_direction);
-            this.velocity.x *= this.drag**delta_time;
-            this.velocity.y *= this.drag**delta_time;
+            if (this.username === "chris" || true) {
+                this.velocity.add(this.move_direction);
+                this.velocity.x *= this.drag**delta_time;
+                this.velocity.y *= this.drag**delta_time;
+            } else {
+                this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
+            }
 
-            let speed_multiplier =  this.effects.get_speed_multiplier();
-
-            this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
-            this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+            this.body.position.x += this.velocity.x*delta_time;
+            this.body.position.y += this.velocity.y*delta_time;
             this.keep_in_map();
 
             // part management
@@ -153,12 +175,12 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.body_object.movement_animation(this.velocity);
             }
             if (defined(this.weapon_object)) {
-                this.weapon_object.game_tick(delta_time);
                 if (this.key_inputs.Attack) {
                     this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
                 } else {
                     this.weapon_object.attack_button_up();
                 }
+                this.weapon_object.game_tick(delta_time);
             }
         }
     }
@@ -199,11 +221,22 @@ export default class Player extends Phaser.GameObjects.Container{
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
             this.refresh_stats();
+            this.refresh_health_bar();
+        }
+    }
+    refresh_health_bar() {
+        this.health_bar.set_health(this.health, this.max_health);
 
-            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13);
-            if (defined(this.name_backing)) {
-                this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
-            }
+        this.bringToTop(this.health_bar);
+        let health_bar_offset = 0;
+        if (this.health_bar.visible) {
+            health_bar_offset = this.health_bar.bar_back.displayHeight+5
+        }
+        if (defined(this.name_backing) && defined(this.body_object)) {
+            this.health_bar.set_parent_width(this.body_object.displayWidth*1.5);
+            this.health_bar.setPosition(0, -this.body_object.displayHeight/2-4-this.health_bar.bar_back.displayHeight/2)
+            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13-health_bar_offset);
+            this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
         }
     }
     refresh_stats() {
@@ -217,13 +250,18 @@ export default class Player extends Phaser.GameObjects.Container{
         return (this.health<=0)
     }
     die() {
+        this.death_count += 1;
         this.dead = true;
         this.visible = false;
         this.set_coins(0);
     }
     respawn() {
-        this.dead = false;
-        this.visible = true;
+        if (this.dead) {
+            this.dead = false;
+            this.visible = true;
+            this.health = this.max_health;
+        }
+
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
@@ -234,13 +272,16 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.last_damage_source = source;
             }
         }
+        
     }
     get_kill_credit(enemy) {
         if (!this.dead) {
             this.scene.score += enemy.coin_value;
             this.kill_count += 1;
             this.player_score += enemy.coin_value;
-            this.set_coins(this.coins+enemy.coin_value);
+            for (let player of Object.values(this.scene.players)) {
+                player.set_coins(player.coins+enemy.coin_value);
+            }
         }
     }
     keep_in_map() {
@@ -289,18 +330,33 @@ export default class Player extends Phaser.GameObjects.Container{
             let new_tower = null;
             if (data.Direction === 'Down' && this.prev_tower_button_direction === 'Up') {
                 if (data.Tower_Stats.cost <= this.coins) {
-                    new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
-                    this.set_coins(this.coins - data.Tower_Stats.cost);
+                    if (!this.scene.level.check_path_collision(this.x, this.y, 30)) {
+                        new_tower = create_tower(data.Tower, this.scene, this.x, this.y, this.player_id, data.Tower_Stats);
+                        if (new_tower.get_overlap_other_towers()) {
+                            new_tower.destroy()
+                            new_tower = null
+                            this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place towers on top of each other!"})
+                        } else {
+                            // buy the tower
+                            this.set_coins(this.coins - data.Tower_Stats.cost);
+                            this.towers_placed += 1;
+                        }
+                    } else {
+                        this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't place a tower on the path!"})
+                    }
+                } else {
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this tower!"})
                 }
             }
             this.prev_tower_button_direction = data.Direction;
             if (new_tower != null) {
-                this.scene.towers.push(new_tower);
+                this.scene.towers[new_tower.tower_id] = new_tower;
             }
         }
     }
     pickup_item(dropped_item) {
         this.add_to_inventory(dropped_item);
+        this.items_picked_up += 1;
         // this.set_part(dropped_item.item_name, dropped_item.item_type);
     }
     set_part(item_name, item_type, stats={}) {
@@ -317,25 +373,37 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     set_coins(coins) {
+        if (coins < this.coins) {
+            this.coins_spent += this.coins-coins;
+        }
         this.coins = coins;
         this.scene.output_data(this.player_id,{type: 'Set_Coins', coins: this.coins});
+        this.scene.level.player_info_display.update_list_text()
     }
     set_health(health, max_health) {
         if (health !== this.health || max_health !== this.max_health || true) {
-            // console.log('set health', health, max_health);
             if (health > max_health) {
                 health = max_health;
             } else if (health < 0) {
                 health = 0;
             }
+            if (max_health === this.max_health) {
+                if (health < this.health) {
+                    this.damage_taken += this.health-health;
+                } else {
+                    this.health_healed += health-this.health;
+                }
+            }
             this.health = health;
             this.max_health = max_health;
+            this.refresh_health_bar()
             if (this.player_id !== 'UI_PLAYER_DISPLAY') {
                 this.scene.output_data(this.player_id, {
                     type: 'Set_Health',
                     health: this.health,
                     max_health: this.max_health
                 });
+                this.scene.level.player_info_display.update_list_text()
             }
         }
     }
@@ -358,6 +426,9 @@ export default class Player extends Phaser.GameObjects.Container{
             this.inventory[item.item_name] = {count: 1, level:1, equipped: false, type: item.item_type};
         }
         this.save_inventory()
+        if (this.player_id === "TempPlayerID") {
+            this.equip_part(item.item_name, {health:1000, speed: 10, damage:1000, target_distance:300})
+        }
     }
     equip_part(item_name, stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
@@ -373,15 +444,26 @@ export default class Player extends Phaser.GameObjects.Container{
     }
     upgrade_part(item_name, new_stats) {
         if (Object.keys(this.inventory).includes(item_name)) {
-            if (this.inventory[item_name].count >= new_stats.upgrade_number && this.coins >= new_stats.upgrade_cost) {
-                this.inventory[item_name].count -= new_stats.upgrade_number;
-                this.inventory[item_name].level += 1;
-                this.set_coins(this.coins - new_stats.upgrade_cost)
-                if (this.inventory[item_name].equipped) {
-                    this.equip_part(item_name, new_stats);
+            if (this.inventory[item_name].count >= new_stats.upgrade_number) {
+                if (this.coins >= new_stats.upgrade_cost) {
+                    this.inventory[item_name].count -= new_stats.upgrade_number;
+                    this.inventory[item_name].level += 1;
+                    this.set_coins(this.coins - new_stats.upgrade_cost)
+                    if (this.inventory[item_name].equipped) {
+                        this.equip_part(item_name, new_stats);
+                    } else {
+                        this.save_inventory();
+                    }
                 } else {
-                    this.save_inventory();
+                    this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this upgrade!"})
                 }
+            } else {
+                let diff = new_stats.upgrade_number - this.inventory[item_name].count
+                let item_output = item_name.replace("_", " ")
+                if (diff > 1) {
+                    item_output += "'s"
+                }
+                this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You need "+diff+" more "+item_output+" for this upgrade!"})
             }
         }
     }

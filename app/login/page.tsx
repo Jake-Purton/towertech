@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<'success' | 'error'>('error');
   const router = useRouter();
@@ -48,7 +48,7 @@ export default function LoginPage() {
         setMessageType('error');
         setMessage(data.error || "Login failed");
       }
-    } catch (error) {
+    } catch {
       setMessageType('error');
       setMessage("Something went wrong. Please try again.");
     } finally {
@@ -58,6 +58,12 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black-900 text-white">
+      <Link
+        href="/"
+        className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+      >
+        Back to Home
+      </Link>
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-orange-600">Login</h1>
         
@@ -80,7 +86,7 @@ export default function LoginPage() {
           />
           
           <input
-            type={showPassword ? "text" : "password"}
+            type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -100,10 +106,10 @@ export default function LoginPage() {
 
         <div className="mt-4 text-center"></div>
           <p>
-            Don't have an account?{" "}
-            <a href="/register" className="text-orange-400 underline">
+            Don&apos;t have an account?&nbsp;
+            <Link href="/register" className="text-orange-400 underline">
               Register
-            </a>
+            </Link>
           </p>
         </div>
       </div>

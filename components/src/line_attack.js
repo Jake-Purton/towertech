@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {RGBtoHEX, get_removed, modulo } from './utiles.js';
+import {get_removed, modulo } from './utiles.js';
 import {LaserDust } from './particle.js';
 
 export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
@@ -45,7 +45,7 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
         if (!get_removed(this.target)) {
             let dmg = this.damage * delta_time/this.scene.target_fps/this.total_time_to_live;
             this.damage_dealt += dmg;
-            this.target.take_damage(dmg, null, null, this.source);
+            this.target.take_damage(dmg, null, null, null, this.source);
         }
     }
     get_dead() {

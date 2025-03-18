@@ -1,10 +1,9 @@
 import * as Phaser from 'phaser';
 import {PartStats} from "./part_stat_manager.js";
-const Vec = Phaser.Math.Vector2;
 
 
 class Body extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene, texture, {height=25, face_movement=true, stats} = {}){
+    constructor(scene, texture, {height=25, face_movement=true, scale=1, stats} = {}){
 
         super(scene, 0, 0, texture);
 
@@ -13,7 +12,7 @@ class Body extends Phaser.Physics.Arcade.Sprite{
         this.base_body_height = 25;
         this.face_movement = face_movement;
         this.body_height = height;
-        this.set_scale(1);
+        this.set_scale(scale);
     }
     movement_animation(velocity) {
         if (this.face_movement) {
@@ -39,7 +38,7 @@ class RobotBody extends Body{
 }
 class LightweightFrame extends Body{
     constructor(scene, stats={}) {
-        super(scene, 'lightweight_frame', {height: 35, stats:stats});
+        super(scene, 'lightweight_frame', {height: 35, scale:0.9, stats:stats});
     }
 }
 class TankFrame extends Body{
@@ -49,9 +48,14 @@ class TankFrame extends Body{
 }
 class EnergyCoreFrame extends Body{
     constructor(scene, stats={}) {
-        super(scene, 'energy_core_frame', {height: 25, stats:stats});
+        super(scene, 'energy_core_frame', {height: 28, scale: 1.3, stats:stats});
+    }
+}
+class TitanCore extends Body{
+    constructor(scene, stats={}) {
+        super(scene, 'titan_core', {height: 32, scale: 1.1, stats:stats});
     }
 }
 
 
-export {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame };
+export {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame, TitanCore };

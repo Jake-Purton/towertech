@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { socket } from "../src/socket";
 import { JoinRoomMessage } from "../src/messages";
 import { useRouter, useSearchParams } from 'next/navigation';
-import { printTreeView } from "next/dist/build/utils";
+import Link from "next/link";
 
 async function verifyToken(token: string) {
     try {
@@ -24,7 +24,7 @@ async function verifyToken(token: string) {
     }
 }
 
-const JoinPage: React.FC = () => {
+const JoinPageContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,11 +35,12 @@ const JoinPage: React.FC = () => {
     const [username, setUsername] = useState<string>("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     
-    
     useEffect(() => {
-        const roomCode = searchParams.get('roomCode');
-        if (roomCode) {
-            setNumber(roomCode);
+        if (searchParams) {
+            const roomCode = searchParams.get('roomCode');
+            if (roomCode) {
+                setNumber(roomCode);
+            }
         }
 
         const checkToken = async () => {
@@ -56,7 +57,7 @@ const JoinPage: React.FC = () => {
             setIsLoading(false);
         };
       
-          checkToken();
+        checkToken();
         
         function onMessage(msg: string) {
             setMessage(msg);
@@ -65,6 +66,7 @@ const JoinPage: React.FC = () => {
 
         function onRoomErr(err: string) {
             setMessage(err);
+            setIsSubmitted(false);
         }
 
         function onSuccess() {
@@ -120,7 +122,7 @@ const JoinPage: React.FC = () => {
 
     const dataSender = (code: string, username: string) => {
         if (socket.id) {
-            var join_message = new JoinRoomMessage(socket.id, code, username);
+            const join_message = new JoinRoomMessage(socket.id, code, username);
             socket.emit("JOIN_ROOM", join_message);
         } else {
             setMessage("Socket ID is undefined");
@@ -136,12 +138,12 @@ const JoinPage: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-black text-white sm:p-20">
-            <a
+            <Link
                 href="/"
                 className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
             >
                 Back to Home
-            </a>
+            </Link>
             {!isLoading && (
                 <div className="absolute top-4 left-4 flex gap-4">
                 {isLoggedIn ? (
@@ -157,14 +159,14 @@ const JoinPage: React.FC = () => {
                 ) : (
                     <ul>
                     <li>
-                        <a href="/login" className="text-orange-600 hover:text-orange-700 underline">
-                        Login
-                        </a>
+                        <Link href="/login" className="text-orange-600 hover:text-orange-700 underline">
+                            Login
+                        </Link>
                     </li> 
                     <li>
-                        <a href="/register" className="text-orange-600 hover:text-orange-700 underline">
-                        Register
-                        </a>
+                        <Link href="/register" className="text-orange-600 hover:text-orange-700 underline">
+                            Register
+                        </Link>
                     </li>
                     </ul>
                 )}
@@ -210,6 +212,14 @@ const JoinPage: React.FC = () => {
                 </button>
             </form>
         </div>
+    );
+};
+
+const JoinPage: React.FC = () => {
+    return (
+        <Suspense fallback={<p>Loading...</p>}>
+            <JoinPageContent />
+        </Suspense>
     );
 };
 

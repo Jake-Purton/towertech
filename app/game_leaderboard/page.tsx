@@ -5,6 +5,7 @@ import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import React from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Player {
   userid: string;
@@ -70,12 +71,12 @@ export default function GameLeaderboard() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-orange-400 font-poppins pt-16">
-      <a
+      <Link
         href="/"
         className="absolute top-4 right-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
       >
         Back to Home
-      </a>
+      </Link>
       <motion.h1
         className="text-4xl font-bold mb-6"
         initial={{ opacity: 0, y: -20 }}
