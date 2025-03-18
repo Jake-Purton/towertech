@@ -105,4 +105,9 @@ export default class Effects{
         parent_object.effects.particle_cooldowns['Slow'].timer+=Math.random()/8
         scene.particles.push(new SlowParticle(scene, parent_object.x, parent_object.y));
     }
+    clear_effects() {
+        for (let effect in this.effects) {
+            this.effects[effect] = [];
+        }
+    }
 }

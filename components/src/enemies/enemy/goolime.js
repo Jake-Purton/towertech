@@ -6,7 +6,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Goolime extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=2, health=4, coin_value=1, melee_damage=2,
-                    melee_attack_speed=1, leave_path=random_range(0.2,0.5), target=null} = {}) {
+                    melee_attack_speed=0.3, leave_path=random_range(0.2,0.5), target=null} = {}) {
         let loot_table = {drop_chance:1.5,drops:{'speedster_wheel':4, 'pistol_weapon':1, 'robot_body':1}}
         super(scene, x, y, 'goolime', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,

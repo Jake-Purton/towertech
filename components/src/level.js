@@ -62,8 +62,12 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
 
         this.wave_manager.load_waves(WavesJson)
     }
+    start_waves() {
+        this.wave_manager.start_waves()
+    }
     game_tick(delta_time) {
         if (this.wave_manager.game_tick(delta_time)) {
+            // new wave has started
             this.respawn_players()
         }
     }

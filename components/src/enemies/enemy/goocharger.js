@@ -5,7 +5,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Goocharger extends Enemy{
     constructor(scene, x, y, path, difficutly,
                 {move_speed=0.5, health=5, coin_value=3,
-                 melee_damage=4, melee_attack_speed=1, max_speed=7} = {}) {
+                 melee_damage=4, melee_attack_speed=0.3, max_speed=7} = {}) {
         let loot_table = {drop_chance:1.5,drops:{'speedster_wheel':2,'energy_core_frame':4}}
         super(scene, x, y, 'goocharger', path, difficutly,
             {move_speed:move_speed, health:health,

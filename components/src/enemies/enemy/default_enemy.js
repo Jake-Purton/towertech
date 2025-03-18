@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
 import {random_range, float_to_random_int, weighted_random_choice, defined } from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
-import {GooMeleeDamage} from "../../projectile.js";
+import {EffectAOE, GooMeleeDamage} from "../../projectile.js";
 import DroppedItem from "../../dropped_item.js";
 import HealthBar from "../../health_bar.js";
 
@@ -11,7 +11,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path, difficulty,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
-                    melee_attack_speed=1, leave_path=1, target=null, damage=0, knockback_resistance=0.3,
+                    melee_attack_speed=0.3, leave_path=1, target=null, damage=0, knockback_resistance=0.3,
                     changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
                     loot_table = {drop_chance:5, drops:{
                             'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1, 'titan_core':1,
@@ -33,7 +33,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.velocity = new Vec(0,0);
         this.health = Math.floor(health * (1 + difficulty));
         this.coin_value = coin_value;
-        this.melee_damage = damage;
+        this.melee_damage = melee_damage;
         this.knockback_resistance = knockback_resistance;
         this.tick = 0;
         this.melee_attack_speed = melee_attack_speed;
@@ -76,6 +76,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.path_t += (delta_time * this.move_speed * this.effects.get_speed_multiplier())/this.path.getLength();
         this.path_t = Phaser.Math.Clamp(this.path_t,0,1);
         let position = this.path.getPoint(this.path_t);
+
+        // flip if moving left
+        this.flipX = (position.x < this.x)
 
         this.setPosition(position.x, position.y);
         return this.path_t >= 1;
@@ -228,7 +231,11 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new GooMeleeDamage(this.scene, this.x, this.y, null, this.melee_damage, this.type));
+            this.scene.projectiles.push(new EffectAOE(
+                this.scene, this.x, this.y, 'Enemy', null, this.body.halfWidth, this.body.halfWidth,{damage:this.melee_damage, time_to_live:this.melee_attack_speed/2}
+            ));
+            // this.scene.projectiles.push(new GooMeleeDamage(
+            //     this.scene, this.x, this.y, null, this.melee_damage, this.type, this.melee_attack_speed/2));
         }
     }
     return_to_path(delta_time){

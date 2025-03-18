@@ -5,7 +5,7 @@ import {random_range } from '../../utiles.js';
 export default class Goosniper extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0.5, health=8, coin_value=4, melee_damage=1,
-                    melee_attack_speed=1, leave_path=random_range(0.2,0.53),
+                    melee_attack_speed=0.3, leave_path=random_range(0.2,0.53),
                     target=null, changed=false, cooldown=5, max_cooldown=5,
                     shoot_angle=0, damage=5} = {}) {
         let loot_table = {drop_chance:1,drops:{'laser_cannon':4}}
