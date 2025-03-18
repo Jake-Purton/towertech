@@ -19,7 +19,6 @@ export async function GET(request: Request) {
         COALESCE(playeringame.kills, 0) AS kills,
         COALESCE(playeringame.towers_placed, 0) AS towersPlaced,
         COALESCE(playeringame.coins_spent, 0) AS coinsSpent,
-        COALESCE(playeringame.wave_reached, 0) AS waveReached,
         TO_CHAR(playeringame.game_time, 'HH24:MI:SS') AS time,
         TO_CHAR(playeringame.game_date, 'YYYY-MM-DD') AS date
       FROM 
@@ -48,7 +47,6 @@ export async function GET(request: Request) {
         kills: row.kills,
         towersPlaced: row.towersPlaced,
         coinsSpent: row.coinsSpent,
-        waveReached: row.waveReached,
         time: row.time,
         date: row.date
       }))

@@ -12,8 +12,9 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    // console.log("THIS IS HERE AND THE FOLLOWING IS DATA")
-    // console.log(data)
+    console.log("THIS IS HERE AND THE FOLLOWING IS DATA")
+    console.log(data)
+    console.log(data.gameData.player_data)
 
     if (!data.roomToken) {
       return NextResponse.json({ error: "Token is required" }, { status: 400 });
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
           
           for (const player of data.gameData.player_data) {
             // console.log(player);
-            const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}) RETURNING *`;
+            const playerResult = await sql`INSERT INTO playeringame (gameid, userid, kills, playerscore, playerid, username, towers_placed, coins_spent) VALUES (${gameid}, '0', ${player.kills}, ${player.score}, ${player.player_id}, ${player.username}, ${player.towers_placed}, ${player.coins_spent}) RETURNING *`;
             // console.log(playerResult);
           }
         } catch (error) {

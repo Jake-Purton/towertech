@@ -12,7 +12,6 @@ interface Game {
   kills: number;
   towersPlaced: number;
   coinsSpent: number;
-  waveReached: number;
   time: string;
   date: string;
 }
@@ -40,12 +39,12 @@ export default function PlayerLeaderboard() {
           throw new Error(`Error: ${res.statusText}`);
         }
         const data = await res.json();
-        if (!data || data.games.length === 0) {
-          throw new Error("No games found.");
-        }
+        // if (!data || data.games.length === 0) {
+        //   throw new Error("No games found.");
+        // }
         setPlayer(data);
       } catch (error) {
-        console.error("Failed to fetch player leaderboard:", error);
+        // console.error("Failed to fetch player leaderboard:", error);
         setPlayer(null);
       } finally {
         setLoading(false);
@@ -146,7 +145,6 @@ export default function PlayerLeaderboard() {
                                 <th className="px-6 py-3">Kills</th>
                                 <th className="px-6 py-3">Towers Placed</th>
                                 <th className="px-6 py-3">Coins Spent</th>
-                                <th className="px-6 py-3">Wave Reached</th>
                                 <th className="px-6 py-3">Time</th>
                                 <th className="px-6 py-3">Date</th>
                               </tr>
@@ -156,7 +154,6 @@ export default function PlayerLeaderboard() {
                                 <td className="px-6 py-4 text-lg">{game.kills}</td>
                                 <td className="px-6 py-4 text-lg">{game.towersPlaced || 0}</td>
                                 <td className="px-6 py-4 text-lg">{game.coinsSpent || 0}</td>
-                                <td className="px-6 py-4 text-lg">{game.waveReached || 0}</td>
                                 <td className="px-6 py-4 text-lg">{game.time}</td>
                                 <td className="px-6 py-4 text-lg">{game.date}</td>
                               </tr>
