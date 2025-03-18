@@ -4,6 +4,7 @@ import {random_range, float_to_random_int, weighted_random_choice, defined } fro
 import {GooBlood} from "../../particle.js";
 import {GooMeleeDamage} from "../../projectile.js";
 import DroppedItem from "../../dropped_item.js";
+import HealthBar from "../../health_bar.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -53,13 +54,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.last_damage_source = null;
 
         // health bar
-        this.health_bar_back = scene.add.sprite(0, 0, 'enemy_health_bar_back').setDepth(3.1);
-        this.health_bar_back.visible = false;
-        this.health_bar = scene.add.sprite(0, 0, 'enemy_health_bar').setDepth(3.1);
-        this.health_bar.visible = false;
-        this.health_bar.setScale(this.displayWidth/this.health_bar_back.displayWidth*1.1);
-        this.health_bar_back.setScale(this.displayWidth/this.health_bar_back.displayWidth*1.1);
-
+        this.health_bar = new HealthBar(
+            scene, 'enemy_health_bar_back', 'enemy_health_bar',
+            this.x, this.y, this.height, this.displayWidth);
 
         // this.game_tick(0); // sets the position to the start of the path
     }
@@ -85,8 +82,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     setPosition(x, y, z=0, w=0) {
         if (defined(this.health_bar)) {
-            this.health_bar_back.setPosition(x, y - this.height/2 - 5);
-            this.health_bar.setPosition(x, y - this.height/2 - 5);
+            this.health_bar.set_position(x, y, this.height);
         }
         super.setPosition(x, y, z, w)
         return this;
@@ -97,16 +93,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         } else if (health < 0) {
             health = 0;
         }
-        if (health === max_health) {
-            this.health_bar_back.visible = false;
-            this.health_bar.visible = false;
-        } else {
-            this.health_bar_back.visible = true;
-            this.health_bar.visible = true;
-        }
         this.health = health;
         this.max_health = max_health;
-        this.health_bar.setCrop(0,0,this.health_bar.width*this.health/this.max_health,this.health_bar.height);
+        this.health_bar.set_health(this.health, this.max_health)
     }
     add_health(health_change) {
         this.set_health(this.health+health_change, this.max_health);
@@ -255,7 +244,6 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     destroy(scene) {
         this.health_bar.destroy()
-        this.health_bar_back.destroy()
         super.destroy(scene);
     }
 }

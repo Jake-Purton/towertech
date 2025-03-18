@@ -46,7 +46,7 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
 
         this.path_radius = info.path_radius;
         this.enemy_path = this.load_path(info.enemy_path);
-        this.depth = -10;
+        this.setDepth(-1000);
 
         this.setScale(this.texture_width / this.width, this.texture_height / this.height);
         this.setPosition(this.texture_width / 2, this.texture_height / 2);

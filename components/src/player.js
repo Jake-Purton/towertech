@@ -16,6 +16,7 @@ import Effects from './effects.js';
 import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
+import HealthBar from "./health_bar.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -64,6 +65,11 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.name_text.width, this.name_text.height-6, RGBtoHEX([255,255,255]),{z_index:7, alpha:0.2});
             this.add(this.name_backing);
         }
+
+        this.health_bar = new HealthBar(
+            scene, 'enemy_health_bar_back', 'enemy_health_bar',
+            0, 0, 0, 30);
+        this.add(this.health_bar)
 
         // game stats
         this.coins = 0;
@@ -215,11 +221,22 @@ export default class Player extends Phaser.GameObjects.Container{
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
             this.refresh_stats();
+            this.refresh_health_bar();
+        }
+    }
+    refresh_health_bar() {
+        this.health_bar.set_health(this.health, this.max_health);
 
-            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13);
-            if (defined(this.name_backing)) {
-                this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
-            }
+        this.bringToTop(this.health_bar);
+        let health_bar_offset = 0;
+        if (this.health_bar.visible) {
+            health_bar_offset = this.health_bar.bar_back.displayHeight+5
+        }
+        if (defined(this.name_backing) && defined(this.body_object)) {
+            this.health_bar.set_parent_width(this.body_object.displayWidth*1.5);
+            this.health_bar.setPosition(0, -this.body_object.displayHeight/2-4-this.health_bar.bar_back.displayHeight/2)
+            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13-health_bar_offset);
+            this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
         }
     }
     refresh_stats() {
@@ -379,6 +396,7 @@ export default class Player extends Phaser.GameObjects.Container{
             }
             this.health = health;
             this.max_health = max_health;
+            this.refresh_health_bar()
             if (this.player_id !== 'UI_PLAYER_DISPLAY') {
                 this.scene.output_data(this.player_id, {
                     type: 'Set_Health',

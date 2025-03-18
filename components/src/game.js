@@ -358,6 +358,7 @@ export default class Game extends Phaser.Scene{
     }
 
     dummy_input(){
+        return
         // dummy method that attempts to recreate how inputs would be taken
         if (this.kprs.up.isDown){
             this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Up', Direction:'Down'});
