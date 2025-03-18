@@ -7,11 +7,12 @@ export default class Goocaster extends Enemy{
                         melee_damage=1, melee_attack_speed=1, 
                         target=null, cooldown=8, max_cooldown=8, 
                         shoot_angle=0, damage=15} = {}) {
+        let loot_table = {drop_chance:3,drops:{'plasma_blaster':4,'speedster_wheel':2,'robot_leg':1,'robot_body':1}}
         super(scene, x, y, 'goocaster', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, 
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed, 
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown, 
-                shoot_angle:shoot_angle, damage:damage});
+                shoot_angle:shoot_angle, damage:damage}, loot_table);
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;

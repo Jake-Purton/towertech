@@ -8,7 +8,7 @@ export default class Game extends Phaser.Scene{
 
         // game object containers
         this.players = {};
-        this.towers = [];
+        this.towers = {};
         this.projectiles = [];
         this.particles = [];
         this.enemies = [];
@@ -33,11 +33,13 @@ export default class Game extends Phaser.Scene{
         this.load.image('lightweight_frame','/game_images/player_sprites/bodies/lightweight_frame.png');
         this.load.image('tank_frame','/game_images/player_sprites/bodies/tank_armor.png');
         this.load.image('energy_core_frame','/game_images/player_sprites/bodies/energy_core_frame.png');
+        this.load.image('titan_core','/game_images/player_sprites/bodies/titan_core.png');
 
         // legs
         this.load.image('robot_leg','/game_images/player_sprites/legs/robot_leg.png');
         this.load.image('armored_walker','/game_images/player_sprites/legs/armored_walker.png');
         this.load.image('spider_leg','/game_images/player_sprites/legs/spider_leg.png');
+        this.load.image('phantom_step','/game_images/player_sprites/legs/phantom_step.png');
 
         // wheels
         this.load.image('speedster_wheel','/game_images/player_sprites/legs/speedster_wheel.png');
@@ -50,6 +52,7 @@ export default class Game extends Phaser.Scene{
         this.load.image('rocket_launcher','/game_images/player_sprites/weapons/rocket_launcher.png');
         this.load.image('tesla_rifle','/game_images/player_sprites/weapons/tesla_rifle.png');
         this.load.image('laser_cannon','/game_images/player_sprites/weapons/laser_cannon.png');
+        this.load.image('sword_of_void','/game_images/player_sprites/weapons/sword_of_void.png');
 
         // weapon projectiles
         this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
@@ -191,8 +194,8 @@ export default class Game extends Phaser.Scene{
         });
 
         // create Level (map info and enemy path)
-        console.log(localStorage.getItem('gameMap'))
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
+        this.level.init_waves()
 
         // game objects
         // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
@@ -225,7 +228,7 @@ export default class Game extends Phaser.Scene{
         }
 
         /// handle towers
-        for (let tower of this.towers){
+        for (let tower of Object.values(this.towers)){
             tower.game_tick(delta, this.enemies, this.players);
         }
 
@@ -345,7 +348,7 @@ export default class Game extends Phaser.Scene{
                     this.players[input.PlayerID].upgrade_part(input.item_name, input.item_stats);
                     break;
                 case 'Print':
-                    console.log('MESSAGE FROM CONTROLLER <' + input.PlayerID + '> = ' + input.text);
+                    console.log('msg: ' + input.text);
                     break;
             }
         } else if (input.type === "Constructor") {
@@ -355,6 +358,7 @@ export default class Game extends Phaser.Scene{
     }
 
     dummy_input(){
+        return
         // dummy method that attempts to recreate how inputs would be taken
         if (this.kprs.up.isDown){
             this.take_input({PlayerID: 'TempPlayerID', type:'Key_Input', Key: 'Up', Direction:'Down'});

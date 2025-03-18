@@ -20,7 +20,7 @@ class PartStats {
 }
 
 class PartStatsManager {
-    constructor(base_health=8, base_speed=0.05, base_damage=0, base_passive_healing_rate=0.1) {
+    constructor(base_health=8, base_speed=0.05, base_damage=0, base_passive_healing_rate=1) {
         this.base_health = base_health;
         this.base_speed = base_speed;
         this.base_damage = base_damage;

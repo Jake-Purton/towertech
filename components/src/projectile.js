@@ -82,7 +82,7 @@ class Projectile extends Entity {
     create_aoe() {
         let aoe = new EffectAOE(
             this.scene, this.x, this.y, this.team,
-            null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05})
+            null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05, source: this.source})
         this.scene.projectiles.push(aoe)
         for (let i=0;i<20;i++) {
             this.scene.particles.push(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
@@ -157,9 +157,9 @@ class PlasmaShot extends Projectile {
 }
 
 class EffectAOE extends Projectile {
-    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1}={}) {
+    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1, source=null}={}) {
         super(scene, x, y, '', 0, 0, team,
-            {inflict_effect:effect, pierce_count:1000, damage:damage},
+            {inflict_effect:effect, pierce_count:1000, damage:damage, source:source},
             {initial_alpha:0, time_to_live:time_to_live, drag:0});
         this.body.setCircle(radius);
         this.body.reset(this.x-radius+base_half_width,this.y-radius+base_half_width);

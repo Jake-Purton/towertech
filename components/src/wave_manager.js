@@ -24,9 +24,9 @@ export default class WaveManager
 
 
         let difficulties = {
-            Easy:1,
-            Medium:2,
-            Hard:3}
+            Easy:0.6,
+            Medium:1.6,
+            Hard:2.6}
         let diff = localStorage.getItem("gameDifficulty")
         this.base_difficulty = difficulties[diff];
 
@@ -91,7 +91,10 @@ export default class WaveManager
             }
         }
 
-        return new Wave(this.game, length, this.waveTemplateData.spawnDelay, enemyList, enemyWeights, numEnemies, difficulty);
+        return new Wave(this.game, length, this.waveTemplateData.spawnDelay,
+            enemyList, enemyWeights, numEnemies, difficulty,
+            "Wave "+(this.wave_index+1), "Literally Everything"
+        );
 
 
 
@@ -99,10 +102,11 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-        console.log(this.current_wave)
         if (this.current_wave.game_tick(deltaTime)) {
             this.next_wave();
+            return true
         }
+        return false
     }
 
     next_wave()
@@ -111,7 +115,7 @@ export default class WaveManager
         this.wave_index ++;
 
         // increases difficulty by number of players every 5 waves
-        let difficulty = (Math.floor((this.wave_index + 1) / 5) + 1) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
+        let difficulty = (((this.wave_index + 1) ** 1.6)/3 + 1) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
 
         let newWave = null;
         if (this.wave_index < this.waveData.length)
@@ -122,10 +126,12 @@ export default class WaveManager
             switch(wave.type)
             {
                 case "wave":
-                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount, difficulty);
+                    newWave = new Wave(this.game, wave.length, wave.spawnDelay, wave.enemyList,
+                        wave.enemyWeights, wave.enemyCount, difficulty, wave.title, wave.sub_title);
                     break;
                 case "boss":
-                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList, wave.enemyWeights, wave.enemyCount, difficulty);
+                    newWave = new BossWave(this.game, wave.length, wave.spawnDelay, wave.enemyList,
+                        wave.enemyWeights, wave.enemyCount, difficulty, wave.title, wave.sub_title);
                     break;
                     // break;
                 default:

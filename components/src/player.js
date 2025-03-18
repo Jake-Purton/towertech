@@ -1,14 +1,22 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
 
-import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame } from './components/body.js';
-import {RobotLeg, ArmoredWalker, SpiderLeg } from './components/leg.js';
+import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame, TitanCore} from './components/body.js';
+import {RobotLeg, ArmoredWalker, SpiderLeg, PhantomStep} from './components/leg.js';
 import {SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
-import {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon } from './components/weapon.js';
+import {
+    PistolWeapon,
+    PlasmaBlaster,
+    RocketLauncher,
+    TeslaRifle,
+    LaserCannon,
+    SwordOfVoid
+} from './components/weapon.js';
 import Effects from './effects.js';
 import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
+import HealthBar from "./health_bar.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -16,6 +24,7 @@ const part_converter = {
     'robot_leg':RobotLeg,
     'armored_walker':ArmoredWalker,
     'spider_leg':SpiderLeg,
+    'phantom_step':PhantomStep,
 
     'speedster_wheel':SpeedsterWheel,
     'floating_wheel':FloatingWheel,
@@ -25,12 +34,14 @@ const part_converter = {
     'lightweight_frame':LightweightFrame,
     'tank_frame':TankFrame,
     'energy_core_frame':EnergyCoreFrame,
+    'titan_core':TitanCore,
 
     'pistol_weapon':PistolWeapon,
     'plasma_blaster': PlasmaBlaster,
     'rocket_launcher': RocketLauncher,
     'tesla_rifle': TeslaRifle,
     'laser_cannon': LaserCannon,
+    'sword_of_void':SwordOfVoid,
 }
 
 export default class Player extends Phaser.GameObjects.Container{
@@ -54,6 +65,11 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.name_text.width, this.name_text.height-6, RGBtoHEX([255,255,255]),{z_index:7, alpha:0.2});
             this.add(this.name_backing);
         }
+
+        this.health_bar = new HealthBar(
+            scene, 'enemy_health_bar_back', 'enemy_health_bar',
+            0, 0, 0, 30);
+        this.add(this.health_bar)
 
         // game stats
         this.coins = 0;
@@ -147,10 +163,8 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
             }
 
-            let speed_multiplier =  this.effects.get_speed_multiplier();
-
-            this.body.position.x += this.velocity.x*delta_time * speed_multiplier;
-            this.body.position.y += this.velocity.y*delta_time * speed_multiplier;
+            this.body.position.x += this.velocity.x*delta_time;
+            this.body.position.y += this.velocity.y*delta_time;
             this.keep_in_map();
 
             // part management
@@ -161,12 +175,12 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.body_object.movement_animation(this.velocity);
             }
             if (defined(this.weapon_object)) {
-                this.weapon_object.game_tick(delta_time);
                 if (this.key_inputs.Attack) {
                     this.weapon_object.attack_button_down(delta_time, enemies, this.effects);
                 } else {
                     this.weapon_object.attack_button_up();
                 }
+                this.weapon_object.game_tick(delta_time);
             }
         }
     }
@@ -207,11 +221,22 @@ export default class Player extends Phaser.GameObjects.Container{
             this.leg_object.set_scale(this.body_object.get_scale_multiplier());
             this.body.setCircle(this.body_object.body_height/2,-this.body_object.body_height/2,-this.body_object.body_height/2);
             this.refresh_stats();
+            this.refresh_health_bar();
+        }
+    }
+    refresh_health_bar() {
+        this.health_bar.set_health(this.health, this.max_health);
 
-            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13);
-            if (defined(this.name_backing)) {
-                this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
-            }
+        this.bringToTop(this.health_bar);
+        let health_bar_offset = 0;
+        if (this.health_bar.visible) {
+            health_bar_offset = this.health_bar.bar_back.displayHeight+5
+        }
+        if (defined(this.name_backing) && defined(this.body_object)) {
+            this.health_bar.set_parent_width(this.body_object.displayWidth*1.5);
+            this.health_bar.setPosition(0, -this.body_object.displayHeight/2-4-this.health_bar.bar_back.displayHeight/2)
+            this.name_text.setPosition(0, -this.body_object.displayHeight/2-13-health_bar_offset);
+            this.name_backing.setPosition(this.name_text.x, this.name_text.y+this.name_text.displayHeight-5)
         }
     }
     refresh_stats() {
@@ -231,8 +256,12 @@ export default class Player extends Phaser.GameObjects.Container{
         this.set_coins(0);
     }
     respawn() {
-        this.dead = false;
-        this.visible = true;
+        if (this.dead) {
+            this.dead = false;
+            this.visible = true;
+            this.health = this.max_health;
+        }
+
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
@@ -250,7 +279,9 @@ export default class Player extends Phaser.GameObjects.Container{
             this.scene.score += enemy.coin_value;
             this.kill_count += 1;
             this.player_score += enemy.coin_value;
-            this.set_coins(this.coins+enemy.coin_value);
+            for (let player of Object.values(this.scene.players)) {
+                player.set_coins(player.coins+enemy.coin_value);
+            }
         }
     }
     keep_in_map() {
@@ -319,7 +350,7 @@ export default class Player extends Phaser.GameObjects.Container{
             }
             this.prev_tower_button_direction = data.Direction;
             if (new_tower != null) {
-                this.scene.towers.push(new_tower);
+                this.scene.towers[new_tower.tower_id] = new_tower;
             }
         }
     }
@@ -365,6 +396,7 @@ export default class Player extends Phaser.GameObjects.Container{
             }
             this.health = health;
             this.max_health = max_health;
+            this.refresh_health_bar()
             if (this.player_id !== 'UI_PLAYER_DISPLAY') {
                 this.scene.output_data(this.player_id, {
                     type: 'Set_Health',

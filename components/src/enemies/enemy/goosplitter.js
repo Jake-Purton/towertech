@@ -6,9 +6,10 @@ export default class Goosplitter extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0.7, health=10, coin_value=2, melee_damage=3,
                     melee_attack_speed=1} = {}) {
+        let loot_table = {drop_chance:1,drops:{'plasma_blaster':2, 'energy_core_frame':2}}
         super(scene, x, y, 'goosplitter', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
-                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed});
+                melee_damage:melee_damage, melee_attack_speed:melee_attack_speed}, loot_table);
 
     }
     die() {
