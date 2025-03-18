@@ -1,5 +1,6 @@
 import Wave from './wave.js';
 import BossWave from './wave_boss.js';
+import WaveBar from './wave_bar.js';
 
 export default class WaveManager
 {
@@ -31,6 +32,12 @@ export default class WaveManager
         this.base_difficulty = difficulties[diff];
 
         this.game = game;
+
+        this.wave_bar = new WaveBar(
+                    this.game, 'wave_progress_bar_back', 'wave_progress_bar',
+                    400, 100, 50, 100);
+        
+        this.wave_bar.set_health(10,10)
     }
 
     load_waves(parsedJson)
@@ -102,7 +109,15 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-        if (this.current_wave.game_tick(deltaTime)) {
+        let data = this.current_wave.game_tick(deltaTime)
+        let enemies_left = data[0]/data[1]
+        if (enemies_left > 0){
+            this.wave_bar.set_health(data[0],data[1])
+        }
+        else if(data[2] > 0){
+            this.wave_bar.set_health(data[3] - data[2],data[3])
+        } 
+        else {
             this.next_wave();
             return true
         }
