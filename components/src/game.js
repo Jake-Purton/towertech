@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Level from "./level.js";
+import HealthBar from './health_bar.js';
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func, init_server_func, end_game_output){
@@ -23,7 +24,8 @@ export default class Game extends Phaser.Scene{
         // gameplay info
         this.game_over = false;
         this.score = 0;
-        this.health = 10;
+        this.health = 100;
+        this.max_health = this.health;
 
     }
     preload() {
@@ -200,6 +202,12 @@ export default class Game extends Phaser.Scene{
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
         this.level.init_waves()
 
+        let endpoint = this.level.enemy_path.getEndPoint()
+
+        this.health_bar = new HealthBar(
+                    this, 'enemy_health_bar_back', 'enemy_health_bar',
+                    endpoint.x+25, endpoint.y, 175, 100);
+
         // game objects
         // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
@@ -299,6 +307,8 @@ export default class Game extends Phaser.Scene{
         if (this.health <= 0) {
             this.end_game();
         }
+
+        this.health_bar.set_health(this.health,this.max_health)
     }
     end_game() {
         // need to output

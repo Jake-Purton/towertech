@@ -2,8 +2,8 @@ import HealthBar from './health_bar.js';
 import {clamp} from "./utiles.js";
 
 export default class WaveBar extends HealthBar{
-    constructor(scene, back_texture, front_texture, parent_x, parent_y, parent_height, parent_width=40, z_depth=3.1) {
-        super(scene, back_texture, front_texture, parent_x, parent_y, parent_height, parent_width=40, z_depth=3.1);
+    constructor(scene, back_texture, front_texture, parent_x, parent_y, parent_height, parent_width=40, z_depth=1000) {
+        super(scene, back_texture, front_texture, parent_x, parent_y, parent_height, parent_width, z_depth);
         this.bar.setScale(2);
         this.bar_back.setScale(2);
     }
