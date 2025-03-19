@@ -115,6 +115,7 @@ export default class WaveManager
             this.wave_bar.set_health(data[0],data[1])
         }
         else if(data[2] > 0){
+            this.wave_bar.set_text(0);
             this.wave_bar.set_health(data[3] - data[2],data[3])
         } 
         else {
@@ -162,6 +163,8 @@ export default class WaveManager
         }
         // set the new wave.
         this.current_wave = newWave;
+
+        this.wave_bar.set_text(this.wave_index + 1)
 
     }
 

@@ -77,7 +77,11 @@ export default class Wave
             // and reset the timer.
             this.nextSpawn = this.spawnDelay;
         }
-        let return_data = [this.game.enemies.length + this.numEnemies,this.totalEnemies,this.timeBetweenWaves,this.totalTimeBetweenWaves]
+        let health = 0;
+        for (let enemy of this.game.enemies){
+            health += enemy.health/enemy.max_health;
+        }
+        let return_data = [health + this.numEnemies,this.totalEnemies,this.timeBetweenWaves,this.totalTimeBetweenWaves]
         return (return_data)
     }
 
