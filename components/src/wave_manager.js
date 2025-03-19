@@ -1,6 +1,9 @@
 import Wave from './wave.js';
 import BossWave from './wave_boss.js';
 import WaveBar from './wave_bar.js';
+import { random_int } from './utiles.js';
+
+const boss = ['gooacid','goobullet','goobuilder']
 
 export default class WaveManager
 {
@@ -73,6 +76,17 @@ export default class WaveManager
         // Initialise the enemy & weight lists
         let enemyList = [];
         let enemyWeights = [];
+
+        if (this.wave_index % 10 === 0){
+            let random_num = random_int(1,3)
+            enemyList.push(boss[random_num])
+            enemyWeights.push(1)
+        } 
+        else if(this.wave_index % 5 === 0){
+            enemyList.push('gootank')
+            enemyWeights.push(this.wave_index % 5)
+        }
+
 
         // Iterate through the enemy list.
         for(let i = 0; i < allEnemies.length; i++)
