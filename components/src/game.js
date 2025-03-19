@@ -209,7 +209,6 @@ export default class Game extends Phaser.Scene{
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
-
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -383,6 +382,9 @@ export default class Game extends Phaser.Scene{
                     break;
                 case 'Print':
                     console.log('msg: ' + input.text);
+                    break;
+                case 'Ping_Response':
+                    this.players[input.PlayerID].receive_ping_reply(input)
                     break;
             }
         } else if (input.type === "Constructor") {

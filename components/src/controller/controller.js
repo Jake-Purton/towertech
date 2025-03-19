@@ -317,6 +317,11 @@ export default class Controller extends Phaser.Scene{
                     this.create_ui();
                 }
                 break
+            case 'Ping_Request':
+                this.output_data({type:'Ping_Response',
+                    request_timestamp:input.request_timestamp,
+                    response_timestamp:new Date().getTime()});
+                break;
             case 'Prompt_User':
                 this.create_prompt_text(input.prompt);
                 break;

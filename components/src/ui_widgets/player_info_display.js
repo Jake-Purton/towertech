@@ -28,7 +28,13 @@ export default class PlayerInfoDisplay extends Phaser.GameObjects.Container {
             } else {
                 text += "DEAD"
             }
-            text += " $"+player.coins+'\n'
+            text += " $"+player.coins
+            if (player.ping < 2000) {
+                text += ' '+player.ping+'ms'
+            } else {
+                text += ' Disconnected'
+            }
+            text += '\n'
         }
         this.list_text.setText(text)
     }

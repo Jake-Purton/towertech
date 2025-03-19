@@ -133,10 +133,18 @@ export default class Player extends Phaser.GameObjects.Container{
         this.effects = new Effects(scene);
         this.last_damage_source = null;
 
+        // ping checker
+        this.ping = 0;
+        this.time_since_last_ping_request = 0;
+        this.ping_request_timer = 0;
+        this.ping_request_cooldown = 5;
+        this.has_outgoing_ping_request = false;
+
         this.refresh_health_bar();
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
+        this.manage_ping(delta_time);
         if (!this.dead) {
             this.passive_healing_timer -= delta_time/this.scene.target_fps;
             if (this.passive_healing_timer < 0) {
@@ -319,6 +327,26 @@ export default class Player extends Phaser.GameObjects.Container{
         } else if (this.body.y+this.body.height > this.scene.level.displayHeight) {
             this.body.position.y = this.scene.level.displayHeight-this.body.height
         }
+    }
+    manage_ping(delta_time) {
+        this.ping_request_timer -= delta_time/this.scene.target_fps;
+        this.time_since_last_ping_request += delta_time/this.scene.target_fps;
+        // console.log(this.time_since_last_ping_request*1000, this.ping, this.has_outgoing_ping_request)
+        if (this.ping_request_timer < 0 && !this.has_outgoing_ping_request) {
+            this.ping_request_timer = this.ping_request_cooldown;
+
+            this.has_outgoing_ping_request = true;
+            this.time_since_last_ping_request = 0;
+            this.scene.output_data(this.player_id, {type:'Ping_Request', request_timestamp:new Date().getTime()})
+        } else if (this.has_outgoing_ping_request && this.time_since_last_ping_request*1000 > this.ping) {
+            this.ping = Math.round(this.time_since_last_ping_request*1000);
+            this.scene.level.player_info_display.update_list_text()
+        }
+    }
+    receive_ping_reply(data) {
+        this.has_outgoing_ping_request = false;
+        this.ping = (new Date().getTime()) - data.request_timestamp;
+        this.scene.level.player_info_display.update_list_text()
     }
     key_input(data) {
         if (data.Direction === 'Down') {
