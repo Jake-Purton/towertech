@@ -1,10 +1,11 @@
 import * as Phaser from 'phaser';
 import Player from './player.js';
 import Level from "./level.js";
+import {defined} from "./utiles.js";
 import HealthBar from './health_bar.js';
 
 export default class Game extends Phaser.Scene{
-    constructor(output_data_func, init_server_func, end_game_output){
+    constructor(output_data_func, init_server_func, end_game_output, target_num_players){
         super('GameScene');
 
         // game object containers
@@ -26,6 +27,8 @@ export default class Game extends Phaser.Scene{
         this.score = 0;
         this.health = 100;
         this.max_health = this.health;
+        this.target_num_players = target_num_players;
+        this.start_waves_delay = 8;
 
     }
     preload() {
@@ -73,58 +76,74 @@ export default class Game extends Phaser.Scene{
         this.load.image('slow_particle','/game_images/particles/Slow.png');
         this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
         this.load.image('smoke_particle','/game_images/particles/smoke.png');
+        this.load.image('dust_particle','/game_images/particles/dust.png');
 
         //// Load tower images
-        this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
         this.load.image('CannonTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
         this.load.image('LaserTower_projectile','/game_images/projectiles/LaserTower_projectile.png');
 
-        this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
         this.load.image('SniperTower_projectile','/game_images/projectiles/SniperTower_projectile.png');
 
-        this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
         this.load.image('FlamethrowerTower_projectile','/game_images/projectiles/FlamethrowerTower_projectile.png');
 
-        this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
         this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
 
-        this.load.image('HealingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
         this.load.image('HealingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('BuffingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('BuffingTower_gun','/game_images/towers/BuffingTower_gun.png');
         this.load.image('BuffingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('SlowingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('SlowingTower_gun','/game_images/towers/SlowingTower_gun.png');
         this.load.image('SlowingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        // enemies
+        this.load.image('EffectTower_base_1','/game_images/towers/EffectTower_base_1.png');
+        this.load.image('EffectTower_base_2','/game_images/towers/EffectTower_base_2.png');
+        this.load.image('EffectTower_base_3','/game_images/towers/EffectTower_base_3.png');
+        this.load.image('AttackTower_base_1','/game_images/towers/AttackTower_base_1.png');
+        this.load.image('AttackTower_base_2','/game_images/towers/AttackTower_base_2.png');
+        this.load.image('AttackTower_base_3','/game_images/towers/AttackTower_base_3.png');
+
+        // enemie projectiles
         this.load.image('goosniper_projectile','/game_images/projectiles/goosniper_projectile.png');
         this.load.image('gooslinger_projectile','/game_images/projectiles/gooslinger_projectile.png');
         this.load.image('goocaster_projectile','/game_images/projectiles/goocaster_projectile.png');
         this.load.image('goobouncer_projectile','/game_images/projectiles/goobouncer_projectile.png');
         this.load.image('gootower_projectile','/game_images/projectiles/gootower_projectile.png');
         this.load.image('goobullet_projectile','/game_images/projectiles/goobullet_projectile.png');
+        this.load.image('goodrone_projectile','/game_images/projectiles/goodrone_projectile.png');
         this.load.image('goo_melee','/game_images/projectiles/goo_melee.png');
+
+        // bosses / mini bosses
+        this.load.spritesheet('gooacid','/game_images/enemy_sprites/boss/gooacid.png', {frameWidth:128, frameHeight:128});
+        this.load.spritesheet('goobuilder','/game_images/enemy_sprites/boss/goobuilder.png', {frameWidth:128, frameHeight:128});
+        this.load.spritesheet('goobullet','/game_images/enemy_sprites/boss/goobullet.png', {frameWidth:128, frameHeight:128});
+        this.load.spritesheet('gootank','/game_images/enemy_sprites/boss/gootank.png', {frameWidth:128, frameHeight:86});
+        // enemies
+        this.load.spritesheet('goober','/game_images/enemy_sprites/enemy/goober.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:48, frameHeight:48});
+        this.load.spritesheet('goocaster','/game_images/enemy_sprites/enemy/goocaster.png', {frameWidth:48, frameHeight:64});
+        this.load.spritesheet('goocharger','/game_images/enemy_sprites/enemy/goocharger.png', {frameWidth:48, frameHeight:48});
+        this.load.spritesheet('goocrab','/game_images/enemy_sprites/enemy/goocrab.png', {frameWidth:58, frameHeight:41});
+        this.load.spritesheet('goodrone','/game_images/enemy_sprites/enemy/goodrone.png', {frameWidth:64, frameHeight:39});
+        this.load.spritesheet('goodropper','/game_images/enemy_sprites/enemy/goodropper.png', {frameWidth:48, frameHeight:40});
+        this.load.spritesheet('goofly','/game_images/enemy_sprites/enemy/goofly.png', {frameWidth:48, frameHeight:27});
         this.load.spritesheet('goolime','/game_images/enemy_sprites/enemy/goolime.png', {frameWidth:30, frameHeight:13});
-        this.load.spritesheet('goocrab','/game_images/enemy_sprites/enemy/goocrab.png', {frameWidth:30, frameHeight:13});
+        this.load.spritesheet('gooshifter','/game_images/enemy_sprites/enemy/gooshifter.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:48, frameHeight:48});
         this.load.spritesheet('goosniper','/game_images/enemy_sprites/enemy/goosniper.png', {frameWidth:32, frameHeight:48});
         this.load.spritesheet('goosplits','/game_images/enemy_sprites/enemy/goosplits.png', {frameWidth:48, frameHeight:19});
-        this.load.spritesheet('goober','/game_images/enemy_sprites/enemy/goober.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('gooslinger','/game_images/enemy_sprites/enemy/gooslinger.png', {frameWidth:48, frameHeight:48});
-        this.load.spritesheet('gooshifter','/game_images/enemy_sprites/enemy/gooshifter.png', {frameWidth:32, frameHeight:48});
-        this.load.spritesheet('goobouncer','/game_images/enemy_sprites/enemy/goobouncer.png', {frameWidth:48, frameHeight:48});
         this.load.spritesheet('goosplitter','/game_images/enemy_sprites/enemy/goosplitter.png', {frameWidth:48, frameHeight:48});
-        this.load.spritesheet('goocaster','/game_images/enemy_sprites/enemy/goocaster.png', {frameWidth:32, frameHeight:48});
+        this.load.spritesheet('goosprint','/game_images/enemy_sprites/enemy/goosprint.png', {frameWidth:48, frameHeight:48});
+        this.load.spritesheet('gootower','/game_images/enemy_sprites/enemy/eviltower.png', {frameWidth:32, frameHeight:32});
+        this.load.spritesheet('goowalker','/game_images/enemy_sprites/enemy/goowalker.png', {frameWidth:48, frameHeight:48});
+
 
         // health bar
         this.load.image('enemy_health_bar_back', '/game_images/UI/enemy_health_bar_back.png');
@@ -137,66 +156,52 @@ export default class Game extends Phaser.Scene{
         this.init_server();
 
         // animations
-        this.anims.create({
-            key: 'goolime_walk',
-            frames: this.anims.generateFrameNumbers('goolime', { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goocrab_walk',
-            frames: this.anims.generateFrameNumbers('goocrab', { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goosniper_walk',
-            frames: this.anims.generateFrameNumbers('goosniper', { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goosplits_walk',
-            frames: this.anims.generateFrameNumbers('goosplits', { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goober_walk',
-            frames: this.anims.generateFrameNumbers('goober', { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'gooshifter_walk',
-            frames: this.anims.generateFrameNumbers('gooshifter', { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'gooslinger_walk',
-            frames: this.anims.generateFrameNumbers('gooslinger', { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goobouncer_walk',
-            frames: this.anims.generateFrameNumbers('goobouncer', { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goosplitter_walk',
-            frames: this.anims.generateFrameNumbers('goosplitter', { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'goocaster_walk',
-            frames: this.anims.generateFrameNumbers('goocaster', { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1
-        });
+        let animations = {
+            'gooacid_walk': {sprite_sheet:'gooacid', frames:4, frameRate:8, repeat:-1},
+            'gooacid_jump_start': {sprite_sheet:'gooacid', frames:5, startFrame:4, frameRate:8, repeat:0},
+            'gooacid_jump': {sprite_sheet:'gooacid', frames:4, startFrame:9, frameRate:8, repeat:0},
+            'gooacid_falling': {sprite_sheet:'gooacid', frames:4, startFrame:13, frameRate:8, repeat:0},
+            'gooacid_land': {sprite_sheet:'gooacid', frames:4, startFrame:17, frameRate:8, repeat:0},
+            'goobuilder_walk': {sprite_sheet:'goobuilder', frames:4, frameRate:8, repeat:-1},
+            'goobuilder_build': {sprite_sheet:'goobuilder', frames:4, startFrame:4, frameRate:8, repeat:-1},
+            'goobullet_walk': {sprite_sheet:'goobullet', frames:4, frameRate:16, repeat:-1},
+            'gootank_walk': {sprite_sheet:'gootank', frames:4, frameRate:8, repeat:-1},
+
+            'goober_walk': {sprite_sheet:'goober', frames:3, frameRate:8, repeat:-1},
+            'goobouncer_walk': {sprite_sheet:'goobouncer', frames:6, frameRate:8, repeat:-1},
+            'goocaster_walk': {sprite_sheet:'goocaster', frames:3, frameRate:8, repeat:-1},
+            'goocaster_cast': {sprite_sheet:'goocaster', frames:2, startFrame:3, frameRate:8, repeat:1},
+            'goocharger_walk': {sprite_sheet:'goocharger', frames:3, frameRate:8, repeat:-1},
+            'goocrab_walk': {sprite_sheet:'goocrab', frames:3, frameRate:8, repeat:-1},
+            'goodrone_walk': {sprite_sheet:'goodrone', frames:4, frameRate:8, repeat:-1},
+            'goodropper_walk': {sprite_sheet:'goodropper', frames:4, frameRate:8, repeat:-1},
+            'goofly_walk': {sprite_sheet:'goofly', frames:4, frameRate:8, repeat:-1},
+            'goolime_walk': {sprite_sheet:'goolime', frames:3, frameRate:8, repeat:-1},
+            'gooshifter_shift': {sprite_sheet:'gooshifter', frames:3, frameRate:8, repeat:0},
+            'gooshifter_walk': {sprite_sheet:'gooshifter', frames:3, startFrame:3, frameRate:8, repeat:-1},
+            'gooslinger_walk': {sprite_sheet:'gooslinger', frames:4, frameRate:8, repeat:-1},
+            'goosniper_walk': {sprite_sheet:'goosniper', frames:3, frameRate:8, repeat:-1},
+            'goosplits_walk': {sprite_sheet:'goosplits', frames:4, frameRate:8, repeat:-1},
+            'goosplitter_walk': {sprite_sheet:'goosplitter', frames:6, frameRate:8, repeat:-1},
+            'goosprint_walk': {sprite_sheet:'goosprint', frames:6, frameRate:8, repeat:-1},
+            'goowalker_walk': {sprite_sheet:'goowalker', frames:6, frameRate:8, repeat:-1},
+        }
+
+        for (let anim of Object.keys(animations)) {
+            let start_frame = 0;
+            if (defined(animations[anim].startFrame)) {
+                start_frame = animations[anim].startFrame;
+            }
+            // console.log('make animation',anim, start_frame, start_frame+animations[anim].frames-1, animations[anim]);
+            this.anims.create({
+                key: anim,
+                frames: this.anims.generateFrameNumbers(animations[anim].sprite_sheet,
+                    {start: start_frame, end: start_frame+animations[anim].frames-1}),
+                frameRate: animations[anim].frameRate,
+                repeat: animations[anim].repeat,
+            })
+        }
+
 
         // create Level (map info and enemy path)
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
@@ -302,6 +307,10 @@ export default class Game extends Phaser.Scene{
 
         // level(wave) management
         this.level.game_tick(delta);
+        this.start_waves_delay -= delta/this.target_fps;
+        if (this.start_waves_delay < 0) {
+            this.level.start_waves()
+        }
 
         // check game over
         if (this.health <= 0) {
@@ -354,6 +363,12 @@ export default class Game extends Phaser.Scene{
                 case 'Create_Tower':
                     this.players[input.PlayerID].new_tower_input(input);
                     break;
+                case 'Upgrade_Tower':
+                    this.players[input.PlayerID].upgrade_tower_input(input);
+                    break;
+                case 'Sell_Tower':
+                    this.players[input.PlayerID].sell_tower_input(input);
+                    break;
                 case 'Equip_Part':
                     this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);
                     break;
@@ -365,8 +380,15 @@ export default class Game extends Phaser.Scene{
                     break;
             }
         } else if (input.type === "Constructor") {
+            let angle = Math.PI*2*Object.keys(this.players).length/this.target_num_players;
+            let radius = 40 * (this.target_num_players-1);
+            let x_pos = this.level.displayWidth/2 + radius * Math.cos(angle);
+            let y_pos = this.level.displayHeight/2 + radius * Math.sin(angle);
             this.players[input.PlayerID] = new Player(
-                this, 100 * Object.keys(this.players).length, 100, input.PlayerID, {username: input.username});
+                this, x_pos, y_pos, input.PlayerID, {username: input.username});
+            if (Object.values(this.players) >= this.target_num_players) {
+                this.start_waves_delay = 2;
+            }
         }
     }
 
