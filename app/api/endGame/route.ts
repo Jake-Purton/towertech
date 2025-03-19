@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
       try {
         // Insert game data into the database
-        const result = await sql`INSERT INTO gameleaderboard (score, waves) VALUES (${data.gameData.game_score}, ${data.gameData.waves_survived}) RETURNING gameid`;
+        const result = await sql`INSERT INTO gameleaderboard (score, waves, map, difficulty) VALUES (${data.gameData.game_score}, ${data.gameData.waves_survived}, ${data.gameData.map}, ${data.gameData.difficulty}) RETURNING gameid`;
         const gameid = result.rows[0].gameid;
         
         console.log("✅ Game data inserted");
