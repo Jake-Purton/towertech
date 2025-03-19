@@ -8,6 +8,7 @@ import SelectorButton from "../ui_widgets/selector_button.js";
 import {Rectangle} from "../ui_widgets/shape.js";
 import Player from '../player.js';
 import {defined} from "../utiles.js";
+import {create_tower} from "../tower.js";
 
 
 export default class Controller extends Phaser.Scene{
@@ -28,6 +29,7 @@ export default class Controller extends Phaser.Scene{
         this.player_health = 5;
         this.player_max_health = 5
         this.player_inventory = {};
+        this.nearby_tower_id = null;
 
         this.current_selected_sub_menu = "Player";
         this.current_selected_tower = "CannonTower";
@@ -36,47 +38,47 @@ export default class Controller extends Phaser.Scene{
 
         // constants
         this.tower_data = {
-            "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
+            "CannonTower":{title:"Cannon", description:"It's a cannon.", level_stats:[
                     {level:1, cost:5, damage:4, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                     {level:2, cost:10, damage:7, fire_rate:2.2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                     {level:3, cost:15, damage:11, fire_rate:2.5, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                 ]},
-            "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
+            "SniperTower":{title:"Sniper", description:"Huge damage per shot in a large range.", level_stats:[
                     {level:1, cost:10, damage:20, fire_rate:0.5, range:380},
                     {level:2, cost:15, damage:30, fire_rate:0.8, range:380},
                     {level:3, cost:25, damage:40, fire_rate:1.4, range:380},
                 ]},
-            "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
+            "BallistaTower":{title:"Ballista", description:"Taken from the walls of Jerusalem.", level_stats:[
                     {level:1, cost:20, damage:6, fire_rate:1.5, range:180},
                     {level:2, cost:30, damage:12, fire_rate:2, range:180},
                     {level:3, cost:40, damage:20, fire_rate:2.5, range:280},
                 ]},
-            "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
+            "LaserTower":{title:"Laser", description:"Take that, Caveman!", level_stats:[
                     {level:1, cost:25, damage:3, fire_rate:10, range:180},
                     {level:2, cost:40, damage:6, fire_rate:10, range:180},
                     {level:3, cost:60, damage:10, fire_rate:10, range:180},
                 ]},
-            "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
+            "FlamethrowerTower":{title:"Flamer", description:"How's the taste of roasted goobers?", level_stats:[
                     {level:1, cost:40, damage:0.1, fire_rate:8, range:280},
                     {level:2, cost:50, damage:0.22, fire_rate:10, range:280},
                     {level:3, cost:60, damage:0.35, fire_rate:12, range:280},
                 ]},
-            "HealingTower":{title:"Healer", description:"its not a cannon", level_stats:[
+            "HealingTower":{title:"Healer", description:"Heal your body and soul.", level_stats:[
                     {level:1, cost:10, damage:1, fire_rate:10, range:120},
                     {level:2, cost:15, damage:1, fire_rate:10, range:160},
                     {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
-            "WeakeningTower":{title:"Weakener", description:"its not a cannon", level_stats:[
+            "WeakeningTower":{title:"Weakener", description:"Steal the will of goobers.", level_stats:[
                     {level:1, cost:10, damage:1, fire_rate:10, range:120},
                     {level:2, cost:15, damage:1, fire_rate:10, range:160},
                     {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
-            "SlowingTower":{title:"Slower", description:"its not a cannon", level_stats:[
+            "SlowingTower":{title:"Slower", description:"The very air thickens, as if reality itself slows down.", level_stats:[
                     {level:1, cost:15, damage:1, fire_rate:10, range:120},
                     {level:2, cost:20, damage:1, fire_rate:10, range:160},
                     {level:3, cost:25, damage:1, fire_rate:10, range:200},
                 ]},
-            "BuffingTower":{title:"Buffing", description:"its not a cannon", level_stats:[
+            "BuffingTower":{title:"Buffing", description:"Embrace the power and fight without fear!", level_stats:[
                     {level:1, cost:15, damage:1, fire_rate:10, range:120},
                     {level:2, cost:20, damage:1, fire_rate:10, range:160},
                     {level:3, cost:25, damage:1, fire_rate:10, range:200},
@@ -119,7 +121,7 @@ export default class Controller extends Phaser.Scene{
                     {health:25, speed:7, upgrade_cost:8, upgrade_number:3},
                     {health:40, speed:8, upgrade_cost:12, upgrade_number:3},
                 ]},
-            "spider_leg":{title:"Spider Legs", description:"abdullah u didnt do a description for this one", level_stats:[
+            "spider_leg":{title:"Spider Legs", description:"Spider Legs offer balanced boosts in speed and health, letting you crawl effortlessly through the battlefield.", level_stats:[
                     {health:10, speed:10},
                     {health:18, speed:13, upgrade_cost:10, upgrade_number:3},
                     {health:25, speed:16, upgrade_cost:15, upgrade_number:3},
@@ -223,28 +225,28 @@ export default class Controller extends Phaser.Scene{
         this.load.image('attack_button_head','/game_images/UI/attack_head.png');
 
         //// Load tower images
-        // this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
 
-        // this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
 
-        // this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
 
-        // this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
 
-        // this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
 
-        // this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
 
-        // this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BuffingTower_gun','/game_images/towers/BuffingTower_gun.png');
 
-        // this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
+        this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SlowingTower_gun','/game_images/towers/SlowingTower_gun.png');
 
     }
@@ -308,8 +310,12 @@ export default class Controller extends Phaser.Scene{
                 }
                 break
             case 'Tower_In_Range':
+                this.nearby_tower_id = input.tower_id;
+                this.nearby_tower_type = input.tower_type;
+                this.nearby_tower_stats = input.nearby_tower_stats;
                 break
             case 'Tower_Out_Of_Range':
+                this.nearby_tower_id = null;
                 break
             case 'Prompt_User':
                 this.create_prompt_text(input.prompt);
@@ -570,9 +576,18 @@ export default class Controller extends Phaser.Scene{
         this.upgrade_menu_ui_objects = [
             new Text(this, container_rect.x+container_rect.width/2, container_rect.y+30,
                 "Tower Upgrades", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:30, align:"center",fontStyle:"bold"}}),
-            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
-                "You are not near any towers", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}}),
         ]
+        if (this.nearby_tower_id === null) {
+            this.upgrade_menu_ui_objects.push(
+                new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
+                    "You are not near any towers", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}}))
+        } else {
+            this.upgrade_menu_ui_objects.concat([
+                create_tower(this.nearby_tower_type, this,
+                    container_rect.x+container_rect.width-60,container_rect.y+120,
+                    "UI_PLAYER_DISPLAY",this.nearby_tower_stats),
+            ])
+        }
     }
     create_player_parts_menu(container_rect) {
         this.player_parts_ui_objects = []

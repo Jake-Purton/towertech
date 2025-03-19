@@ -42,6 +42,7 @@ class Tower extends ProjectileShooter {
         // basic tower info
         this.tower_type = tower_type;
         this.playerid = player_id;
+        this.tower_stats = tower_stats;
 
         this.enabled = true;
         this.health = health;
@@ -102,12 +103,14 @@ class Tower extends ProjectileShooter {
         this.remove_nearby_player();
         this.nearby_player = new_nearby_player;
         this.nearby_player.has_nearby_tower = true;
-        this.scene.output_data(new_nearby_player.player_id, {type:'Tower_In_Range'});
+        this.scene.output_data(new_nearby_player.player_id,
+            {type:'Tower_In_Range', tower_id:this.tower_id,
+             tower_type:this.tower_type, tower_stats:this.tower_stats});
         this.graphics.setVisible(true)
     }
     remove_nearby_player() {
         if (this.nearby_player !== null) {
-            this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range'});
+            this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range', tower_id:this.tower_id});
             this.nearby_player.has_nearby_tower = false;
         }
         this.nearby_player = null;
@@ -132,6 +135,7 @@ class Tower extends ProjectileShooter {
         this.gun.setAngle(-45);
     }
     destroy(fromScene) {
+        console.log('destroying',this);
         this.gun.destroy();
         super.destroy(fromScene);
     }
