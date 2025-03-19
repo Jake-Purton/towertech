@@ -5,8 +5,8 @@ import {GoobulletProjectile } from '../../projectile.js';
 export default class Goobullet extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0.3, health=200, coin_value=50, melee_damage=5, 
-                    melee_attack_speed=1, target=null, cooldown=3, 
-                    max_cooldown=3, shoot_angle=0, damage=1} = {}) {
+                    melee_attack_speed=0.3, target=null, cooldown=3,
+                    max_cooldown=3, shoot_angle=0, damage=3} = {}) {
         let loot_table = {drop_chance:10,drops:{'sword_of_void':8,'rocket_launcher':3,'laser_cannon':2,'energy_core_frame':2,'tank_frame':2,'floating_wheel':2,'armored_walker':2}}
         super(scene, x, y, 'goobullet', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, melee_damage:melee_damage, 

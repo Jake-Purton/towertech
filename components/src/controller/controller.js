@@ -8,6 +8,7 @@ import SelectorButton from "../ui_widgets/selector_button.js";
 import {Rectangle} from "../ui_widgets/shape.js";
 import Player from '../player.js';
 import {defined} from "../utiles.js";
+import {create_tower} from "../tower.js";
 
 
 export default class Controller extends Phaser.Scene{
@@ -22,60 +23,63 @@ export default class Controller extends Phaser.Scene{
 
         // variables
         this.player_created = false;
+        this.ui_active = false;
 
         this.player_coins = 0;
-        this.player_health = 5;
-        this.player_max_health = 5
+        this.player_health = 30;
+        this.player_max_health = 30
         this.player_inventory = {};
+        this.nearby_tower_id = null;
 
         this.current_selected_sub_menu = "Player";
         this.current_selected_tower = "CannonTower";
         this.current_selected_part_type = "All";
         this.current_selected_part = {};
+        this.prompt_delayed_calls = 0;
 
         // constants
         this.tower_data = {
-            "CannonTower":{title:"Cannon", description:"its a cannon", level_stats:[
+            "CannonTower":{title:"Cannon", description:"It's a cannon.", level_stats:[
                     {level:1, cost:5, damage:4, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                     {level:2, cost:10, damage:7, fire_rate:2.2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                     {level:3, cost:15, damage:11, fire_rate:2.5, range:180, fire_distance:180, projectile_auto_aim_strength:10},
                 ]},
-            "SniperTower":{title:"Sniper", description:"its not a cannon", level_stats:[
+            "SniperTower":{title:"Sniper", description:"Huge damage per shot in a large range.", level_stats:[
                     {level:1, cost:10, damage:20, fire_rate:0.5, range:380},
                     {level:2, cost:15, damage:30, fire_rate:0.8, range:380},
                     {level:3, cost:25, damage:40, fire_rate:1.4, range:380},
                 ]},
-            "BallistaTower":{title:"Ballista", description:"its not a cannon", level_stats:[
+            "BallistaTower":{title:"Ballista", description:"Taken from the walls of Jerusalem.", level_stats:[
                     {level:1, cost:20, damage:6, fire_rate:1.5, range:180},
                     {level:2, cost:30, damage:12, fire_rate:2, range:180},
                     {level:3, cost:40, damage:20, fire_rate:2.5, range:280},
                 ]},
-            "LaserTower":{title:"Laser", description:"its not a cannon", level_stats:[
+            "LaserTower":{title:"Laser", description:"Take that, Caveman!", level_stats:[
                     {level:1, cost:25, damage:3, fire_rate:10, range:180},
                     {level:2, cost:40, damage:6, fire_rate:10, range:180},
                     {level:3, cost:60, damage:10, fire_rate:10, range:180},
                 ]},
-            "FlamethrowerTower":{title:"Flamer", description:"its not a cannon", level_stats:[
+            "FlamethrowerTower":{title:"Flamer", description:"How's the taste of roasted goobers?", level_stats:[
                     {level:1, cost:40, damage:0.1, fire_rate:8, range:280},
                     {level:2, cost:50, damage:0.22, fire_rate:10, range:280},
                     {level:3, cost:60, damage:0.35, fire_rate:12, range:280},
                 ]},
-            "HealingTower":{title:"Healer", description:"its not a cannon", level_stats:[
+            "HealingTower":{title:"Healer", description:"Heal your body and soul.", level_stats:[
                     {level:1, cost:10, damage:1, fire_rate:10, range:120},
                     {level:2, cost:15, damage:1, fire_rate:10, range:160},
                     {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
-            "WeakeningTower":{title:"Weakener", description:"its not a cannon", level_stats:[
+            "WeakeningTower":{title:"Weakener", description:"Steal the will of goobers.", level_stats:[
                     {level:1, cost:10, damage:1, fire_rate:10, range:120},
                     {level:2, cost:15, damage:1, fire_rate:10, range:160},
                     {level:3, cost:20, damage:1, fire_rate:10, range:200},
                 ]},
-            "SlowingTower":{title:"Slower", description:"its not a cannon", level_stats:[
+            "SlowingTower":{title:"Slower", description:"The very air thickens, as if reality itself slows down.", level_stats:[
                     {level:1, cost:15, damage:1, fire_rate:10, range:120},
                     {level:2, cost:20, damage:1, fire_rate:10, range:160},
                     {level:3, cost:25, damage:1, fire_rate:10, range:200},
                 ]},
-            "BuffingTower":{title:"Buffing", description:"its not a cannon", level_stats:[
+            "BuffingTower":{title:"Buffing", description:"Embrace the power and fight without fear!", level_stats:[
                     {level:1, cost:15, damage:1, fire_rate:10, range:120},
                     {level:2, cost:20, damage:1, fire_rate:10, range:160},
                     {level:3, cost:25, damage:1, fire_rate:10, range:200},
@@ -118,7 +122,7 @@ export default class Controller extends Phaser.Scene{
                     {health:25, speed:7, upgrade_cost:8, upgrade_number:3},
                     {health:40, speed:8, upgrade_cost:12, upgrade_number:3},
                 ]},
-            "spider_leg":{title:"Spider Legs", description:"abdullah u didnt do a description for this one", level_stats:[
+            "spider_leg":{title:"Spider Legs", description:"Spider Legs offer balanced boosts in speed and health, letting you crawl effortlessly through the battlefield.", level_stats:[
                     {health:10, speed:10},
                     {health:18, speed:13, upgrade_cost:10, upgrade_number:3},
                     {health:25, speed:16, upgrade_cost:15, upgrade_number:3},
@@ -156,9 +160,9 @@ export default class Controller extends Phaser.Scene{
                     {damage:10, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
-                    {damage:50, fire_rate:0.6, fire_distance:300, projectile_auto_aim_strength:10},
-                    {damage:80, fire_rate:0.8, fire_distance:350, upgrade_cost:15, upgrade_number:3, projectile_auto_aim_strength:10},
-                    {damage:120, fire_rate:1, fire_distance:400, upgrade_cost:20, upgrade_number:3, projectile_auto_aim_strength:10},
+                    {damage:50, fire_rate:1, fire_distance:300, projectile_auto_aim_strength:10},
+                    {damage:80, fire_rate:1.4, fire_distance:350, upgrade_cost:15, upgrade_number:3, projectile_auto_aim_strength:10},
+                    {damage:120, fire_rate:2, fire_distance:400, upgrade_cost:20, upgrade_number:3, projectile_auto_aim_strength:10},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
                     {damage:7, fire_rate:8, fire_distance:140},
@@ -222,29 +226,22 @@ export default class Controller extends Phaser.Scene{
         this.load.image('attack_button_head','/game_images/UI/attack_head.png');
 
         //// Load tower images
-        // this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
-
-        // this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
-
-        // this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
-
-        // this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
 
-        // this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
-
-        // this.load.image('HealingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
-
-        // this.load.image('BuffingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BuffingTower_gun','/game_images/towers/BuffingTower_gun.png');
-
-        // this.load.image('SlowingTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SlowingTower_gun','/game_images/towers/SlowingTower_gun.png');
+
+        this.load.image('EffectTower_base_1','/game_images/towers/EffectTower_base_1.png');
+        this.load.image('EffectTower_base_2','/game_images/towers/EffectTower_base_2.png');
+        this.load.image('EffectTower_base_3','/game_images/towers/EffectTower_base_3.png');
+        this.load.image('AttackTower_base_1','/game_images/towers/AttackTower_base_1.png');
+        this.load.image('AttackTower_base_2','/game_images/towers/AttackTower_base_2.png');
+        this.load.image('AttackTower_base_3','/game_images/towers/AttackTower_base_3.png');
 
     }
     create() {
@@ -259,6 +256,7 @@ export default class Controller extends Phaser.Scene{
                 this.create_ui();
             });
             this.create_ui();
+            this.ui_active = true;
             this.input.keyboard.on('keydown', this.key_pressed, this);
             this.input.keyboard.on('keyup', this.key_pressed, this);
         }
@@ -280,11 +278,13 @@ export default class Controller extends Phaser.Scene{
                 break;
             case 'Set_Coins':
                 this.player_coins = input.coins;
-                this.coins_ui_text.setText('Coins: '+this.player_coins);
+                if (this.ui_active) {
+                    this.coins_ui_text.setText('Coins: '+this.player_coins);
+                }
                 break;
             case 'Set_Inventory':
                 this.player_inventory = input.inventory;
-                if (this.current_selected_sub_menu === "Player" && defined(this.ui_objects)) {
+                if (this.current_selected_sub_menu === "Player" && this.ui_active) {
                     this.create_ui();
                 }
                 break;
@@ -293,7 +293,6 @@ export default class Controller extends Phaser.Scene{
                 this.player_max_health = input.max_health;
                 if (defined(this.health_ui_text)) {
                     this.health_ui_text.setText('Health: '+Math.round(this.player_health)+'/'+this.player_max_health);
-                    console.log(input, this.health_ui_bar);
                     this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
                 }
                 break;
@@ -302,6 +301,20 @@ export default class Controller extends Phaser.Scene{
                     this.equip_part(input.item_name, this.parts_data[input.item_name].level_stats[this.player_inventory[input.item_name].level-1]);
                 } else {
                     console.log('no part data found when equipping item: ', input)
+                }
+                break
+            case 'Tower_In_Range':
+                this.nearby_tower_id = input.tower_id;
+                this.nearby_tower_type = input.tower_type;
+                this.nearby_tower_stats = input.tower_stats;
+                if (this.current_selected_sub_menu === "Upgrade" && this.ui_active) {
+                    this.create_ui();
+                }
+                break
+            case 'Tower_Out_Of_Range':
+                this.nearby_tower_id = null;
+                if (this.current_selected_sub_menu === "Upgrade" && this.ui_active) {
+                    this.create_ui();
                 }
                 break
             case 'Prompt_User':
@@ -373,20 +386,11 @@ export default class Controller extends Phaser.Scene{
             try {
                 this.scale.startFullscreen();
             } catch {}
-
-            // let forceFullScreen = () => {
-            //     let gameContainer = document.getElementById('game_controller');
-            //     gameContainer.style.position = 'fixed';
-            //     gameContainer.style.width = '100vw';
-            //     gameContainer.style.height = '100vh';
-            //     gameContainer.style.top = '0';
-            //     gameContainer.style.left = '0';
-            // }
-            // forceFullScreen()
         }
     }
 
     destroy_ui = (destroy_all=true) => {
+        this.ui_active = !destroy_all;
         if (destroy_all) {
             this.destroy_ui_list(this.ui_objects);
         }
@@ -470,6 +474,7 @@ export default class Controller extends Phaser.Scene{
         // Player Health
         this.health_ui_text = new Text(this, this.screen_width-115, 40, 'Health: '+Math.round(this.player_health)+'/'+this.player_max_health, {center:true}).setDepth(6);
         this.health_ui_bar = this.add.sprite(this.screen_width-218, 62, 'player_health_bar').setDepth(7).setDisplayOrigin(0,0);
+        this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height)
         this.ui_objects.push(this.health_ui_text, this.health_ui_bar);
 
         // top tab buttons
@@ -488,27 +493,26 @@ export default class Controller extends Phaser.Scene{
             item.set_select_group(select_buttons);
             this.ui_objects.push(item);
         }
+        this.ui_active = true;
     }
 
     move_sub_menu = (menu, container_rect) => {
-        if (menu !== this.prev_sub_menu) {
-            this.prev_sub_menu = menu;
-            this.current_selected_sub_menu = menu;
-            this.destroy_ui(false);
-            switch (menu) {
-                case "Player":
-                    this.create_player_parts_menu(container_rect);
-                    break;
-                case "Tower":
-                    this.create_tower_menu(container_rect);
-                    break;
-                case "Upgrade":
-                    this.create_tower_upgrade_menu(container_rect);
-                    break;
-                default:
-                    this.create_player_parts_menu(container_rect);
-                    break;
-            }
+        this.prev_sub_menu = menu;
+        this.current_selected_sub_menu = menu;
+        this.destroy_ui(false);
+        switch (menu) {
+            case "Player":
+                this.create_player_parts_menu(container_rect);
+                break;
+            case "Tower":
+                this.create_tower_menu(container_rect);
+                break;
+            case "Upgrade":
+                this.create_tower_upgrade_menu(container_rect);
+                break;
+            default:
+                this.create_player_parts_menu(container_rect);
+                break;
         }
     }
     create_main_menu(container_rect) {
@@ -553,17 +557,22 @@ export default class Controller extends Phaser.Scene{
         this.destroy_ui_list(this.tower_buy_ui_objects);
         let tower_info = this.tower_data[tower_type];
         let level_info = tower_info.level_stats[0];
-        let description_string = tower_info.description+"\nDamage: "+level_info.damage+"\nFire Rate: "+level_info.fire_rate+"\nRange: "+level_info.range;
+        let description_string = tower_info.description
+        let stats_string = this.get_tower_stats_string(level_info);
         this.tower_buy_ui_objects = [
             new Rectangle(this, container_rect.x+10, container_rect.y+70, container_rect.width-20, container_rect.height-80, RGBtoHEX([96,103,109]),{rounded_corners:5}),
             new Rectangle(this, container_rect.x+15, container_rect.y+75, container_rect.width-30, container_rect.height-90, RGBtoHEX([78,87,97]),{rounded_corners:5}),
 
-            new Text(this, container_rect.x+20, container_rect.y+75,
-                tower_info.title, {center:false, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:30,fontStyle:"bold"}}),
-            new Text(this, container_rect.x+20, container_rect.y+110, description_string, {center:false, text_style:
-                    {fontFamily:"Tahoma",color:'#111111',fontSize:25,wordWrap:{width:container_rect.width-40}}}),
+            new Text(this, container_rect.x+22, container_rect.y+77,
+                tower_info.title, {center:false, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:28,fontStyle:"bold"}}),
+
+            new Text(this, container_rect.x+container_rect.width*0.4, container_rect.y+110, description_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:22,wordWrap:{width:container_rect.width*0.6-10}}}),
+            new Text(this, container_rect.x+20, container_rect.y+110, stats_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width/2-40}}}),
+
             new Button(this, container_rect.x+container_rect.width/2, container_rect.y+container_rect.height-40,
-                {text:"Buy - "+level_info.cost, width:104, height:40,
+                {text:"Buy - "+level_info.cost, width:140, height:40, texture:'equip_button',
                     press_command: ()=>this.make_tower(tower_type, "Down", level_info),
                     release_command: ()=>this.make_tower(tower_type, "Up", level_info)
                 }),
@@ -571,12 +580,83 @@ export default class Controller extends Phaser.Scene{
     }
     create_tower_upgrade_menu(container_rect) {
         this.upgrade_menu_ui_objects = [
-            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+30,
-                "Tower Upgrades", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:30, align:"center",fontStyle:"bold"}}),
-            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
-                "You are not near any towers", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}}),
+            new Text(this, container_rect.x+container_rect.width/2, container_rect.y+25,
+                "Upgrade Towers", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:30, align:"center",fontStyle:"bold"}}),
         ]
+        if (this.nearby_tower_id === null) {
+            this.upgrade_menu_ui_objects.push(
+                new Text(this, container_rect.x+container_rect.width/2, container_rect.y+144,
+                    "You are not near any towers", {text_style:{fontFamily:'Tahoma',color:'#111111', fontSize:25, align:"center"}}))
+        } else {
+            let tower_info = this.tower_data[this.nearby_tower_type];
+            let tower_stats = this.nearby_tower_stats;
+            let maxed = (this.nearby_tower_stats.level === tower_info.level_stats.length)
+            let next_level_info = null;
+            let upgrade_text = "Maxed";
+            let upgrade_enabled = false;
+            if (!maxed) {
+                next_level_info = tower_info.level_stats[this.nearby_tower_stats.level];
+                upgrade_text = "Upgrade-"+next_level_info.cost;
+                upgrade_enabled = true;
+            }
+            let sell_value = this.get_sell_value(tower_info.level_stats, this.nearby_tower_stats.level)
+            let stats_string = this.get_tower_stats_string(tower_stats, next_level_info);
+
+            this.upgrade_menu_ui_objects = this.upgrade_menu_ui_objects.concat([
+                new Rectangle(this, container_rect.x+10, container_rect.y+55, container_rect.width-20, container_rect.height-65, RGBtoHEX([96,103,109]),{rounded_corners:5}),
+                new Rectangle(this, container_rect.x+15, container_rect.y+60, container_rect.width-30, container_rect.height-75, RGBtoHEX([78,87,97]),{rounded_corners:5}),
+
+                new Text(this, container_rect.x+20, container_rect.y+66,
+                    'Level '+this.nearby_tower_stats.level+" "+tower_info.title,
+                    {center:false, text_style: {fontFamily:"Tahoma",color:'#111111',fontSize:25,fontStyle:"bold"}}),
+
+                create_tower(this.nearby_tower_type, this,
+                    container_rect.x+container_rect.width-59,container_rect.y+105,
+                    "UI_PLAYER_DISPLAY",this.nearby_tower_stats).setScale(2).set_weapon_direction(135),
+
+                new Button(this, container_rect.x+20, container_rect.y+container_rect.height-60,
+                    {text:"Sell-"+sell_value, width:140, height:40, texture:'equip_button', center:false,
+                        text_style:{fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:22},
+                        press_command: ()=>this.sell_tower(this.nearby_tower_id, sell_value, "Down"),
+                  }),
+                new Button(this, container_rect.x+container_rect.width-160, container_rect.y+container_rect.height-60,
+                    {text:upgrade_text, width:140, height:40, texture:'equip_button', center:false,
+                        text_style:{fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:22},
+                        press_command: ()=>this.upgrade_tower(this.nearby_tower_id, this.nearby_tower_type, next_level_info, "Down"),
+                  }).set_enabled(upgrade_enabled),
+            ])
+            let description_object = new Text(this, container_rect.x+20, container_rect.y+96, tower_info.description, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:22,wordWrap:{width:container_rect.width-110}}})
+            this.upgrade_menu_ui_objects.push(description_object)
+            this.upgrade_menu_ui_objects.push(
+                new Text(this, container_rect.x+20, container_rect.y+96+description_object.displayHeight,
+                    stats_string, {center:false, text_style:
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width-110}}}),
+            )
+        }
     }
+    get_tower_stats_string(tower_stats, next_level=null) {
+        let listed_stats = {'damage':'Damage', 'fire_rate':'Fire Rate', 'range':'Range'};
+        let stats_string = ""
+        for (let stat of Object.keys(listed_stats)) {
+            if (defined(tower_stats[stat])) {
+                stats_string += listed_stats[stat]+': '+tower_stats[stat];
+                if (next_level !== null) {
+                    stats_string += ' -> '+next_level[stat]
+                }
+                stats_string += '\n'
+            }
+        }
+        return stats_string;
+    }
+    get_sell_value(level_stats, level) {
+        let value = 0;
+        for (let i = 0;i<level;i++) {
+            value += level_stats[i].cost;
+        }
+        return Math.round(value*0.5);
+    }
+
     create_player_parts_menu(container_rect) {
         this.player_parts_ui_objects = []
         let parts = {
@@ -698,24 +778,37 @@ export default class Controller extends Phaser.Scene{
 
             new Button(this, container_rect.x+20, container_rect.y+container_rect.height-60,
                 {text:button_text, width:140, height:40, texture:'equip_button', center:false,
+                    text_style:{fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:22},
                     press_command: ()=>this.equip_part(item_name, item_stats)}),
 
             new Button(this, container_rect.x+container_rect.width-160, container_rect.y+container_rect.height-60,
                 {text:upgrade_text, width:140, height:40, texture:'equip_button', center:false,
+                    text_style:{fontFamily:'Tahoma', fontStyle:'bold', color:'#333', fontSize:22},
                     press_command: ()=>this.upgrade_part(item_name, upgraded_stats)}).set_enabled(upgrade_enabled),
 
         ]
     }
     create_prompt_text(text) {
-        let text_obj = this.add.text(this.screen_width/2, this.screen_height/2, text,
+        if (defined(this.prompt_text_obj)) {
+            this.prompt_text_obj.destroy();
+            this.prompt_backing_rect.destroy();
+        }
+        this.prompt_text_obj = this.add.text(this.screen_width/2, this.screen_height/2, text,
             {fontSize: 20, fontFamily:"Tahoma", fontStyle:"bold",align:"center",
                 color:'#b11', wordWrap:{width:200}})
-        let rect = new Rectangle(this, text_obj.x-10-text_obj.width/2, text_obj.y-10-text_obj.height/2,
-            text_obj.width+20, text_obj.height+20, RGBtoHEX([30,10,10]),{rounded_corners:10}).setDepth(10)
-        text_obj.setOrigin(0.5,0.5).setDepth(10.1);
+        this.prompt_backing_rect = new Rectangle(
+            this, this.prompt_text_obj.x-10-this.prompt_text_obj.width/2,
+            this.prompt_text_obj.y-10-this.prompt_text_obj.height/2,
+            this.prompt_text_obj.width+20, this.prompt_text_obj.height+20,
+            RGBtoHEX([30,10,10]),{rounded_corners:10}).setDepth(10)
+        this.prompt_text_obj.setOrigin(0.5,0.5).setDepth(10.1);
+        this.prompt_delayed_calls += 1;
         this.time.delayedCall(3000, () => {
-            text_obj.destroy()
-            rect.destroy()
+            this.prompt_delayed_calls -= 1;
+            if (this.prompt_delayed_calls === 0) {
+                this.prompt_text_obj.destroy()
+                this.prompt_backing_rect.destroy()
+            }
         }, [], this);
     }
 
@@ -766,6 +859,12 @@ export default class Controller extends Phaser.Scene{
     }
     make_tower = (tower, direction, tower_stats) => {
         this.output_data({type:'Create_Tower', Tower: tower, Direction: direction, Tower_Stats:tower_stats})
+    }
+    upgrade_tower = (tower_id, tower_type, tower_stats, direction) => {
+        this.output_data({type:'Upgrade_Tower', tower_id: tower_id, tower_type: tower_type, tower_stats: tower_stats, Direction: direction});
+    }
+    sell_tower = (tower_id, sell_value, direction) => {
+        this.output_data({type:'Sell_Tower', tower_id: tower_id, sell_value:sell_value, Direction: direction});
     }
     equip_part = (item_name, item_stats) => {
         this.output_data({type:'Equip_Part', item_name: item_name, item_stats: item_stats});

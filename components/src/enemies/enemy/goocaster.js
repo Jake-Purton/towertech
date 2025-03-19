@@ -4,9 +4,9 @@ import {GoocasterProjectile } from '../../projectile.js';
 export default class Goocaster extends Enemy{
     constructor(scene, x, y, path, difficulty, 
                     {move_speed=0.8, health=10, coin_value=2, 
-                        melee_damage=1, melee_attack_speed=1, 
+                        melee_damage=1, melee_attack_speed=0.3,
                         target=null, cooldown=8, max_cooldown=8, 
-                        shoot_angle=0, damage=15} = {}) {
+                        shoot_angle=0, damage=12} = {}) {
         let loot_table = {drop_chance:3,drops:{'plasma_blaster':4,'speedster_wheel':2,'robot_leg':1,'robot_body':1}}
         super(scene, x, y, 'goocaster', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, 
@@ -19,7 +19,11 @@ export default class Goocaster extends Enemy{
         this.cooldown -= time;
         if (this.cooldown <= 0){
             this.cooldown += this.max_cooldown;
-            this.shoot_projectile(players, towers);
+            this.play('goocaster_cast');
+            this.once('animationcomplete', ()=>{
+                this.play('goocaster_walk')
+                this.shoot_projectile(players, towers)
+            })
         }
         super.game_tick(delta_time, players, towers);
     }

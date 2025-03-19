@@ -63,7 +63,7 @@ export default class Wave
     game_tick(deltaTime)
     {
         // Subtract deltaTime from the remaining time.
-        if (this.game.enemies.length <= 0) {
+        if (this.game.enemies.length <= 0 && this.numEnemies <= 0) {
             this.timeBetweenWaves -= deltaTime;
         }
         this.nextSpawn -= deltaTime;

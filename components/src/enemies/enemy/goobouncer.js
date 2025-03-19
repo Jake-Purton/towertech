@@ -4,7 +4,7 @@ import {GoobouncerProjectile } from '../../projectile.js';
 export default class Goobouncer extends Enemy{
     constructor(scene, x, y, path, difficulty,
                  {move_speed=0.5, health=15, coin_value=4, 
-                    melee_damage=1, melee_attack_speed=1, 
+                    melee_damage=1, melee_attack_speed=0.3,
                     target=null, cooldown=10, max_cooldown=10, 
                     shoot_angle=0, damage=15} = {}) {
         let loot_table = {drop_chance:1.5,drops:{'tesla_rifle':2,'floating_wheel':4}}

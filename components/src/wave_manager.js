@@ -20,6 +20,7 @@ export default class WaveManager
         // It contains the same data as waveData (excluding the type), except with a "number of unique enemies" value too.
         this.waveTemplateData = {};
         this.wave_index = -1;
+        this.waves_started = false;
         //this.waveSeed = -1;
 
 
@@ -48,10 +49,13 @@ export default class WaveManager
 
         this.waveData = parsedJson.waves;
         this.waveTemplateData = parsedJson.waveTemplate;
-
-        this.next_wave();
     }
-
+    start_waves() {
+        if (!this.waves_started) {
+            this.next_wave();
+            this.waves_started = true;
+        }
+    }
     generate_wave(difficulty)
     {
         // number of enemies increases by 5 with each wave.
@@ -100,9 +104,8 @@ export default class WaveManager
 
     }
 
-    game_tick(deltaTime)
-    {
-        if (this.current_wave.game_tick(deltaTime)) {
+    game_tick(deltaTime) {
+        if (this.current_wave !== null && this.current_wave.game_tick(deltaTime)) {
             this.next_wave();
             return true
         }

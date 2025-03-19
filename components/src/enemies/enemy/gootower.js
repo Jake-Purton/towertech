@@ -4,7 +4,7 @@ import {GootowerProjectile} from '../../projectile.js';
 export default class Gootower extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0, health=20, coin_value=1, melee_damage=1, 
-                    melee_attack_speed=1, target=null, cooldown=5, 
+                    melee_attack_speed=0.3, target=null, cooldown=5,
                     max_cooldown=5, shoot_angle=0, damage=3} = {}) {
         let loot_table = {drop_chance:0.6,drops:{'laser_cannon':2, 'tank_treads':1}}
         super(scene, x, y, 'gootower', path, difficulty,

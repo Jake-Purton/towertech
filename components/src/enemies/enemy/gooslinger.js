@@ -4,7 +4,7 @@ import {GooslingerProjectile } from '../../projectile.js';
 export default class Gooslinger extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0.6, health=13, coin_value=3,
-                    melee_damage=1, melee_attack_speed=1,
+                    melee_damage=1, melee_attack_speed=0.3,
                     target=null, cooldown=2, max_cooldown=2,
                     shoot_angle=0, damage=1} = {}) {
         let loot_table = {drop_chance:1.5,drops:{'pistol_weapon':1, 'plasma_blaster':3}}
