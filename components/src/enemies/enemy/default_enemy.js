@@ -12,7 +12,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, type, path, difficulty,
                 {move_speed=1, health=10, coin_value=1, melee_damage=1,
                     melee_attack_speed=0.3, leave_path=1, target=null, damage=0, knockback_resistance=0.3,
-                    changed=false, cooldown=10, max_cooldown=10, shoot_angle=0} = {},
+                    changed=false, cooldown=10, max_cooldown=10, shoot_angle=0, damage_to_base=1} = {},
                     loot_table = {drop_chance:5, drops:{
                             'robot_body':1, 'lightweight_frame':1, 'tank_frame':1, 'energy_core_frame':1, 'titan_core':1,
                             'robot_leg':1, 'armored_walker':1, 'spider_leg':1, 'phantom_step':1,
@@ -48,6 +48,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.max_health = this.health;
         this.loot_table = loot_table;
         this.difficulty = difficulty;
+        this.damage_to_base = damage_to_base;
 
         // effects info
         this.effects = new Effects(scene);

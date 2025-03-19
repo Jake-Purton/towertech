@@ -6,7 +6,7 @@ export default class WaveBar extends HealthBar{
         super(scene, back_texture, front_texture, parent_x, parent_y, parent_height, parent_width, z_depth);
         this.bar.setScale(2);
         this.bar_back.setScale(2);
-        this.text = this.scene.add.text(this.scene.level.texture_width/2, 30, 'Wave ');
+        this.text = this.scene.add.text(this.scene.level.texture_width/2, 30, 'Preparing First Wave');
         this.text.setDepth(10000);
         this.text.setOrigin(0.5, 0.5);
     }
@@ -26,9 +26,9 @@ export default class WaveBar extends HealthBar{
         this.bar.setCrop(0,0,this.bar.width*this.health/this.max_health,this.bar.height)
     }
 
-    set_text(wave_number){
-        if (wave_number>0){
-            this.text.setText('Wave '+String(wave_number))
+    set_text(wave_title){
+        if (wave_title !== ""){
+            this.text.setText(wave_title)
         }
         else {
             this.text.setText('Preparing Next Wave')

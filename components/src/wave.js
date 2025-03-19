@@ -49,6 +49,7 @@ export default class Wave
         this.difficulty = difficulty;
 
         // create wave titles
+        this.title_text = title;
         this.title_obj = this.game.add.text(
             this.game.level.texture_width/2, this.game.level.texture_height/2-30, title,
             {fontStyle: 'bold', fontSize:50, color:'#111111'}).setOrigin(0.5).setDepth(100)
