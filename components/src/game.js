@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import Player from './player.js';
 import Level from "./level.js";
 import {defined} from "./utiles.js";
+import HealthBar from './health_bar.js';
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func, init_server_func, end_game_output, target_num_players){
@@ -25,6 +26,7 @@ export default class Game extends Phaser.Scene{
         this.game_over = false;
         this.score = 0;
         this.health = 10;
+        this.max_health = this.health;
         this.target_num_players = target_num_players;
         this.start_waves_delay = 8;
 
@@ -146,6 +148,9 @@ export default class Game extends Phaser.Scene{
         // health bar
         this.load.image('enemy_health_bar_back', '/game_images/UI/enemy_health_bar_back.png');
         this.load.image('enemy_health_bar', '/game_images/UI/enemy_health_bar.png');
+
+        this.load.image('wave_progress_bar_back', '/game_images/UI/wave_progress_bar_back.png');
+        this.load.image('wave_progress_bar', '/game_images/UI/wave_progress_bar.png');
     }
     create() {
         this.init_server();
@@ -201,6 +206,12 @@ export default class Game extends Phaser.Scene{
         // create Level (map info and enemy path)
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
         this.level.init_waves()
+
+        let endpoint = this.level.enemy_path.getEndPoint()
+
+        this.health_bar = new HealthBar(
+                    this, 'enemy_health_bar_back', 'enemy_health_bar',
+                    endpoint.x, endpoint.y, 200, 100);
 
         // game objects
         // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
@@ -282,7 +293,7 @@ export default class Game extends Phaser.Scene{
             enemy.game_tick(delta, this.players, this.towers);
             if (enemy.get_finished_path()) {
                 remove_list.push(enemy);
-                this.health -= 1; // temporary
+                this.health -= enemy.damage_to_base;
             } else if (enemy.get_dead()){
                 remove_list.push(enemy);
                 enemy.die();
@@ -305,6 +316,8 @@ export default class Game extends Phaser.Scene{
         if (this.health <= 0) {
             this.end_game();
         }
+
+        this.health_bar.set_health(this.health,this.max_health)
     }
     end_game() {
         // need to output
