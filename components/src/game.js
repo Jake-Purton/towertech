@@ -206,7 +206,7 @@ export default class Game extends Phaser.Scene{
 
         this.health_bar = new HealthBar(
                     this, 'enemy_health_bar_back', 'enemy_health_bar',
-                    endpoint.x+25, endpoint.y, 175, 100);
+                    endpoint.x, endpoint.y, 175, 100);
 
         // game objects
         // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
