@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js';
-import {get_removed } from './utiles.js';
+import {defined, get_removed} from './utiles.js';
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 import ProjectileShooter from './projectile_shooter.js';
@@ -8,17 +8,20 @@ import ProjectileShooter from './projectile_shooter.js';
 class Tower extends ProjectileShooter {
     // range is in pixels
     // fire_rate is shots per seconds
-    tower_id_tracker = 0;
-    constructor(scene, x, y, tower_type, player_id, projectile_class, tower_stats={},
+    static tower_id_tracker = 0;
+    constructor(scene, x, y, tower_type, player_id, projectile_class, tower_stats={level:1},
                 {base_scale=1, gun_scale=1, gun_center=[0.2, 0.5], health=100} = {}, properties = {}) {
         for (let stat in tower_stats) {
             properties[stat] = tower_stats[stat];
         }
-        super(scene, x, y, tower_type + '_base', projectile_class, properties);
+        let type_to_subclass = {
+            "CannonTower":"Attack", "SniperTower":"Attack", "BallistaTower":"Attack", "LaserTower":"Attack", "FlamethrowerTower":"Attack",
+            "HealingTower":"Effect", "BuffingTower":"Effect", "SlowingTower":"Effect", "WeakeningTower":"Effect"}
+        let tower_subclass = type_to_subclass[tower_type];
+        super(scene, x, y, tower_subclass+'Tower_base_'+tower_stats.level, projectile_class, properties);
         this.setDepth(1);
 
         this.base_scale = base_scale;
-        this.setScale(this.base_scale);
 
         // create gun
         this.gun = new Phaser.Physics.Arcade.Sprite(scene, x, y, tower_type + '_gun');
@@ -34,26 +37,26 @@ class Tower extends ProjectileShooter {
 
         ////// variables //////
         // gun rendering
-        this.gun_scale = gun_scale;
+        this.gun_scale = gun_scale*(tower_stats.level/10+0.9);
         this.gun_center = gun_center;
         this.gun.setOrigin(this.gun_center[0], this.gun_center[1]);
-        this.gun.setScale(this.gun_scale);
+        this.setScale(1);
 
         // basic tower info
         this.tower_type = tower_type;
         this.playerid = player_id;
+        this.tower_stats = tower_stats;
 
         this.enabled = true;
         this.health = health;
         this.max_health = health;
+        this.nearby_players = [];
 
         // effects info
         this.effects = new Effects(scene);
 
-        // nearby player info
-        this.nearby_radius = 35;
-        this.nearby_player = null;
 
+        // id
         this.tower_id = Tower.tower_id_tracker;
         Tower.tower_id_tracker += 1;
     }
@@ -69,44 +72,43 @@ class Tower extends ProjectileShooter {
             this.rotate_gun(delta_time);
             this.attack_enemies(enemies, this.effects);
 
-            this.check_nearby_player(players);
+            // this.check_nearby_player(players);
 
             this.effects.game_tick(delta_time, this);
         }
     }
+    add_nearby_player(player) {
+        if (!this.nearby_players.includes(player)) {
+            this.nearby_players.push(player)
+            if (this.nearby_players.length > 0) {
+                this.graphics.setVisible(true)
+            }
+        }
+    }
+    remove_nearby_player(player) {
+        if (this.nearby_players.includes(player)) {
+            this.nearby_players.splice(this.nearby_players.indexOf(player), 1)
+            // this.nearby_players.remove(player)
+            if (this.nearby_players.length === 0) {
+                this.graphics.setVisible(false)
+            }
+        }
+    }
+    upgrade(tower_stats) {
+        let new_tower = create_tower(this.tower_type, this.scene, this.x, this.y, this.playerid, tower_stats);
+        this.scene.towers[this.tower_id] = new_tower;
+        new_tower.tower_id = this.tower_id;
+        this.destroy();
+    }
     set_weapon_direction(angle) {
         this.gun.setAngle(angle);
+        return this;
     }
     get_weapon_direction() {
         return this.gun.angle;
     }
     get_projectile_texture_name() {
         return this.tower_type.concat('_projectile');
-    }
-    check_nearby_player(players) {
-        let new_nearby_player = null;
-        for (let player of Object.values(players)) {
-            if (this.get_relative_pos(player).length()<this.nearby_radius) {
-                new_nearby_player = player;
-            }
-        }
-        if ((this.nearby_player == null || this.nearby_player === new_nearby_player) && new_nearby_player != null && !new_nearby_player.has_nearby_tower) {
-            this.set_new_nearby_player(new_nearby_player);
-        } else if (this.nearby_player != null && new_nearby_player == null) {
-            this.remove_nearby_player();
-        }
-    }
-    set_new_nearby_player(new_nearby_player) {
-        this.nearby_player = new_nearby_player;
-        this.nearby_player.has_nearby_tower = true;
-        this.scene.output_data(new_nearby_player.player_id, {type:'Tower_In_Range'});
-        this.graphics.setVisible(true)
-    }
-    remove_nearby_player() {
-        this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range'});
-        this.nearby_player.has_nearby_tower = false;
-        this.nearby_player = null;
-        this.graphics.setVisible(false)
     }
     get_dead() {
         return (this.health<=0)
@@ -115,7 +117,9 @@ class Tower extends ProjectileShooter {
         this.health -= damage;
     }
     get_kill_credit(enemy) {
-        this.scene.players[this.playerid].get_kill_credit(enemy);
+        if (defined(this.scene)) {
+            this.scene.players[this.playerid].get_kill_credit(enemy);
+        }
     }
     set_pos(x, y) {
         this.setPosition(x, y);
@@ -127,6 +131,7 @@ class Tower extends ProjectileShooter {
         this.gun.setAngle(-45);
     }
     destroy(fromScene) {
+        this.graphics.destroy();
         this.gun.destroy();
         super.destroy(fromScene);
     }
@@ -143,6 +148,17 @@ class Tower extends ProjectileShooter {
             }
         }
         return false
+    }
+    setScale(x, y = undefined) {
+        if (!defined(y)) {
+            y = x;
+        }
+        this.gun.setScale(
+            x * this.base_scale * this.gun_scale,
+            y * this.base_scale * this.gun_scale);
+        super.setScale(
+            x * this.base_scale, y * this.base_scale);
+        return this
     }
 }
 
@@ -274,7 +290,7 @@ const tower_map = {
     'HealingTower':HealingTower,
     'BuffingTower':BuffingTower};
 
-function create_tower(tower_type, scene, x, y, player_id, tower_stats={}){
+function create_tower(tower_type, scene, x, y, player_id, tower_stats={level:1}){
     let new_tower = null;
     if (tower_type in tower_map) {
         new_tower = new tower_map[tower_type](scene, x, y, tower_type, player_id, tower_stats);

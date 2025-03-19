@@ -26,7 +26,7 @@ export default class Game extends Phaser.Scene{
         this.score = 0;
         this.health = 10;
         this.target_num_players = target_num_players;
-        this.start_waves_delay = 1//15;
+        this.start_waves_delay = 8;
 
     }
     preload() {
@@ -77,37 +77,36 @@ export default class Game extends Phaser.Scene{
         this.load.image('dust_particle','/game_images/particles/dust.png');
 
         //// Load tower images
-        this.load.image('CannonTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
         this.load.image('CannonTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('LaserTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('LaserTower_gun','/game_images/towers/LaserTower_gun.png');
         this.load.image('LaserTower_projectile','/game_images/projectiles/LaserTower_projectile.png');
 
-        this.load.image('SniperTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('SniperTower_gun','/game_images/towers/SniperTower_gun.png');
         this.load.image('SniperTower_projectile','/game_images/projectiles/SniperTower_projectile.png');
 
-        this.load.image('FlamethrowerTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('FlamethrowerTower_gun','/game_images/towers/FlamethrowerTower_gun.png');
         this.load.image('FlamethrowerTower_projectile','/game_images/projectiles/FlamethrowerTower_projectile.png');
 
-        this.load.image('BallistaTower_base','/game_images/towers/CannonTower_base.png');
         this.load.image('BallistaTower_gun','/game_images/towers/BallistaTower_gun.png');
         this.load.image('BallistaTower_projectile','/game_images/projectiles/BallistaTower_projectile.png');
 
-        this.load.image('HealingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('HealingTower_gun','/game_images/towers/HealingTower_gun.png');
         this.load.image('HealingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('BuffingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('BuffingTower_gun','/game_images/towers/BuffingTower_gun.png');
         this.load.image('BuffingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
 
-        this.load.image('SlowingTower_base','/game_images/towers/EffectTower_base.png');
         this.load.image('SlowingTower_gun','/game_images/towers/SlowingTower_gun.png');
         this.load.image('SlowingTower_projectile','/game_images/projectiles/CannonTower_projectile.png');
+
+        this.load.image('EffectTower_base_1','/game_images/towers/EffectTower_base_1.png');
+        this.load.image('EffectTower_base_2','/game_images/towers/EffectTower_base_2.png');
+        this.load.image('EffectTower_base_3','/game_images/towers/EffectTower_base_3.png');
+        this.load.image('AttackTower_base_1','/game_images/towers/AttackTower_base_1.png');
+        this.load.image('AttackTower_base_2','/game_images/towers/AttackTower_base_2.png');
+        this.load.image('AttackTower_base_3','/game_images/towers/AttackTower_base_3.png');
 
         // enemie projectiles
         this.load.image('goosniper_projectile','/game_images/projectiles/goosniper_projectile.png');
@@ -350,6 +349,12 @@ export default class Game extends Phaser.Scene{
                     break;
                 case 'Create_Tower':
                     this.players[input.PlayerID].new_tower_input(input);
+                    break;
+                case 'Upgrade_Tower':
+                    this.players[input.PlayerID].upgrade_tower_input(input);
+                    break;
+                case 'Sell_Tower':
+                    this.players[input.PlayerID].sell_tower_input(input);
                     break;
                 case 'Equip_Part':
                     this.players[input.PlayerID].equip_part(input.item_name, input.item_stats);

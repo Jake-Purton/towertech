@@ -13,7 +13,7 @@ import {
     SwordOfVoid
 } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
+import {get_item_type, defined, RGBtoHEX, clamp} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
 import HealthBar from "./health_bar.js";
@@ -126,10 +126,14 @@ export default class Player extends Phaser.GameObjects.Container{
         this.joystick_direction = new Vec(0,0);
 
         this.has_nearby_tower = false;
+        this.nearby_tower_id = null;
+        this.tower_nearby_radius = 35;
 
         // effects info
         this.effects = new Effects(scene);
         this.last_damage_source = null;
+
+        this.refresh_health_bar();
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
@@ -138,6 +142,9 @@ export default class Player extends Phaser.GameObjects.Container{
             if (this.passive_healing_timer < 0) {
                 this.add_health(this.passive_healing_rate*delta_time/this.scene.target_fps);
             }
+
+            // check nearby towers
+            this.check_nearby_tower(this.scene.towers);
 
             // handle effects
             this.add_health(this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps);
@@ -356,6 +363,78 @@ export default class Player extends Phaser.GameObjects.Container{
             }
         }
     }
+    sell_tower_input(data) {
+        for (let player of Object.values(this.scene.players)) {
+            if (player.nearby_tower_id === data.tower_id) {
+                player.remove_nearby_tower(this.scene.towers);
+            }
+        }
+        this.scene.towers[data.tower_id].destroy()
+        delete this.scene.towers[data.tower_id];
+        this.set_coins(this.coins + data.sell_value);
+    }
+    upgrade_tower_input(data) {
+        if (data.tower_stats.cost <= this.coins) {
+            this.set_coins(this.coins - data.tower_stats.cost);
+            this.scene.towers[data.tower_id].upgrade(data.tower_stats);
+            for (let player of Object.values(this.scene.players)) {
+                if (player.nearby_tower_id === data.tower_id) {
+                    player.set_new_nearby_tower(data.tower_id, this.scene.towers);
+                }
+            }
+        } else {
+            this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this upgrade!"})
+        }
+    }
+    check_nearby_tower(towers) {
+        let new_nearby_tower_id = null;
+        let min_distance = this.tower_nearby_radius;
+        for (let tower of Object.values(towers)) {
+            let distance = new Vec(tower.x-this.x, tower.y-this.y);
+            distance = distance.length();
+            if (distance < min_distance) {
+                new_nearby_tower_id = tower.tower_id;
+                min_distance = distance;
+            }
+        }
+        if (new_nearby_tower_id === null) {
+            if (this.has_nearby_tower) {
+                this.remove_nearby_tower(towers)
+            }
+        } else {
+            if (this.has_nearby_tower) {
+                if (this.nearby_tower_id !== new_nearby_tower_id) {
+                    this.set_new_nearby_tower(new_nearby_tower_id, towers);
+                }
+            } else {
+                this.set_new_nearby_tower(new_nearby_tower_id, towers);
+            }
+        }
+    }
+    set_new_nearby_tower(new_nearby_tower_id, towers) {
+        if (this.nearby_tower_id !== null) {
+            towers[this.nearby_tower_id].remove_nearby_player(this);
+        }
+        this.has_nearby_tower = true;
+        this.nearby_tower_id = new_nearby_tower_id;
+        if (this.nearby_tower_id !== null) {
+            towers[this.nearby_tower_id].add_nearby_player(this);
+            this.scene.output_data(this.player_id,
+                {type:'Tower_In_Range', tower_id:this.nearby_tower_id,
+                    tower_type: towers[this.nearby_tower_id].tower_type,
+                    tower_stats: towers[this.nearby_tower_id].tower_stats});
+        }
+    }
+    remove_nearby_tower(towers) {
+        if (this.nearby_tower_id !== null) {
+            towers[this.nearby_tower_id].remove_nearby_player(this);
+            this.scene.output_data(this.player_id, {type:'Tower_Out_Of_Range', tower_id:this.nearby_tower_id});
+        }
+        this.has_nearby_tower = false;
+        this.nearby_tower_id = null;
+    }
+
+
     pickup_item(dropped_item) {
         this.add_to_inventory(dropped_item);
         this.items_picked_up += 1;
@@ -383,12 +462,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.scene.level.player_info_display.update_list_text()
     }
     set_health(health, max_health) {
-        if (health !== this.health || max_health !== this.max_health || true) {
-            if (health > max_health) {
-                health = max_health;
-            } else if (health < 0) {
-                health = 0;
-            }
+        health = clamp(health, 0, max_health);
+        if (health !== this.health || max_health !== this.max_health) {
             if (max_health === this.max_health) {
                 if (health < this.health) {
                     this.damage_taken += this.health-health;
