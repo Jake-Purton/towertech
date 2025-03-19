@@ -94,7 +94,12 @@ class Projectile extends Entity {
         if (this.source !== null && defined(this.source.damage_dealt)) {
             this.source.damage_dealt += 1;
         }
-        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.knockback, this.source);
+        let angle = this.velocity.angle()
+        if (this.velocity.length() < 0.1) {
+            let diff = new Vec(entity.x-this.x, entity.y-this.y);
+            angle = diff.angle()
+        }
+        entity.take_damage(this.damage, this.velocity.length(), angle, this.knockback, this.source);
         this.apply_inflict_effect(entity);
     }
     make_hit_particles(entity) {

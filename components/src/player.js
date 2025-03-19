@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
-
 import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame, TitanCore} from './components/body.js';
 import {RobotLeg, ArmoredWalker, SpiderLeg, PhantomStep} from './components/leg.js';
 import {SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
@@ -13,10 +12,11 @@ import {
     SwordOfVoid
 } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type, defined, RGBtoHEX, clamp} from "./utiles.js";
+import {get_item_type, defined, RGBtoHEX, clamp, random_range} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
 import HealthBar from "./health_bar.js";
+import {PlayerDamagedParticle} from "./particle.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -86,7 +86,7 @@ export default class Player extends Phaser.GameObjects.Container{
       
         // constants
         this.speed = 0.4;
-        this.knockback_resistance = 0.5;
+        this.knockback_resistance = 2;
         this.drag = 0.9;
         this.player_id = player_id;
         this.pickup_range = 20;
@@ -277,12 +277,26 @@ export default class Player extends Phaser.GameObjects.Container{
         if (damage !== 0) {
             this.passive_healing_timer = this.passive_healing_hit_timer;
             this.add_health(-damage)
+            this.make_hit_particles(Math.ceil(2*(damage**0.5-1)), speed, angle);
             this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
             if (source !== null) {
                 this.last_damage_source = source;
             }
         }
-        
+    }
+    make_hit_particles = (num_particles, speed=4, angle=null) => {
+        speed = clamp(speed, 4, 100);
+        while (num_particles > 0) {
+            if (Math.random() < num_particles) {
+                let particle_angle = angle;
+                if (particle_angle == null) {
+                    particle_angle = random_range(-Math.PI,Math.PI);
+                }
+                this.scene.particles.push(new PlayerDamagedParticle(this.scene, this.x, this.y,
+                    speed, particle_angle * 180 / Math.PI));
+            }
+            num_particles -= 1;
+        }
     }
     get_kill_credit(enemy) {
         if (!this.dead) {
