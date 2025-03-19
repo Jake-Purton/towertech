@@ -26,7 +26,7 @@ export default class Game extends Phaser.Scene{
         this.score = 0;
         this.health = 10;
         this.target_num_players = target_num_players;
-        this.start_waves_delay = 1//15;
+        this.start_waves_delay = 8;
 
     }
     preload() {

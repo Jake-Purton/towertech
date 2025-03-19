@@ -50,14 +50,13 @@ class Tower extends ProjectileShooter {
         this.enabled = true;
         this.health = health;
         this.max_health = health;
+        this.nearby_players = [];
 
         // effects info
         this.effects = new Effects(scene);
 
-        // nearby player info
-        this.nearby_radius = 35;
-        this.nearby_player = null;
 
+        // id
         this.tower_id = Tower.tower_id_tracker;
         Tower.tower_id_tracker += 1;
     }
@@ -73,9 +72,26 @@ class Tower extends ProjectileShooter {
             this.rotate_gun(delta_time);
             this.attack_enemies(enemies, this.effects);
 
-            this.check_nearby_player(players);
+            // this.check_nearby_player(players);
 
             this.effects.game_tick(delta_time, this);
+        }
+    }
+    add_nearby_player(player) {
+        if (!this.nearby_players.includes(player)) {
+            this.nearby_players.push(player)
+            if (this.nearby_players.length > 0) {
+                this.graphics.setVisible(true)
+            }
+        }
+    }
+    remove_nearby_player(player) {
+        if (this.nearby_players.includes(player)) {
+            this.nearby_players.splice(this.nearby_players.indexOf(player), 1)
+            // this.nearby_players.remove(player)
+            if (this.nearby_players.length === 0) {
+                this.graphics.setVisible(false)
+            }
         }
     }
     upgrade(tower_stats) {
@@ -94,38 +110,6 @@ class Tower extends ProjectileShooter {
     get_projectile_texture_name() {
         return this.tower_type.concat('_projectile');
     }
-    check_nearby_player(players) {
-        let new_nearby_player = null;
-        for (let player of Object.values(players)) {
-            if (this.get_relative_pos(player).length()<this.nearby_radius) {
-                new_nearby_player = player;
-            }
-        }
-        if (new_nearby_player === null) {
-            this.remove_nearby_player();
-        } else if (this.nearby_player === null) {
-            this.set_new_nearby_player(new_nearby_player)
-        } else if (new_nearby_player !== this.nearby_player){
-            this.set_new_nearby_player(new_nearby_player)
-        }
-    }
-    set_new_nearby_player(new_nearby_player) {
-        this.remove_nearby_player();
-        this.nearby_player = new_nearby_player;
-        this.nearby_player.has_nearby_tower = true;
-        this.scene.output_data(new_nearby_player.player_id,
-            {type:'Tower_In_Range', tower_id:this.tower_id,
-             tower_type:this.tower_type, tower_stats:this.tower_stats});
-        this.graphics.setVisible(true)
-    }
-    remove_nearby_player() {
-        if (this.nearby_player !== null) {
-            this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range', tower_id:this.tower_id});
-            this.nearby_player.has_nearby_tower = false;
-        }
-        this.nearby_player = null;
-        this.graphics.setVisible(false)
-    }
     get_dead() {
         return (this.health<=0)
     }
@@ -133,7 +117,9 @@ class Tower extends ProjectileShooter {
         this.health -= damage;
     }
     get_kill_credit(enemy) {
-        this.scene.players[this.playerid].get_kill_credit(enemy);
+        if (defined(this.scene)) {
+            this.scene.players[this.playerid].get_kill_credit(enemy);
+        }
     }
     set_pos(x, y) {
         this.setPosition(x, y);

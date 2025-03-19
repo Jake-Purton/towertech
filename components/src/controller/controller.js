@@ -26,8 +26,8 @@ export default class Controller extends Phaser.Scene{
         this.ui_active = false;
 
         this.player_coins = 0;
-        this.player_health = 5;
-        this.player_max_health = 5
+        this.player_health = 30;
+        this.player_max_health = 30
         this.player_inventory = {};
         this.nearby_tower_id = null;
 
@@ -150,7 +150,7 @@ export default class Controller extends Phaser.Scene{
                 ]},
 
             "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
-                    {damage:3, fire_rate:30, fire_distance:100},
+                    {damage:3, fire_rate:3, fire_distance:100},
                     {damage:5, fire_rate:4, fire_distance:130, upgrade_cost:2, upgrade_number:3},
                     {damage:8, fire_rate:5, fire_distance:160, upgrade_cost:5, upgrade_number:3},
                 ]},
@@ -474,6 +474,7 @@ export default class Controller extends Phaser.Scene{
         // Player Health
         this.health_ui_text = new Text(this, this.screen_width-115, 40, 'Health: '+Math.round(this.player_health)+'/'+this.player_max_health, {center:true}).setDepth(6);
         this.health_ui_bar = this.add.sprite(this.screen_width-218, 62, 'player_health_bar').setDepth(7).setDisplayOrigin(0,0);
+        this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height)
         this.ui_objects.push(this.health_ui_text, this.health_ui_bar);
 
         // top tab buttons
