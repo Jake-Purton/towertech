@@ -68,6 +68,7 @@ const GameController = () => {
         return () => {
           socket.off("output_from_game_to_client");
           socket.off('end_game_client')
+          game.destroy_ui(true);
           game.destroy(true);
         };
 
@@ -76,11 +77,13 @@ const GameController = () => {
           console.log('here');
           router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
           // socket.leave(data.room)
+          game.destroy_ui(true);
           game.destroy(true);
         }
 
         function input_data(data) {
           if (data['PlayerID'] === socket.id) {
+            console.log('data input:',data);
             let scene = game.scene.getScene('GameController');
             if (scene !== null) {
               scene.take_input(data);

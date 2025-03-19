@@ -260,6 +260,7 @@ export default class Controller extends Phaser.Scene{
                 this.create_ui();
             });
             this.create_ui();
+            this.ui_active = true;
             this.input.keyboard.on('keydown', this.key_pressed, this);
             this.input.keyboard.on('keyup', this.key_pressed, this);
         }
@@ -287,7 +288,7 @@ export default class Controller extends Phaser.Scene{
                 break;
             case 'Set_Inventory':
                 this.player_inventory = input.inventory;
-                if (this.current_selected_sub_menu === "Player" && defined(this.ui_objects)) {
+                if (this.current_selected_sub_menu === "Player" && this.ui_active) {
                     this.create_ui();
                 }
                 break;
@@ -296,7 +297,6 @@ export default class Controller extends Phaser.Scene{
                 this.player_max_health = input.max_health;
                 if (defined(this.health_ui_text)) {
                     this.health_ui_text.setText('Health: '+Math.round(this.player_health)+'/'+this.player_max_health);
-                    console.log(input, this.health_ui_bar);
                     this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
                 }
                 break;
@@ -306,6 +306,10 @@ export default class Controller extends Phaser.Scene{
                 } else {
                     console.log('no part data found when equipping item: ', input)
                 }
+                break
+            case 'Tower_In_Range':
+                break
+            case 'Tower_Out_Of_Range':
                 break
             case 'Prompt_User':
                 this.create_prompt_text(input.prompt);
@@ -376,21 +380,11 @@ export default class Controller extends Phaser.Scene{
             try {
                 this.scale.startFullscreen();
             } catch {}
-
-            // let forceFullScreen = () => {
-            //     let gameContainer = document.getElementById('game_controller');
-            //     gameContainer.style.position = 'fixed';
-            //     gameContainer.style.width = '100vw';
-            //     gameContainer.style.height = '100vh';
-            //     gameContainer.style.top = '0';
-            //     gameContainer.style.left = '0';
-            // }
-            // forceFullScreen()
         }
     }
 
     destroy_ui = (destroy_all=true) => {
-        this.ui_active = false;
+        this.ui_active = !destroy_all;
         if (destroy_all) {
             this.destroy_ui_list(this.ui_objects);
         }
@@ -496,24 +490,22 @@ export default class Controller extends Phaser.Scene{
     }
 
     move_sub_menu = (menu, container_rect) => {
-        if (menu !== this.prev_sub_menu) {
-            this.prev_sub_menu = menu;
-            this.current_selected_sub_menu = menu;
-            this.destroy_ui(false);
-            switch (menu) {
-                case "Player":
-                    this.create_player_parts_menu(container_rect);
-                    break;
-                case "Tower":
-                    this.create_tower_menu(container_rect);
-                    break;
-                case "Upgrade":
-                    this.create_tower_upgrade_menu(container_rect);
-                    break;
-                default:
-                    this.create_player_parts_menu(container_rect);
-                    break;
-            }
+        this.prev_sub_menu = menu;
+        this.current_selected_sub_menu = menu;
+        this.destroy_ui(false);
+        switch (menu) {
+            case "Player":
+                this.create_player_parts_menu(container_rect);
+                break;
+            case "Tower":
+                this.create_tower_menu(container_rect);
+                break;
+            case "Upgrade":
+                this.create_tower_upgrade_menu(container_rect);
+                break;
+            default:
+                this.create_player_parts_menu(container_rect);
+                break;
         }
     }
     create_main_menu(container_rect) {

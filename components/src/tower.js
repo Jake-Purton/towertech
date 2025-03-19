@@ -8,7 +8,7 @@ import ProjectileShooter from './projectile_shooter.js';
 class Tower extends ProjectileShooter {
     // range is in pixels
     // fire_rate is shots per seconds
-    tower_id_tracker = 0;
+    static tower_id_tracker = 0;
     constructor(scene, x, y, tower_type, player_id, projectile_class, tower_stats={},
                 {base_scale=1, gun_scale=1, gun_center=[0.2, 0.5], health=100} = {}, properties = {}) {
         for (let stat in tower_stats) {
@@ -90,21 +90,26 @@ class Tower extends ProjectileShooter {
                 new_nearby_player = player;
             }
         }
-        if ((this.nearby_player == null || this.nearby_player === new_nearby_player) && new_nearby_player != null && !new_nearby_player.has_nearby_tower) {
-            this.set_new_nearby_player(new_nearby_player);
-        } else if (this.nearby_player != null && new_nearby_player == null) {
+        if (new_nearby_player === null) {
             this.remove_nearby_player();
+        } else if (this.nearby_player === null) {
+            this.set_new_nearby_player(new_nearby_player)
+        } else if (new_nearby_player !== this.nearby_player){
+            this.set_new_nearby_player(new_nearby_player)
         }
     }
     set_new_nearby_player(new_nearby_player) {
+        this.remove_nearby_player();
         this.nearby_player = new_nearby_player;
         this.nearby_player.has_nearby_tower = true;
         this.scene.output_data(new_nearby_player.player_id, {type:'Tower_In_Range'});
         this.graphics.setVisible(true)
     }
     remove_nearby_player() {
-        this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range'});
-        this.nearby_player.has_nearby_tower = false;
+        if (this.nearby_player !== null) {
+            this.scene.output_data(this.nearby_player.player_id, {type:'Tower_Out_Of_Range'});
+            this.nearby_player.has_nearby_tower = false;
+        }
         this.nearby_player = null;
         this.graphics.setVisible(false)
     }

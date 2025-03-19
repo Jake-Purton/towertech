@@ -13,7 +13,7 @@ import {
     SwordOfVoid
 } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type, defined, RGBtoHEX} from "./utiles.js";
+import {get_item_type, defined, RGBtoHEX, clamp} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
 import HealthBar from "./health_bar.js";
@@ -130,6 +130,8 @@ export default class Player extends Phaser.GameObjects.Container{
         // effects info
         this.effects = new Effects(scene);
         this.last_damage_source = null;
+
+        this.refresh_health_bar();
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
@@ -383,12 +385,8 @@ export default class Player extends Phaser.GameObjects.Container{
         this.scene.level.player_info_display.update_list_text()
     }
     set_health(health, max_health) {
-        if (health !== this.health || max_health !== this.max_health || true) {
-            if (health > max_health) {
-                health = max_health;
-            } else if (health < 0) {
-                health = 0;
-            }
+        health = clamp(health, 0, max_health);
+        if (health !== this.health || max_health !== this.max_health) {
             if (max_health === this.max_health) {
                 if (health < this.health) {
                     this.damage_taken += this.health-health;
