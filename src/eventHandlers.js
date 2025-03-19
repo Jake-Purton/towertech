@@ -25,7 +25,7 @@ function handleJoinRoom(socket, roomManager) {
       var users = roomManager.getUsersInRoom(roomId);
       socket.to(roomId).emit("updateUsers", users);
 
-      socket.emit("roomJoinSuccess", "Successfully joined room " + roomId);
+      socket.emit("roomJoinSuccess", username);
     } else {
       socket.emit("RoomErr", "Room number " + roomId + " does not exist");
     }

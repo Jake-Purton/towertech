@@ -125,7 +125,7 @@ app.prepare().then(() => {
           const users = roomManager.getUsersInRoom(roomCode);
           socket.to(roomCode).emit("updateUsers", users);
     
-          socket.emit("roomJoinSuccess", "Successfully joined room " + roomCode);
+          socket.emit("roomJoinSuccess", usersUserName);
         } else {
           socket.emit("RoomErr", "Room number " + roomCode + " does not exist");
         }
@@ -133,6 +133,29 @@ app.prepare().then(() => {
         console.error("Invalid token:", error);
         socket.emit("RoomErr", "Invalid token");
       }
+
+    });
+
+    socket.on("removeUser", async (data) => {
+      console.log(data)
+      roomManager.removeUserFromRoom(data.userid, data.roomName)
+
+      const users = roomManager.getUsersInRoom(data.roomName);
+      socket.to(data.roomName).emit("updateUsers", users);
+      
+      try {
+        const user_sockets = await io.sockets.in(data.userid).fetchSockets();
+        const user_socket = user_sockets.find(socket => socket.id.toString() === data.userid);
+
+        user_socket.leave(data.roomName);
+
+        user_socket.emit("You have been ejected")
+
+      } catch (e) {
+        console.log(e)
+      }
+
+      socket
 
     });
 
