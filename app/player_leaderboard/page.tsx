@@ -8,15 +8,26 @@ import Link from "next/link";
 
 interface Game {
   gameid: number;
-  score: number;
-  kills: number;
+  gamescore: number;
   playerscore: number;
+  kills: number;
+  towers_placed: number;
+  coins_spent: number;
+  time: string;
+  date: string;
+}
+
+interface PlayerData {
+  username: string;
+  games: Game[];
 }
 
 const PlayerLeaderboardContent: React.FC = () => {
-  const [games, setGames] = useState<Game[]>([]);
+  const [player, setPlayer] = useState<PlayerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchUser, setSearchUser] = useState("");
+  const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const userid = searchParams ? searchParams.get("userid") : null;
@@ -25,10 +36,17 @@ const PlayerLeaderboardContent: React.FC = () => {
     const fetchPlayerLeaderboard = async () => {
       try {
         const res = await fetch(`/api/playerleaderboard?userid=${userid}`);
+        if (!res.ok) {
+          throw new Error(`Error: ${res.statusText}`);
+        }
         const data = await res.json();
-        setGames(data);
+        // if (!data || data.games.length === 0) {
+        //   throw new Error("No games found.");
+        // }
+        setPlayer(data);
       } catch (error) {
-        console.error("Failed to fetch player leaderboard:", error);
+        // console.error("Failed to fetch player leaderboard:", error);
+        setPlayer(null);
       } finally {
         setLoading(false);
       }
@@ -40,7 +58,7 @@ const PlayerLeaderboardContent: React.FC = () => {
   }, [userid]);
 
   const handleSearch = () => {
-    if (searchUser) {
+    if (searchUser.trim()) {
       router.push(`/player_leaderboard?userid=${searchUser}`);
     }
   };
@@ -49,6 +67,10 @@ const PlayerLeaderboardContent: React.FC = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const toggleExpand = (gameid: number) => {
+    setExpandedGameId(expandedGameId === gameid ? null : gameid);
   };
 
   return (
@@ -65,7 +87,7 @@ const PlayerLeaderboardContent: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        🏅 Player Leaderboard 🏅
+        {loading ? "🏅 Player Leaderboard 🏅" : player ? `🏅 ${player.username} 🏅` : "🏅 Player Not Found 🏅"}
       </motion.h1>
 
       <div className="w-1/3 mb-4 flex items-center">
@@ -87,34 +109,67 @@ const PlayerLeaderboardContent: React.FC = () => {
 
       {loading ? (
         <p className="text-lg mt-4 animate-pulse">Loading...</p>
-      ) : games.length === 0 ? (
-        <p className="text-lg mt-4">No games found</p>
-      ) : (
+      ) : player ? (
         <div className="bg-gray-800/50 backdrop-blur-lg shadow-xl rounded-lg p-6 w-[90%] md:w-1/2 mt-4">
           <table className="w-full text-center border-collapse">
             <thead>
               <tr className="bg-orange-500 text-white">
                 <th className="px-6 py-3 rounded-tl-lg">Game ID</th>
-                <th className="px-6 py-3">Score</th>
-                <th className="px-6 py-3">Kills</th>
-                <th className="px-6 py-3 rounded-tr-lg">Player Score</th>
+                <th className="px-6 py-3">Game Score</th>
+                <th className="px-6 py-3">Player Score</th>
+                <th className="px-6 py-3 rounded-tr-lg">Details</th>
               </tr>
             </thead>
             <tbody>
-              {games.map((game, index) => (
-                <tr
-                  key={`${game.gameid}-${index}`}
-                  className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none"
-                >
-                  <td className="px-6 py-4 text-lg font-medium">{game.gameid}</td>
-                  <td className="px-6 py-4 text-lg">{game.score}</td>
-                  <td className="px-6 py-4 text-lg">{game.kills}</td>
-                  <td className="px-6 py-4 text-lg">{game.playerscore}</td>
-                </tr>
+              {player.games.map((game, index) => (
+                <React.Fragment key={`${game.gameid}-${index}`}>
+                  <tr
+                    className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none cursor-pointer"
+                    onClick={() => toggleExpand(game.gameid)}
+                  >
+                    <td className="px-6 py-4 text-lg font-medium">{game.gameid}</td>
+                    <td className="px-6 py-4 text-lg">{game.gamescore}</td>
+                    <td className="px-6 py-4 text-lg">{game.playerscore}</td>
+                    <td className="px-6 py-4 text-lg font-bold">
+                      {expandedGameId === game.gameid ? "−" : "+"}
+                    </td>
+                  </tr>
+                  {expandedGameId === game.gameid && (
+                    <tr>
+                      <td colSpan={4} className="bg-gray-800">
+                        <div className="p-4">
+                          <h3 className="text-xl font-bold mb-2">Game Details</h3>
+                          <table className="w-full text-center border-collapse">
+                            <thead>
+                              <tr className="bg-orange-500 text-white">
+                                <th className="px-6 py-3">Kills</th>
+                                <th className="px-6 py-3">Towers Placed</th>
+                                <th className="px-6 py-3">Coins Spent</th>
+                                <th className="px-6 py-3">Time</th>
+                                <th className="px-6 py-3">Date</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr className="bg-gray-900 hover:bg-gray-700 transition-all duration-300 border-b border-gray-700 last:border-none">
+                                <td className="px-6 py-4 text-lg">{game.kills}</td>
+                                <td className="px-6 py-4 text-lg">{game.towers_placed || 0}</td>
+                                <td className="px-6 py-4 text-lg">{game.coins_spent || 0}</td>
+                                <td className="px-6 py-4 text-lg">{game.time}</td>
+                                <td className="px-6 py-4 text-lg">{game.date}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
         </div>
+      ) : (
+        <p className="text-lg mt-4">No games found</p>
       )}
     </div>
   );
