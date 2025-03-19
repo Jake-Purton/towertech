@@ -268,7 +268,8 @@ export default class Player extends Phaser.GameObjects.Container{
         if (this.dead) {
             this.dead = false;
             this.visible = true;
-            this.health = this.max_health;
+            // this.health = this.max_health;
+            this.set_health(this.max_health, this.max_health);
         }
 
     }

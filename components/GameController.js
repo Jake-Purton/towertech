@@ -75,7 +75,7 @@ const GameController = () => {
 
           router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
           // socket.leave(data.room)
-          game.destroy_ui(true);
+          // game.destroy_ui(true);
           game.destroy(true, true);
         }
 

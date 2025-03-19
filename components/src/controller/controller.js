@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {RGBtoHEX } from '../utiles.js';
+import {get_tower_subclass, RGBtoHEX} from '../utiles.js';
 import Text from '../ui_widgets/text.js';
 import Button from '../ui_widgets/button.js';
 import Joystick from '../ui_widgets/joystick.js';
@@ -41,55 +41,55 @@ export default class Controller extends Phaser.Scene{
         this.tower_data = {
             "CannonTower":{title:"Cannon", description:"It's a cannon.", level_stats:[
                     {level:1, cost:5, damage:4, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
-                    {level:2, cost:10, damage:7, fire_rate:2.2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
-                    {level:3, cost:15, damage:11, fire_rate:2.5, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                    {level:2, cost:10, damage:7, fire_rate:2.2, range:200, fire_distance:200, projectile_auto_aim_strength:10},
+                    {level:3, cost:15, damage:11, fire_rate:2.5, range:220, fire_distance:220, projectile_auto_aim_strength:10},
                 ]},
             "SniperTower":{title:"Sniper", description:"Huge damage per shot in a large range.", level_stats:[
-                    {level:1, cost:10, damage:20, fire_rate:0.5, range:380},
-                    {level:2, cost:15, damage:30, fire_rate:0.8, range:380},
-                    {level:3, cost:25, damage:40, fire_rate:1.4, range:380},
+                    {level:1, cost:10, damage:20, fire_rate:0.5, range:320, fire_distance:320, projectile_auto_aim_strength:10},
+                    {level:2, cost:15, damage:30, fire_rate:0.8, range:380, fire_distance:380, projectile_auto_aim_strength:10},
+                    {level:3, cost:25, damage:40, fire_rate:1.4, range:440, fire_distance:440, projectile_auto_aim_strength:10},
                 ]},
             "BallistaTower":{title:"Ballista", description:"Taken from the walls of Jerusalem.", level_stats:[
-                    {level:1, cost:20, damage:6, fire_rate:1.5, range:180},
-                    {level:2, cost:30, damage:12, fire_rate:2, range:180},
-                    {level:3, cost:40, damage:20, fire_rate:2.5, range:280},
+                    {level:1, cost:20, damage:6, fire_rate:1.5, range:220, fire_distance:220, pierce_count:3},
+                    {level:2, cost:30, damage:12, fire_rate:2, range:250, fire_distance:250, pierce_count:5},
+                    {level:3, cost:40, damage:20, fire_rate:2.5, range:280, fire_distance:280, pierce_count:8},
                 ]},
             "LaserTower":{title:"Laser", description:"Take that, Caveman!", level_stats:[
-                    {level:1, cost:25, damage:3, fire_rate:10, range:180},
-                    {level:2, cost:40, damage:6, fire_rate:10, range:180},
-                    {level:3, cost:60, damage:10, fire_rate:10, range:180},
+                    {level:1, cost:25, damage:3, fire_rate:10, range:200, fire_distance:200},
+                    {level:2, cost:40, damage:6, fire_rate:10, range:240, fire_distance:240},
+                    {level:3, cost:60, damage:10, fire_rate:10, range:280, fire_distance:280},
                 ]},
             "FlamethrowerTower":{title:"Flamer", description:"How's the taste of roasted goobers?", level_stats:[
-                    {level:1, cost:40, damage:0.1, fire_rate:8, range:280},
-                    {level:2, cost:50, damage:0.22, fire_rate:10, range:280},
-                    {level:3, cost:60, damage:0.35, fire_rate:12, range:280},
+                    {level:1, cost:40, damage:3, fire_rate:8, range:160, fire_distance:160},
+                    {level:2, cost:50, damage:5, fire_rate:10, range:200, fire_distance:200},
+                    {level:3, cost:60, damage:8, fire_rate:12, range:240, fire_distance:240},
                 ]},
             "HealingTower":{title:"Healer", description:"Heal your body and soul.", level_stats:[
-                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
-                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
-                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
+                    {level:1, cost:10, effect_amplifier:6, range:120},
+                    {level:2, cost:20, effect_amplifier:12, range:160},
+                    {level:3, cost:30, effect_amplifier:20, range:200},
                 ]},
             "WeakeningTower":{title:"Weakener", description:"Steal the will of goobers.", level_stats:[
-                    {level:1, cost:10, damage:1, fire_rate:10, range:120},
-                    {level:2, cost:15, damage:1, fire_rate:10, range:160},
-                    {level:3, cost:20, damage:1, fire_rate:10, range:200},
+                    {level:1, cost:10, effect_amplifier:0.8, range:120},
+                    {level:2, cost:15, effect_amplifier:0.8, range:160},
+                    {level:3, cost:20, effect_amplifier:0.8, range:200},
                 ]},
-            "SlowingTower":{title:"Slower", description:"The very air thickens, as if reality itself slows down.", level_stats:[
-                    {level:1, cost:15, damage:1, fire_rate:10, range:120},
-                    {level:2, cost:20, damage:1, fire_rate:10, range:160},
-                    {level:3, cost:25, damage:1, fire_rate:10, range:200},
+            "SlowingTower":{title:"Slower", description:"The air thickens, as if reality itself slows down.", level_stats:[
+                    {level:1, cost:15, effect_amplifier:0.8,range:120},
+                    {level:2, cost:20, effect_amplifier:0.65, range:160},
+                    {level:3, cost:25, effect_amplifier:0.5, range:200},
                 ]},
             "BuffingTower":{title:"Buffing", description:"Embrace the power and fight without fear!", level_stats:[
-                    {level:1, cost:15, damage:1, fire_rate:10, range:120},
-                    {level:2, cost:20, damage:1, fire_rate:10, range:160},
-                    {level:3, cost:25, damage:1, fire_rate:10, range:200},
+                    {level:1, cost:20, effect_amplifier:1.2, range:120},
+                    {level:2, cost:40, effect_amplifier:1.4, range:160},
+                    {level:3, cost:80, effect_amplifier:1.6, range:180},
                 ]},
             }
         this.parts_data = {
             "robot_body":{title:"Robot Body", description:"A standard robotic frame that gets the job done without extras.", level_stats:[
                     {health:10, speed:5},
-                    {health:15, speed:7, upgrade_cost:3, upgrade_number:3},
-                    {health:20, speed:10, upgrade_cost:6, upgrade_number:3},
+                    {health:15, speed:7, upgrade_cost:3, upgrade_number:1},
+                    {health:20, speed:10, upgrade_cost:6, upgrade_number:2},
                 ]},
             "lightweight_frame":{title:"Lightweight Frame", description:"A lightweight frame built for speed at the cost of durability.", level_stats:[
                     {health:8, speed:12},
@@ -114,8 +114,8 @@ export default class Controller extends Phaser.Scene{
 
             "robot_leg":{title:"Robot Legs", description:"A basic set of robotic legs, simple and reliable.", level_stats:[
                     {health:7, speed:8},
-                    {health:12, speed:10, upgrade_cost:1, upgrade_number:3},
-                    {health:17, speed:12, upgrade_cost:3, upgrade_number:3},
+                    {health:12, speed:10, upgrade_cost:1, upgrade_number:1},
+                    {health:17, speed:12, upgrade_cost:3, upgrade_number:2},
                 ]},
             "armored_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
                     {health:14, speed:6},
@@ -151,8 +151,8 @@ export default class Controller extends Phaser.Scene{
 
             "pistol_weapon":{title:"Pistol Weapon", description:"A simple firearm for consistent, low-damage attacks. ", level_stats:[
                     {damage:3, fire_rate:3, fire_distance:100},
-                    {damage:5, fire_rate:4, fire_distance:130, upgrade_cost:2, upgrade_number:3},
-                    {damage:8, fire_rate:5, fire_distance:160, upgrade_cost:5, upgrade_number:3},
+                    {damage:5, fire_rate:4, fire_distance:130, upgrade_cost:2, upgrade_number:1},
+                    {damage:8, fire_rate:5, fire_distance:160, upgrade_cost:5, upgrade_number:2},
                 ]},
             "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay.", level_stats:[
                     {damage:6, fire_rate:5, fire_distance:150},
@@ -558,7 +558,7 @@ export default class Controller extends Phaser.Scene{
         let tower_info = this.tower_data[tower_type];
         let level_info = tower_info.level_stats[0];
         let description_string = tower_info.description
-        let stats_string = this.get_tower_stats_string(level_info);
+        let stats_string = this.get_tower_stats_string(level_info, null, tower_type);
         this.tower_buy_ui_objects = [
             new Rectangle(this, container_rect.x+10, container_rect.y+70, container_rect.width-20, container_rect.height-80, RGBtoHEX([96,103,109]),{rounded_corners:5}),
             new Rectangle(this, container_rect.x+15, container_rect.y+75, container_rect.width-30, container_rect.height-90, RGBtoHEX([78,87,97]),{rounded_corners:5}),
@@ -566,7 +566,7 @@ export default class Controller extends Phaser.Scene{
             new Text(this, container_rect.x+22, container_rect.y+77,
                 tower_info.title, {center:false, text_style:{fontFamily:"Tahoma",color:'#111111',fontSize:28,fontStyle:"bold"}}),
 
-            new Text(this, container_rect.x+container_rect.width*0.4, container_rect.y+110, description_string, {center:false, text_style:
+            new Text(this, container_rect.x+container_rect.width*0.4, container_rect.y+82, description_string, {center:false, text_style:
                     {fontFamily:"Tahoma",color:'#111111',fontSize:22,wordWrap:{width:container_rect.width*0.6-10}}}),
             new Text(this, container_rect.x+20, container_rect.y+110, stats_string, {center:false, text_style:
                     {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width/2-40}}}),
@@ -600,7 +600,11 @@ export default class Controller extends Phaser.Scene{
                 upgrade_enabled = true;
             }
             let sell_value = this.get_sell_value(tower_info.level_stats, this.nearby_tower_stats.level)
-            let stats_string = this.get_tower_stats_string(tower_stats, next_level_info);
+            let stats_string = this.get_tower_stats_string(tower_stats, next_level_info, this.nearby_tower_type);
+            let display_weapon_angle = 135;
+            if (get_tower_subclass(this.nearby_tower_type) == "Effect") {
+                display_weapon_angle = 0;
+            }
 
             this.upgrade_menu_ui_objects = this.upgrade_menu_ui_objects.concat([
                 new Rectangle(this, container_rect.x+10, container_rect.y+55, container_rect.width-20, container_rect.height-65, RGBtoHEX([96,103,109]),{rounded_corners:5}),
@@ -612,7 +616,7 @@ export default class Controller extends Phaser.Scene{
 
                 create_tower(this.nearby_tower_type, this,
                     container_rect.x+container_rect.width-59,container_rect.y+105,
-                    "UI_PLAYER_DISPLAY",this.nearby_tower_stats).setScale(2).set_weapon_direction(135),
+                    "UI_PLAYER_DISPLAY",this.nearby_tower_stats).setScale(2).set_weapon_direction(display_weapon_angle),
 
                 new Button(this, container_rect.x+20, container_rect.y+container_rect.height-60,
                     {text:"Sell-"+sell_value, width:140, height:40, texture:'equip_button', center:false,
@@ -626,23 +630,40 @@ export default class Controller extends Phaser.Scene{
                   }).set_enabled(upgrade_enabled),
             ])
             let description_object = new Text(this, container_rect.x+20, container_rect.y+96, tower_info.description, {center:false, text_style:
-                    {fontFamily:"Tahoma",color:'#111111',fontSize:22,wordWrap:{width:container_rect.width-110}}})
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:22,wordWrap:{width:container_rect.width-130}}})
             this.upgrade_menu_ui_objects.push(description_object)
             this.upgrade_menu_ui_objects.push(
                 new Text(this, container_rect.x+20, container_rect.y+96+description_object.displayHeight,
                     stats_string, {center:false, text_style:
-                    {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width-110}}}),
+                    {fontFamily:"Tahoma",color:'#111111',fontSize:17,wordWrap:{width:container_rect.width-40}}}),
             )
         }
     }
-    get_tower_stats_string(tower_stats, next_level=null) {
-        let listed_stats = {'damage':'Damage', 'fire_rate':'Fire Rate', 'range':'Range'};
+    get_tower_stats_string(tower_stats, next_level=null, tower_type) {
+        let listed_stats = {'damage':'DPS', 'pierce_count':'Piercing', 'effect_amplifier':"Healing/sec", 'range':'Range'};
         let stats_string = ""
         for (let stat of Object.keys(listed_stats)) {
             if (defined(tower_stats[stat])) {
-                stats_string += listed_stats[stat]+': '+tower_stats[stat];
-                if (next_level !== null) {
-                    stats_string += ' -> '+next_level[stat]
+                if (tower_type === "SlowingTower" && stat === "effect_amplifier") {
+                    stats_string += 'Speed: -'+Math.round((1-tower_stats[stat])*100)+'%';
+                    if (next_level !== null) {
+                        stats_string += ' -> -'+Math.round((1-next_level[stat])*100)+'%'
+                    }
+                } else if (tower_type === "BuffingTower" && stat === "effect_amplifier") {
+                    stats_string += 'Attack Speed: +'+Math.round((tower_stats[stat]-1)*100)+'%';
+                    if (next_level !== null) {
+                        stats_string += ' -> +'+Math.round((next_level[stat]-1)*100)+'%'
+                    }
+                } else if (stat === "damage") {
+                    stats_string += listed_stats[stat] + ': ' + Math.round(tower_stats[stat]*tower_stats["fire_rate"]);
+                    if (next_level !== null) {
+                        stats_string += ' -> ' + Math.round(next_level[stat]*next_level["fire_rate"])
+                    }
+                } else{
+                    stats_string += listed_stats[stat] + ': ' + tower_stats[stat];
+                    if (next_level !== null) {
+                        stats_string += ' -> ' + next_level[stat]
+                    }
                 }
                 stats_string += '\n'
             }
@@ -739,11 +760,15 @@ export default class Controller extends Phaser.Scene{
         let item_stats = this.parts_data[item_name].level_stats[this.player_inventory[item_name].level-1];
 
         let description_string = part_info.description;
-        let listed_stats = {'health':'Health', 'speed':'Speed', 'damage':'Damage', 'fire_rate':'Fire Rate', 'fire_distance':'Range'};
+        let listed_stats = {'health':'Health', 'speed':'Speed', 'damage':'Damage', 'fire_distance':'Range'};
         let stats_string = ""
         for (let stat of Object.keys(listed_stats)) {
             if (defined(item_stats[stat])) {
-                stats_string += listed_stats[stat]+': '+item_stats[stat]+'\n';
+                if (stat === "damage") {
+                    stats_string += 'DPS: '+Math.round(item_stats[stat]*item_stats["fire_rate"])+'\n';
+                } else {
+                    stats_string += listed_stats[stat]+': '+item_stats[stat]+'\n';
+                }
             }
         }
         let button_text;

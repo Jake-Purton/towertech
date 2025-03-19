@@ -333,6 +333,23 @@ export default class Game extends Phaser.Scene{
         this.game_over = true;
         console.log('GAME OVER', game_data);
 
+        // game over dislpay
+        this.add.text(
+            this.level.texture_width/2, this.level.texture_height/2-30, "GAME OVER",
+            {fontStyle: 'bold', fontSize:100, color:'#111111'}).setOrigin(0.5).setDepth(100)
+        this.loading_stats_title = this.add.text(
+            this.level.texture_width/2-310, this.level.texture_height/2+60, "Loading Statistics",
+            {fontStyle: 'bold', fontSize:60, color:'#111111'}).setOrigin(0,0.5).setDepth(100)
+        this.current_stats_title_dots = ""
+        this.update_loading_stats_title()
+    }
+    update_loading_stats_title = () => {
+        this.current_stats_title_dots += '.'
+        if (this.current_stats_title_dots.length > 3) {
+            this.current_stats_title_dots = ''
+        }
+        this.loading_stats_title.setText("Loading Statistics"+this.current_stats_title_dots)
+        this.time.delayedCall(500,this.update_loading_stats_title,this)
     }
 
     take_input(input){
