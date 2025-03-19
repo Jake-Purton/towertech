@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js';
-import {get_removed } from './utiles.js';
+import {defined, get_removed} from './utiles.js';
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 import ProjectileShooter from './projectile_shooter.js';
@@ -9,16 +9,19 @@ class Tower extends ProjectileShooter {
     // range is in pixels
     // fire_rate is shots per seconds
     static tower_id_tracker = 0;
-    constructor(scene, x, y, tower_type, player_id, projectile_class, tower_stats={},
+    constructor(scene, x, y, tower_type, player_id, projectile_class, tower_stats={level:1},
                 {base_scale=1, gun_scale=1, gun_center=[0.2, 0.5], health=100} = {}, properties = {}) {
         for (let stat in tower_stats) {
             properties[stat] = tower_stats[stat];
         }
-        super(scene, x, y, tower_type + '_base', projectile_class, properties);
+        let type_to_subclass = {
+            "CannonTower":"Attack", "SniperTower":"Attack", "BallistaTower":"Attack", "LaserTower":"Attack", "FlamethrowerTower":"Attack",
+            "HealingTower":"Effect", "BuffingTower":"Effect", "SlowingTower":"Effect", "WeakeningTower":"Effect"}
+        let tower_subclass = type_to_subclass[tower_type];
+        super(scene, x, y, tower_subclass+'Tower_base_'+tower_stats.level, projectile_class, properties);
         this.setDepth(1);
 
         this.base_scale = base_scale;
-        this.setScale(this.base_scale);
 
         // create gun
         this.gun = new Phaser.Physics.Arcade.Sprite(scene, x, y, tower_type + '_gun');
@@ -34,10 +37,10 @@ class Tower extends ProjectileShooter {
 
         ////// variables //////
         // gun rendering
-        this.gun_scale = gun_scale;
+        this.gun_scale = gun_scale*(tower_stats.level/10+0.9);
         this.gun_center = gun_center;
         this.gun.setOrigin(this.gun_center[0], this.gun_center[1]);
-        this.gun.setScale(this.gun_scale);
+        this.setScale(1);
 
         // basic tower info
         this.tower_type = tower_type;
@@ -75,8 +78,15 @@ class Tower extends ProjectileShooter {
             this.effects.game_tick(delta_time, this);
         }
     }
+    upgrade(tower_stats) {
+        let new_tower = create_tower(this.tower_type, this.scene, this.x, this.y, this.playerid, tower_stats);
+        this.scene.towers[this.tower_id] = new_tower;
+        new_tower.tower_id = this.tower_id;
+        this.destroy();
+    }
     set_weapon_direction(angle) {
         this.gun.setAngle(angle);
+        return this;
     }
     get_weapon_direction() {
         return this.gun.angle;
@@ -135,7 +145,7 @@ class Tower extends ProjectileShooter {
         this.gun.setAngle(-45);
     }
     destroy(fromScene) {
-        console.log('destroying',this);
+        this.graphics.destroy();
         this.gun.destroy();
         super.destroy(fromScene);
     }
@@ -152,6 +162,17 @@ class Tower extends ProjectileShooter {
             }
         }
         return false
+    }
+    setScale(x, y = undefined) {
+        if (!defined(y)) {
+            y = x;
+        }
+        this.gun.setScale(
+            x * this.base_scale * this.gun_scale,
+            y * this.base_scale * this.gun_scale);
+        super.setScale(
+            x * this.base_scale, y * this.base_scale);
+        return this
     }
 }
 
@@ -283,7 +304,7 @@ const tower_map = {
     'HealingTower':HealingTower,
     'BuffingTower':BuffingTower};
 
-function create_tower(tower_type, scene, x, y, player_id, tower_stats={}){
+function create_tower(tower_type, scene, x, y, player_id, tower_stats={level:1}){
     let new_tower = null;
     if (tower_type in tower_map) {
         new_tower = new tower_map[tower_type](scene, x, y, tower_type, player_id, tower_stats);

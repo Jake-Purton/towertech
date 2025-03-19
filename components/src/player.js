@@ -72,7 +72,7 @@ export default class Player extends Phaser.GameObjects.Container{
         this.add(this.health_bar)
 
         // game stats
-        this.coins = 0;
+        this.coins = 10000;
         this.player_score = 0;
         this.towers_placed = 0;
         this.kill_count = 0;
@@ -356,6 +356,20 @@ export default class Player extends Phaser.GameObjects.Container{
             if (new_tower != null) {
                 this.scene.towers[new_tower.tower_id] = new_tower;
             }
+        }
+    }
+    sell_tower_input(data) {
+        this.scene.towers[data.tower_id].remove_nearby_player()
+        this.scene.towers[data.tower_id].destroy()
+        delete this.scene.towers[data.tower_id];
+        this.set_coins(this.coins + data.sell_value);
+    }
+    upgrade_tower_input(data) {
+        if (data.tower_stats.cost <= this.coins) {
+            this.set_coins(this.coins - data.tower_stats.cost);
+            this.scene.towers[data.tower_id].upgrade(data.tower_stats);
+        } else {
+            this.scene.output_data(this.player_id,{type:'Prompt_User',prompt:"You can't afford this upgrade!"})
         }
     }
     pickup_item(dropped_item) {

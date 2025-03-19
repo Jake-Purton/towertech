@@ -22,8 +22,8 @@ const GameController = () => {
 
         let scene_info = {
           output_data_func: output_data,
-          max_screen_width: 1200, //804,
-          max_screen_height: 500, //385
+          max_screen_width: 804, //1200,
+          max_screen_height: 385, //500
           mobile_device: mobile_device};
 
         const config = {
@@ -69,21 +69,19 @@ const GameController = () => {
           socket.off("output_from_game_to_client");
           socket.off('end_game_client')
           game.destroy_ui(true);
-          game.destroy(true);
+          game.destroy(true, true);
         };
 
         function end_game (data) {
 
-          console.log('here');
           router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
           // socket.leave(data.room)
           game.destroy_ui(true);
-          game.destroy(true);
+          game.destroy(true, true);
         }
 
         function input_data(data) {
           if (data['PlayerID'] === socket.id) {
-            console.log('data input:',data);
             let scene = game.scene.getScene('GameController');
             if (scene !== null) {
               scene.take_input(data);
