@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import {CannonBall, Bullet, FireProjectile, EffectAOE } from './projectile.js';
-import {defined, get_removed} from './utiles.js';
+import {defined, get_removed, get_tower_subclass} from './utiles.js';
 import Effects from './effects.js';
 import LineAttack from './line_attack.js';
 import ProjectileShooter from './projectile_shooter.js';
@@ -14,10 +14,7 @@ class Tower extends ProjectileShooter {
         for (let stat in tower_stats) {
             properties[stat] = tower_stats[stat];
         }
-        let type_to_subclass = {
-            "CannonTower":"Attack", "SniperTower":"Attack", "BallistaTower":"Attack", "LaserTower":"Attack", "FlamethrowerTower":"Attack",
-            "HealingTower":"Effect", "BuffingTower":"Effect", "SlowingTower":"Effect", "WeakeningTower":"Effect"}
-        let tower_subclass = type_to_subclass[tower_type];
+        let tower_subclass = get_tower_subclass(tower_type);
         super(scene, x, y, tower_subclass+'Tower_base_'+tower_stats.level, projectile_class, properties);
         this.setDepth(1);
 
@@ -219,7 +216,7 @@ class FlamethrowerTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, FireProjectile, tower_stats,
             {gun_scale:0.5}, {range:200, fire_distance:200, projectile_no_drag_distance:50,
-            damage:0.5, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:3,
+            damage:0.5, fire_rate:20, fire_spread:10, projectile_auto_aim_strength:0,pierce_count:1,
             projectile_min_speed:1, projectile_spawn_location:1.2});
     }
 }
@@ -228,7 +225,7 @@ class BallistaTower extends Tower{
     constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
         super(scene, x, y, tower_type, player_id, Bullet, tower_stats,
             {gun_scale:1.5}, {range:300, fire_distance:300, projectile_no_drag_distance:200,
-            damage:3, fire_rate:3, pierce_count:1, fire_velocity:20,projectile_auto_aim_strength:0});
+            damage:3, fire_rate:3, fire_velocity:20,projectile_auto_aim_strength:0});
     }
 }
 // tesla tower/inferno style tower?
@@ -241,12 +238,13 @@ class WeakeningTower extends Tower{
 }
 
 class SlowingTower extends Tower{
-    constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
+    constructor(scene, x, y, tower_type, player_id, tower_stats={effect_amplifier:0.5}) {
         super(scene, x, y, tower_type, player_id, EffectAOE, tower_stats, {gun_center:[0.5,0.5]}, {fire_rate:10});
+        this.effect_amplifier = tower_stats.effect_amplifier;
     }
     shoot() {
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:0.5, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun() {
         this.ready_to_shoot = true;
@@ -254,12 +252,13 @@ class SlowingTower extends Tower{
 }
 
 class HealingTower extends Tower{
-    constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
+    constructor(scene, x, y, tower_type, player_id, tower_stats={effect_amplifier:10}) {
         super(scene, x, y, tower_type, player_id, EffectAOE, tower_stats, {gun_center:[0.5,0.5]}, {fire_rate:10,});
+        this.effect_amplifier = tower_stats.effect_amplifier;
     }
     shoot() {
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:10, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun() {
         this.ready_to_shoot = true;
@@ -267,12 +266,13 @@ class HealingTower extends Tower{
 }
 
 class BuffingTower extends Tower{
-    constructor(scene, x, y, tower_type, player_id, tower_stats={}) {
+    constructor(scene, x, y, tower_type, player_id, tower_stats={effect_amplifier:1.5}) {
         super(scene, x, y, tower_type, player_id, EffectAOE, tower_stats, {gun_center:[0.5,0.5]}, {fire_rate:10});
+        this.effect_amplifier = tower_stats.effect_amplifier;
     }
     shoot() {
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:1.5, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun() {
         this.ready_to_shoot = true;

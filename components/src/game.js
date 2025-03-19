@@ -77,6 +77,8 @@ export default class Game extends Phaser.Scene{
         this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
         this.load.image('smoke_particle','/game_images/particles/smoke.png');
         this.load.image('dust_particle','/game_images/particles/dust.png');
+        this.load.image('nut_particle','/game_images/particles/nut.png');
+        this.load.image('screw_particle','/game_images/particles/screw.png');
 
         //// Load tower images
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
@@ -218,7 +220,6 @@ export default class Game extends Phaser.Scene{
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
-
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -361,6 +362,23 @@ export default class Game extends Phaser.Scene{
         this.game_over = true;
         console.log('GAME OVER', game_data);
 
+        // game over dislpay
+        this.add.text(
+            this.level.texture_width/2, this.level.texture_height/2-30, "GAME OVER",
+            {fontStyle: 'bold', fontSize:100, color:'#111111'}).setOrigin(0.5).setDepth(100)
+        this.loading_stats_title = this.add.text(
+            this.level.texture_width/2-310, this.level.texture_height/2+60, "Loading Statistics",
+            {fontStyle: 'bold', fontSize:60, color:'#111111'}).setOrigin(0,0.5).setDepth(100)
+        this.current_stats_title_dots = ""
+        this.update_loading_stats_title()
+    }
+    update_loading_stats_title = () => {
+        this.current_stats_title_dots += '.'
+        if (this.current_stats_title_dots.length > 3) {
+            this.current_stats_title_dots = ''
+        }
+        this.loading_stats_title.setText("Loading Statistics"+this.current_stats_title_dots)
+        this.time.delayedCall(500,this.update_loading_stats_title,this)
     }
 
     take_input(input){
@@ -392,6 +410,9 @@ export default class Game extends Phaser.Scene{
                     break;
                 case 'Print':
                     console.log('msg: ' + input.text);
+                    break;
+                case 'Ping_Response':
+                    this.players[input.PlayerID].receive_ping_reply(input)
                     break;
             }
         } else if (input.type === "Constructor") {
