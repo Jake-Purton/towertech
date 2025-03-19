@@ -324,9 +324,20 @@ export default class Game extends Phaser.Scene{
         let date = new Date().toDateString().split(" ");
         date = date[1]+" "+date[2]+" "+date[3];
         let time = new Date().toTimeString().split(" ")[0];
+
+        const difficulty = localStorage.getItem("gameDifficulty");
+        const map = localStorage.getItem("gameMap");
+
         let game_data = {
-            game_score: this.score, waves_survived: this.level.wave_manager.wave_index,
-            game_date: date, game_time: time, player_data: player_data}
+            game_score: this.score, 
+            waves_survived: this.level.wave_manager.wave_index,
+            game_date: date, 
+            game_time: time, 
+            map: Number(map.split(" ")[1]),
+            difficulty: difficulty,
+            player_data: player_data
+        
+        }
 
         this.end_game_output(game_data);
 
