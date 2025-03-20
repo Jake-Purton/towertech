@@ -12,7 +12,7 @@ export default class Gooacid extends Enemy{
         super(scene, x, y, 'gooacid', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, melee_damage:melee_damage, 
                 melee_attack_speed:melee_attack_speed, cooldown:cooldown, max_cooldown:max_cooldown,
-                target:target, damage:damage, damage_to_base:10000});
+                target:target, damage:damage, damage_to_base:10000}, loot_table);
         this.jump_offset = 0;
         this.jump_velocity = 0;
         this.jumping = false;
@@ -72,7 +72,7 @@ export default class Gooacid extends Enemy{
         //     tower.take_damage(this.damage)
         // }
     }
-    setPosition(x, y, w, z) {
+    setPosition(x, y) {
         if (defined(this.jump_offset)) {
             super.setPosition(x,y-this.jump_offset);
         } else {

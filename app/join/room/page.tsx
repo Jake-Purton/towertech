@@ -10,13 +10,13 @@ const JoinRoomPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [inRoom, setInRoom] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [username, setStoredValue] = useState<string | null>(null);
   type User = { userID: string, username: string };
 
-  const username = localStorage.getItem("player_username") ? localStorage.getItem("player_username") : "";
-
-  console.log(username)
   
   useEffect(() => {
+    const username = localStorage.getItem("player_username") ? localStorage.getItem("player_username") : "";
+    setStoredValue(username);
     // Listen for updates to the user list
     socket.on('updateUsers', (userList) => {
       setIsLoading(false);

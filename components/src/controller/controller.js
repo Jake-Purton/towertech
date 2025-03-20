@@ -160,14 +160,14 @@ export default class Controller extends Phaser.Scene{
                     {damage:10, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
-                    {damage:50, fire_rate:1, fire_distance:300, projectile_auto_aim_strength:10},
-                    {damage:80, fire_rate:1.4, fire_distance:350, upgrade_cost:15, upgrade_number:3, projectile_auto_aim_strength:10},
-                    {damage:120, fire_rate:2, fire_distance:400, upgrade_cost:20, upgrade_number:3, projectile_auto_aim_strength:10},
+                    {damage:50, fire_rate:1, fire_distance:350, projectile_no_drag_distance:300, projectile_auto_aim_strength:10},
+                    {damage:80, fire_rate:1.4, fire_distance:400, projectile_no_drag_distance:350, upgrade_cost:30, upgrade_number:3, projectile_auto_aim_strength:10},
+                    {damage:120, fire_rate:2, fire_distance:450, projectile_no_drag_distance:400, upgrade_cost:40, upgrade_number:3, projectile_auto_aim_strength:10},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
                     {damage:6, fire_rate:10, fire_distance:240},
-                    {damage:12, fire_rate:10, fire_distance:300, upgrade_cost:10, upgrade_number:3},
-                    {damage:25, fire_rate:10, fire_distance:360, upgrade_cost:15, upgrade_number:3},
+                    {damage:12, fire_rate:10, fire_distance:300, upgrade_cost:20, upgrade_number:3},
+                    {damage:22, fire_rate:10, fire_distance:360, upgrade_cost:30, upgrade_number:3},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
                     {damage:6, fire_rate:10, fire_distance:200},

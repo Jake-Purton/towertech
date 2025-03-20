@@ -57,7 +57,7 @@ class Tower extends ProjectileShooter {
         this.tower_id = Tower.tower_id_tracker;
         Tower.tower_id_tracker += 1;
     }
-    game_tick(delta_time, enemies, players) {
+    game_tick(delta_time, enemies) {
         super.game_tick(delta_time);
         if (this.enabled){
             this.shoot_cooldown -= delta_time/this.scene.target_fps;

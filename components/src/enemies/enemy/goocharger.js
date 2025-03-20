@@ -1,6 +1,4 @@
-import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goocharger extends Enemy{
     constructor(scene, x, y, path, difficutly,

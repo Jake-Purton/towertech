@@ -149,8 +149,19 @@ class Rocket extends Projectile {
     constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
         entity_properties.rotate_to_direction = true
         entity_properties.initial_scale = 0.3
+        // entity_properties.no_drag_distance = 1000;
         properties.aoe = 50;
         super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+    get_dead() {
+        if (this.velocity.length()<this.speed_min_to_kill) {
+            if (this.aoe !== 0) {
+                this.create_aoe()
+            }
+            return true;
+        }
+        return (this.pierce_count<0);
+
     }
 }
 class PlasmaShot extends Projectile {

@@ -45,7 +45,7 @@ const part_converter = {
 }
 
 export default class Player extends Phaser.GameObjects.Container{
-    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='pistol_weapon', username='Player'}={}){
+    constructor(scene, x, y, player_id, {body='robot_body', leg='robot_leg', weapon='rocket_launcher', username='Player'}={}){
 
         // create phaser stuff
         super(scene, x, y, []);

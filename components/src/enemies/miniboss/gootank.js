@@ -1,6 +1,4 @@
-import * as Phaser from 'phaser';
 import Enemy from '../enemy/default_enemy';
-const Vec = Phaser.Math.Vector2;
 
 export default class Gootank extends Enemy{
     constructor(scene, x, y, path, difficulty,

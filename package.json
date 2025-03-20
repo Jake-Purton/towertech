@@ -6,13 +6,19 @@
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "cross-env NODE_ENV=production node server.js",
     "lint": "next lint"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "bcrypt"
+    ]
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "eslint": "^9.18.0",
     "framer-motion": "^12.4.7",
