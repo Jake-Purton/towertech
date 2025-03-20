@@ -81,7 +81,7 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
     make_particles() {
         if (this.particle_cooldown_timer < 0) {
             this.particle_cooldown_timer = this.particle_cooldown;
-            this.scene.particles.push(new LaserDust(this.scene, this.target.x, this.target.y, this.angle));
+            this.scene.add_particle(new LaserDust(this.scene, this.target.x, this.target.y, this.angle));
         }
     }
 }

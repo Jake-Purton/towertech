@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import Player from './player.js';
 import Level from "./level.js";
 import {defined} from "./utiles.js";
+import HealthBar from './health_bar.js';
 
 export default class Game extends Phaser.Scene{
     constructor(output_data_func, init_server_func, end_game_output, target_num_players){
@@ -25,6 +26,7 @@ export default class Game extends Phaser.Scene{
         this.game_over = false;
         this.score = 0;
         this.health = 10;
+        this.max_health = this.health;
         this.target_num_players = target_num_players;
         this.start_waves_delay = 8;
 
@@ -60,6 +62,8 @@ export default class Game extends Phaser.Scene{
         // weapon projectiles
         this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
         this.load.image('plasma_blaster_projectile','/game_images/projectiles/plasma_blaster_projectile.png');
+        this.load.image('TeslaRifle_projectile','/game_images/projectiles/laser_rifle_projectile.png');
+        this.load.image('LaserCannon_projectile','/game_images/projectiles/laser_cannon_projectile_2.png');
 
         //// background
         this.load.image('background_1','/game_images/background_1.png');
@@ -75,6 +79,8 @@ export default class Game extends Phaser.Scene{
         this.load.image('laser_particle','/game_images/particles/Laser_Dust.png');
         this.load.image('smoke_particle','/game_images/particles/smoke.png');
         this.load.image('dust_particle','/game_images/particles/dust.png');
+        this.load.image('nut_particle','/game_images/particles/nut.png');
+        this.load.image('screw_particle','/game_images/particles/screw.png');
 
         //// Load tower images
         this.load.image('CannonTower_gun','/game_images/towers/CannonTower_gun.png');
@@ -146,6 +152,9 @@ export default class Game extends Phaser.Scene{
         // health bar
         this.load.image('enemy_health_bar_back', '/game_images/UI/enemy_health_bar_back.png');
         this.load.image('enemy_health_bar', '/game_images/UI/enemy_health_bar.png');
+
+        this.load.image('wave_progress_bar_back', '/game_images/UI/wave_progress_bar_back.png');
+        this.load.image('wave_progress_bar', '/game_images/UI/wave_progress_bar.png');
     }
     create() {
         this.init_server();
@@ -202,12 +211,17 @@ export default class Game extends Phaser.Scene{
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
         this.level.init_waves()
 
+        let endpoint = this.level.enemy_path.getEndPoint()
+
+        this.health_bar = new HealthBar(
+                    this, 'enemy_health_bar_back', 'enemy_health_bar',
+                    endpoint.x, endpoint.y, 200, 100);
+
         // game objects
         // this.players['TempPlayerID'] =  new Player(this, 100, 100, 'TempPlayerID');
 
         // input
         this.kprs = this.input.keyboard.createCursorKeys();
-
     }
     // delta is the delta_time value, it is the milliseconds since last frame
     update(time, delta) {
@@ -282,7 +296,7 @@ export default class Game extends Phaser.Scene{
             enemy.game_tick(delta, this.players, this.towers);
             if (enemy.get_finished_path()) {
                 remove_list.push(enemy);
-                this.health -= 1; // temporary
+                this.health -= enemy.damage_to_base;
             } else if (enemy.get_dead()){
                 remove_list.push(enemy);
                 enemy.die();
@@ -305,6 +319,8 @@ export default class Game extends Phaser.Scene{
         if (this.health <= 0) {
             this.end_game();
         }
+
+        this.health_bar.set_health(this.health,this.max_health)
     }
     end_game() {
         // need to output
@@ -317,22 +333,62 @@ export default class Game extends Phaser.Scene{
         let player_data = [];
         for (let player_id of Object.keys(this.players)) {
             player_data.push({
-                player_id: player_id, score: this.players[player_id].player_score,
-                kills: this.players[player_id].kill_count, towers_placed: this.players[player_id].towers_placed,
-                coins_spent: this.players[player_id].coins_spent, username: this.players[player_id].username})
+                player_id: player_id, 
+                score: this.players[player_id].player_score, 
+                kills: this.players[player_id].kill_count, 
+                username: this.players[player_id].username, 
+                towers_placed: this.players[player_id].towers_placed,
+                coins_spent: this.players[player_id].coins_spent
+            })
         }
         let date = new Date().toDateString().split(" ");
         date = date[1]+" "+date[2]+" "+date[3];
         let time = new Date().toTimeString().split(" ")[0];
+
+        const difficulty = localStorage.getItem("gameDifficulty");
+        const map = localStorage.getItem("gameMap");
+
         let game_data = {
-            game_score: this.score, waves_survived: this.level.wave_manager.wave_index,
-            game_date: date, game_time: time, player_data: player_data}
+            game_score: this.score, 
+            waves_survived: this.level.wave_manager.wave_index,
+            game_date: date, 
+            game_time: time, 
+            map: Number(map.split(" ")[1]),
+            difficulty: difficulty,
+            player_data: player_data
+        
+        }
 
         this.end_game_output(game_data);
 
         this.game_over = true;
         console.log('GAME OVER', game_data);
 
+        // game over dislpay
+        this.add.text(
+            this.level.texture_width/2, this.level.texture_height/2-30, "GAME OVER",
+            {fontStyle: 'bold', fontSize:100, color:'#111111'}).setOrigin(0.5).setDepth(100)
+        this.loading_stats_title = this.add.text(
+            this.level.texture_width/2-310, this.level.texture_height/2+60, "Loading Statistics",
+            {fontStyle: 'bold', fontSize:60, color:'#111111'}).setOrigin(0,0.5).setDepth(100)
+        this.current_stats_title_dots = ""
+        this.update_loading_stats_title()
+    }
+    update_loading_stats_title = () => {
+        this.current_stats_title_dots += '.'
+        if (this.current_stats_title_dots.length > 3) {
+            this.current_stats_title_dots = ''
+        }
+        this.loading_stats_title.setText("Loading Statistics"+this.current_stats_title_dots)
+        this.time.delayedCall(500,this.update_loading_stats_title,this)
+    }
+    add_particle(new_particle) {
+        this.half_chance_particle_num = 500;
+        if (Math.random() > (1-this.half_chance_particle_num/(this.particles.length+this.half_chance_particle_num))) {
+            this.particles.push(new_particle)
+        } else {
+            new_particle.destroy()
+        }
     }
 
     take_input(input){
@@ -364,6 +420,9 @@ export default class Game extends Phaser.Scene{
                     break;
                 case 'Print':
                     console.log('msg: ' + input.text);
+                    break;
+                case 'Ping_Response':
+                    this.players[input.PlayerID].receive_ping_reply(input)
                     break;
             }
         } else if (input.type === "Constructor") {

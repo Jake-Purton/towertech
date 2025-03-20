@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {create_tower } from './tower.js';
-
 import {RobotBody, LightweightFrame, TankFrame, EnergyCoreFrame, TitanCore} from './components/body.js';
 import {RobotLeg, ArmoredWalker, SpiderLeg, PhantomStep} from './components/leg.js';
 import {SpeedsterWheel, FloatingWheel, TankTreads } from './components/wheel.js';
@@ -13,10 +12,11 @@ import {
     SwordOfVoid
 } from './components/weapon.js';
 import Effects from './effects.js';
-import {get_item_type, defined, RGBtoHEX, clamp} from "./utiles.js";
+import {get_item_type, defined, RGBtoHEX, clamp, random_range} from "./utiles.js";
 import {PartStatsManager} from "./components/part_stat_manager.js";
 import {Rectangle} from "./ui_widgets/shape.js";
 import HealthBar from "./health_bar.js";
+import {PlayerDamagedParticle} from "./particle.js";
 
 const Vec = Phaser.Math.Vector2;
 
@@ -86,7 +86,7 @@ export default class Player extends Phaser.GameObjects.Container{
       
         // constants
         this.speed = 0.4;
-        this.knockback_resistance = 0.5;
+        this.knockback_resistance = 2;
         this.drag = 0.9;
         this.player_id = player_id;
         this.pickup_range = 20;
@@ -133,10 +133,18 @@ export default class Player extends Phaser.GameObjects.Container{
         this.effects = new Effects(scene);
         this.last_damage_source = null;
 
+        // ping checker
+        this.ping = 0;
+        this.time_since_last_ping_request = 0;
+        this.ping_request_timer = 0;
+        this.ping_request_cooldown = 5;
+        this.has_outgoing_ping_request = false;
+
         this.refresh_health_bar();
 
     }
     game_tick(delta_time, enemies){ //function run by game.js every game tick
+        this.manage_ping(delta_time);
         if (!this.dead) {
             this.passive_healing_timer -= delta_time/this.scene.target_fps;
             if (this.passive_healing_timer < 0) {
@@ -268,20 +276,37 @@ export default class Player extends Phaser.GameObjects.Container{
         if (this.dead) {
             this.dead = false;
             this.visible = true;
-            this.health = this.max_health;
+            // this.health = this.max_health;
+            this.set_health(this.max_health, this.max_health);
         }
-
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
             this.passive_healing_timer = this.passive_healing_hit_timer;
             this.add_health(-damage)
-            this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
+            this.make_hit_particles(Math.ceil(2*(damage**0.5-1)), speed, angle);
+            if (defined(angle) && defined(knockback)) {
+                this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
+            }
+
             if (source !== null) {
                 this.last_damage_source = source;
             }
         }
-        
+    }
+    make_hit_particles = (num_particles, speed=4, angle=null) => {
+        speed = clamp(speed, 4, 100);
+        while (num_particles > 0) {
+            if (Math.random() < num_particles) {
+                let particle_angle = angle;
+                if (particle_angle == null) {
+                    particle_angle = random_range(-Math.PI,Math.PI);
+                }
+                this.scene.add_particle(new PlayerDamagedParticle(this.scene, this.x, this.y,
+                    speed, particle_angle * 180 / Math.PI));
+            }
+            num_particles -= 1;
+        }
     }
     get_kill_credit(enemy) {
         if (!this.dead) {
@@ -304,6 +329,25 @@ export default class Player extends Phaser.GameObjects.Container{
         } else if (this.body.y+this.body.height > this.scene.level.displayHeight) {
             this.body.position.y = this.scene.level.displayHeight-this.body.height
         }
+    }
+    manage_ping(delta_time) {
+        this.ping_request_timer -= delta_time/this.scene.target_fps;
+        this.time_since_last_ping_request += delta_time/this.scene.target_fps;
+        if (this.ping_request_timer < 0 && !this.has_outgoing_ping_request) {
+            this.ping_request_timer = this.ping_request_cooldown;
+
+            this.has_outgoing_ping_request = true;
+            this.time_since_last_ping_request = 0;
+            this.scene.output_data(this.player_id, {type:'Ping_Request', request_timestamp:new Date().getTime()})
+        } else if (this.has_outgoing_ping_request && this.time_since_last_ping_request*1000 > this.ping) {
+            this.ping = Math.round(this.time_since_last_ping_request*1000);
+            this.scene.level.player_info_display.update_list_text()
+        }
+    }
+    receive_ping_reply(data) {
+        this.has_outgoing_ping_request = false;
+        this.ping = (new Date().getTime()) - data.request_timestamp;
+        this.scene.level.player_info_display.update_list_text()
     }
     key_input(data) {
         if (data.Direction === 'Down') {

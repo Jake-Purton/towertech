@@ -7,7 +7,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Level extends Phaser.Physics.Arcade.Sprite {
     static map_data = {
         // 'original': {map_texture: '', enemy_path:[[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]},
-        'level 1': {map_texture:'background_1', width:800, height:800, path_radius:50, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]},
+        'level 1': {map_texture:'background_1', width:800, height:800, path_radius:50, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.48]]},
         'level 2': {map_texture:'background_2', width:1500, height:750, path_radius:50 ,enemy_path:[
             [0.06,0],[0.06,0.344, 0.03],[0.23,0.344,0.03],[0.23,0.14,0.03],[0.44,0.14,0.03],[0.44,0.56,0.03],
             [0.11,0.56,0.03],[0.11,0.84,0.03],[0.61,0.84,0.03],[0.61,0.2,0.03],[0.73,0.2,0.03],[0.73,0.79,0.03],[0.88,0.79,0.03],[0.88,0.47]]},

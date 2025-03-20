@@ -1,5 +1,9 @@
 import Wave from './wave.js';
 import BossWave from './wave_boss.js';
+import WaveBar from './wave_bar.js';
+import { random_int } from './utiles.js';
+
+const boss = ['gooacid','goobullet','goobuilder']
 
 export default class WaveManager
 {
@@ -32,6 +36,12 @@ export default class WaveManager
         this.base_difficulty = difficulties[diff];
 
         this.game = game;
+
+        this.wave_bar = new WaveBar(
+                    this.game, 'wave_progress_bar_back', 'wave_progress_bar',
+                    400, 100, 50, 100);
+        
+        this.wave_bar.set_health(10,10)
     }
 
     load_waves(parsedJson)
@@ -71,6 +81,17 @@ export default class WaveManager
         let enemyList = [];
         let enemyWeights = [];
 
+        if (this.wave_index % 10 === 0){
+            let random_num = random_int(1,3)
+            enemyList.push(boss[random_num])
+            enemyWeights.push(1)
+        } 
+        else if(this.wave_index % 5 === 0){
+            enemyList.push('gootank')
+            enemyWeights.push(this.wave_index % 5)
+        }
+
+
         // Iterate through the enemy list.
         for(let i = 0; i < allEnemies.length; i++)
         {
@@ -104,10 +125,20 @@ export default class WaveManager
 
     }
 
-    game_tick(deltaTime) {
-        if (this.current_wave !== null && this.current_wave.game_tick(deltaTime)) {
-            this.next_wave();
-            return true
+    game_tick(deltaTime)
+    {
+        if (this.current_wave !== null) {
+            let data = this.current_wave.game_tick(deltaTime)
+            let enemies_left = data[0] / data[1]
+            if (enemies_left > 0) {
+                this.wave_bar.set_health(data[0], data[1])
+            } else if (data[2] > 0) {
+                this.wave_bar.set_text("");
+                this.wave_bar.set_health(data[3] - data[2], data[3])
+            } else {
+                this.next_wave();
+                return true
+            }
         }
         return false
     }
@@ -150,6 +181,8 @@ export default class WaveManager
         }
         // set the new wave.
         this.current_wave = newWave;
+
+        this.wave_bar.set_text(this.current_wave.title_text)
 
     }
 
