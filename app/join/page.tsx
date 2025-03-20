@@ -69,8 +69,8 @@ const JoinPageContent: React.FC = () => {
             setIsSubmitted(false);
         }
 
-        function onSuccess() {
-            router.push('/join/room');
+        function onSuccess(mane:string) {
+            router.push(`/join/room?username=${mane}`);
         }
 
         socket.on("message", onMessage);

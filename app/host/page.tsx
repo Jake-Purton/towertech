@@ -229,6 +229,15 @@ const HostPage = () => {
                   className="p-4 bg-gray-900 rounded-lg border border-gray-600 transition-all hover:bg-gray-700 shadow-sm text-center text-lg font-medium"
                 >
                   <span className="text-orange-500">{user.username}</span>
+                    <button
+                    className="ml-2 text-red-500 hover:text-red-700"
+                    onClick={() => {
+                      setUsers(users.filter((u) => u.userID !== user.userID));
+                      socket.emit("removeUser", {userid: user.userID, roomName: roomCode});
+                    }}
+                    >
+                    ✖
+                    </button>
                 </li>
               ))
             ) : (
