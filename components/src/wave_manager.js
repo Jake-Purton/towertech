@@ -127,11 +127,6 @@ export default class WaveManager
 
     game_tick(deltaTime)
     {
-<<<<<<< HEAD
-        // console.log(this.current_wave)
-        if (this.current_wave.game_tick(deltaTime)) {
-            this.next_wave();
-=======
         if (this.current_wave !== null) {
             let data = this.current_wave.game_tick(deltaTime)
             let enemies_left = data[0] / data[1]
@@ -144,7 +139,6 @@ export default class WaveManager
                 this.next_wave();
                 return true
             }
->>>>>>> main
         }
         return false
     }
