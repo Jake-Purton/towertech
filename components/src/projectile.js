@@ -85,7 +85,7 @@ class Projectile extends Entity {
             null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05, source: this.source})
         this.scene.projectiles.push(aoe)
         for (let i=0;i<20;i++) {
-            this.scene.particles.push(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
+            this.scene.add_particle(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
         }
     }
     deal_damage(entity) {
@@ -104,7 +104,7 @@ class Projectile extends Entity {
     }
     make_hit_particles(entity) {
         for (let i = 0; i < 3; i++) {
-            this.scene.particles.push(new GooBlood(this.scene, entity.x, entity.y,
+            this.scene.add_particle(new GooBlood(this.scene, entity.x, entity.y,
                 this.velocity.length() * 0.4, this.velocity.angle() * 180 / Math.PI));
         }
     }
@@ -141,7 +141,7 @@ class FireProjectile extends Projectile {
         this.particle_cooldown -= delta_time/this.scene.target_fps;
         if (this.particle_cooldown < 0) {
             this.particle_cooldown = 0.2-this.alpha/10;
-            this.scene.particles.push(new FireParticle(this.scene, this.x, this.y, 8));
+            this.scene.add_particle(new FireParticle(this.scene, this.x, this.y, 8));
         }
     }
 }

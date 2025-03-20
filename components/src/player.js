@@ -279,14 +279,16 @@ export default class Player extends Phaser.GameObjects.Container{
             // this.health = this.max_health;
             this.set_health(this.max_health, this.max_health);
         }
-
     }
     take_damage(damage, speed, angle, knockback, source) {
         if (damage !== 0) {
             this.passive_healing_timer = this.passive_healing_hit_timer;
             this.add_health(-damage)
             this.make_hit_particles(Math.ceil(2*(damage**0.5-1)), speed, angle);
-            this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
+            if (defined(angle) && defined(knockback)) {
+                this.velocity.add(new Vec().setToPolar(angle, knockback*this.knockback_resistance));
+            }
+
             if (source !== null) {
                 this.last_damage_source = source;
             }
@@ -300,7 +302,7 @@ export default class Player extends Phaser.GameObjects.Container{
                 if (particle_angle == null) {
                     particle_angle = random_range(-Math.PI,Math.PI);
                 }
-                this.scene.particles.push(new PlayerDamagedParticle(this.scene, this.x, this.y,
+                this.scene.add_particle(new PlayerDamagedParticle(this.scene, this.x, this.y,
                     speed, particle_angle * 180 / Math.PI));
             }
             num_particles -= 1;
