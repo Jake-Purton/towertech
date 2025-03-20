@@ -208,10 +208,6 @@ export default class Game extends Phaser.Scene{
 
 
         // create Level (map info and enemy path)
-<<<<<<< HEAD
-        // console.log(localStorage.getItem('gameMap'))
-=======
->>>>>>> main
         this.level = new Level(this, localStorage.getItem('gameMap'), this.scale.width, this.scale.height);
         this.level.init_waves()
 
