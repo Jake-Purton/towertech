@@ -43,6 +43,7 @@ const HostPage = () => {
     handleMapClick("level 2");
 
     socket.on("connect", () => {
+      console.log("connect")
       socket.emit("createRoom");
     })
     getIPAddress();

@@ -150,7 +150,7 @@ app.prepare().then(() => {
               console.error("Error creating token:", err);
               return;
             }
-            socket.emit("roomJoinSuccess", indexToken);
+            socket.emit("roomJoinSuccess", ({username: usersUserName, token: indexToken}));
           });
 
         } else {

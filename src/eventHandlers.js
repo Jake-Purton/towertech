@@ -33,7 +33,7 @@ function handleJoinRoom(socket, roomManager, secret) {
           console.error("Error creating token:", err);
           return;
         }
-        socket.emit("roomJoinSuccess", indexToken);
+        socket.emit("roomJoinSuccess", {username: username, token: indexToken});
       });
 
     } else {
