@@ -42,8 +42,9 @@ const HostPage = () => {
     handleDifficultyClick("Medium")
     handleMapClick("level 2");
 
-    if (!socket.connected) socket.connect();
-    socket.emit("createRoom");
+    socket.on("connect", () => {
+      socket.emit("createRoom");
+    })
     getIPAddress();
 
     const handleRoomCode = (data) => {
@@ -73,7 +74,6 @@ const HostPage = () => {
       setGameStarted(true);
       router.push("/game");
       localStorage.setItem("roomCode", roomCode);
-      // socket.emit("gameStarted", roomCode)
     }
   };
   return (
