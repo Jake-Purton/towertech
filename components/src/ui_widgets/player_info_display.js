@@ -14,27 +14,45 @@ export default class PlayerInfoDisplay extends Phaser.GameObjects.Container {
         this.add(this.list_text)
     }
     update_list_text() {
-        let text = ""
-        let name_length = 0
+        let data_table = [];
         for (let player of Object.values(this.scene.players)) {
-            if (player.username.length > name_length) {
-                name_length = player.username.length
-            }
-        }
-        for (let player of Object.values(this.scene.players)) {
-            text += player.username+" ".repeat(name_length-player.username.length)+" "
+            let hp_display;
+            let ping_display;
             if (!player.dead && player.health > 0) {
-                text += Math.round(player.health)+"/"+player.max_health+ 'hp';
+                hp_display = Math.round(player.health)+"/"+player.max_health+ 'hp';
             } else {
-                text += "DEAD"
+                hp_display = "DEAD"
             }
-            text += " $"+player.coins
             if (player.ping < 2000) {
-                text += ' '+player.ping+'ms'
+                ping_display = player.ping+'ms'
             } else {
-                text += ' Disconnected'
+                ping_display = 'Disconnected'
             }
-            text += '\n'
+            data_table.push([
+                player.username, hp_display, "$"+player.coins, ping_display
+            ])
+        }
+        let text = ""
+        if (data_table.length > 0) {
+            let word_lengths = []
+            for (let column=0;column<data_table[0].length;column++) {
+                let len = 0;
+                for (let row=0;row<data_table.length;row++) {
+                    if (data_table[row][column].length > len) {
+                        len = data_table[row][column].length
+                    }
+                }
+                word_lengths.push(len);
+            }
+            for (let row=0;row<data_table.length;row++) {
+                for (let column=0;column<data_table[0].length;column++) {
+                    text += data_table[row][column]+" ".repeat(word_lengths[column]-data_table[row][column].length)
+                    if (row !== data_table[0].length-1) {
+                        text += " "
+                    }
+                }
+                text += "\n"
+            }
         }
         this.list_text.setText(text)
     }

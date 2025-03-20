@@ -85,7 +85,7 @@ class Projectile extends Entity {
             null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05, source: this.source})
         this.scene.projectiles.push(aoe)
         for (let i=0;i<20;i++) {
-            this.scene.particles.push(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
+            this.scene.add_particle(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
         }
     }
     deal_damage(entity) {
@@ -104,7 +104,7 @@ class Projectile extends Entity {
     }
     make_hit_particles(entity) {
         for (let i = 0; i < 3; i++) {
-            this.scene.particles.push(new GooBlood(this.scene, entity.x, entity.y,
+            this.scene.add_particle(new GooBlood(this.scene, entity.x, entity.y,
                 this.velocity.length() * 0.4, this.velocity.angle() * 180 / Math.PI));
         }
     }
@@ -141,7 +141,7 @@ class FireProjectile extends Projectile {
         this.particle_cooldown -= delta_time/this.scene.target_fps;
         if (this.particle_cooldown < 0) {
             this.particle_cooldown = 0.2-this.alpha/10;
-            this.scene.particles.push(new FireParticle(this.scene, this.x, this.y, 8));
+            this.scene.add_particle(new FireParticle(this.scene, this.x, this.y, 8));
         }
     }
 }
@@ -158,6 +158,13 @@ class PlasmaShot extends Projectile {
         entity_properties.rotate_to_direction = true;
         entity_properties.initial_scale = 0.6
         super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+}
+class LaserCannonShot extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        // entity_properties.initial_scale = 0.3
+        super(scene, x, y, 'LaserCannon_projectile', speed, angle, team, properties, entity_properties);
     }
 }
 
@@ -231,5 +238,4 @@ class GooMeleeDamage extends Projectile {
 
 export {CannonBall, Bullet, Rocket, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile,
         GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile,
-        PlasmaShot,
-        GoodroneProjectile};
+        PlasmaShot, LaserCannonShot, GoodroneProjectile};

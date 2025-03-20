@@ -93,17 +93,17 @@ export default class Effects{
         }
     }
     create_fire_particle(scene, parent_object) {
-        scene.particles.push(new FireParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
+        scene.add_particle(new FireParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
     }
     create_heart_particle(scene, parent_object) {
-        scene.particles.push(new HeartParticle(scene, parent_object.x, parent_object.y));
+        scene.add_particle(new HeartParticle(scene, parent_object.x, parent_object.y));
     }
     create_speed_particle(scene, parent_object) {
-        scene.particles.push(new SpeedParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
+        scene.add_particle(new SpeedParticle(scene, parent_object.x, parent_object.y, parent_object.width / 2));
     }
     create_slow_particle(scene, parent_object) {
         parent_object.effects.particle_cooldowns['Slow'].timer+=Math.random()/8
-        scene.particles.push(new SlowParticle(scene, parent_object.x, parent_object.y));
+        scene.add_particle(new SlowParticle(scene, parent_object.x, parent_object.y));
     }
     clear_effects() {
         for (let effect in this.effects) {

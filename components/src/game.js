@@ -62,6 +62,8 @@ export default class Game extends Phaser.Scene{
         // weapon projectiles
         this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
         this.load.image('plasma_blaster_projectile','/game_images/projectiles/plasma_blaster_projectile.png');
+        this.load.image('TeslaRifle_projectile','/game_images/projectiles/laser_rifle_projectile.png');
+        this.load.image('LaserCannon_projectile','/game_images/projectiles/laser_cannon_projectile_2.png');
 
         //// background
         this.load.image('background_1','/game_images/background_1.png');
@@ -379,6 +381,14 @@ export default class Game extends Phaser.Scene{
         }
         this.loading_stats_title.setText("Loading Statistics"+this.current_stats_title_dots)
         this.time.delayedCall(500,this.update_loading_stats_title,this)
+    }
+    add_particle(new_particle) {
+        this.half_chance_particle_num = 500;
+        if (Math.random() > (1-this.half_chance_particle_num/(this.particles.length+this.half_chance_particle_num))) {
+            this.particles.push(new_particle)
+        } else {
+            new_particle.destroy()
+        }
     }
 
     take_input(input){

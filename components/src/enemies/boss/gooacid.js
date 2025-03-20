@@ -63,7 +63,7 @@ export default class Gooacid extends Enemy{
             let dis = random_range(0, radius);
             let x_pos = this.x + Math.cos(angle)*dis;
             let y_pos = this.y + Math.sin(angle)*dis;
-            this.scene.particles.push(
+            this.scene.add_particle(
                 new DustParticle(this.scene, x_pos, y_pos, angle/Math.PI*180).setDepth(2.5)
             )
         }

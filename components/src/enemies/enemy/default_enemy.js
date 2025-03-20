@@ -49,6 +49,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.loot_table = loot_table;
         this.difficulty = difficulty;
         this.damage_to_base = damage_to_base;
+        this.gooblood_tracker = 0;
+        this.gooblood_max = 40;
 
         // effects info
         this.effects = new Effects(scene);
@@ -63,6 +65,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     game_tick(delta_time){
         let time = delta_time/this.scene.target_fps;
+        if (this.gooblood_tracker > 0) {
+            this.gooblood_tracker -= 1;
+        }
         // handle effects
         this.add_health(this.effects.get_effect("Healing", 0)*time);
         this.take_damage(this.effects.get_effect("Burning", 0)*time);
@@ -130,13 +135,15 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
     }
     make_hit_particles = (num_particles, speed=1, angle=null) => {
+        let ran = Math.random();
         while (num_particles > 0) {
-            if (Math.random() < num_particles) {
+            if (ran < num_particles && this.gooblood_tracker < this.gooblood_max) {
+                this.gooblood_tracker += 1
                 let particle_angle = angle;
                 if (particle_angle == null) {
                     particle_angle = random_range(-Math.PI,Math.PI);
                 }
-                this.scene.particles.push(new GooBlood(this.scene, this.x, this.y,
+                this.scene.add_particle(new GooBlood(this.scene, this.x, this.y,
                     speed * 0.4, particle_angle * 180 / Math.PI));
             }
             num_particles -= 1;
@@ -232,11 +239,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
-            this.scene.projectiles.push(new EffectAOE(
-                this.scene, this.x, this.y, 'Enemy', null, this.body.halfWidth, this.body.halfWidth,{damage:this.melee_damage, time_to_live:this.melee_attack_speed/2}
-            ));
-            // this.scene.projectiles.push(new GooMeleeDamage(
-            //     this.scene, this.x, this.y, null, this.melee_damage, this.type, this.melee_attack_speed/2));
+            this.scene.projectiles.push(new GooMeleeDamage(
+                this.scene, this.x, this.y, null, this.melee_damage, this.type, this.melee_attack_speed/2));
         }
     }
     return_to_path(delta_time){
