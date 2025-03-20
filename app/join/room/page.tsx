@@ -37,7 +37,9 @@ const JoinRoomPageContent = () => {
       router.push("/join")
     });
 
-    socket.emit('getUsers');
+    socket.on("connect", () => {
+      socket.emit("getUsers");
+    })
 
     // Clean up the socket connection on component unmount
     return () => {
