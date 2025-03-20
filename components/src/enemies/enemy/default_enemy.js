@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import Effects from "../../effects.js";
 import {random_range, float_to_random_int, weighted_random_choice, defined } from "../../utiles.js";
 import {GooBlood} from "../../particle.js";
-import {EffectAOE, GooMeleeDamage} from "../../projectile.js";
+import {GooMeleeDamage} from "../../projectile.js";
 import DroppedItem from "../../dropped_item.js";
 import HealthBar from "../../health_bar.js";
 

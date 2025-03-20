@@ -6,9 +6,11 @@ interface Table {
     table_name: string;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Record {
     [key: string]: any;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const TestDbPage = () => {
     const [tables, setTables] = useState<Table[]>([]);
@@ -26,7 +28,7 @@ const TestDbPage = () => {
                     setError(data.error);
                 }
             } catch (err) {
-                setError("Failed to fetch tables.");
+                setError("Failed to fetch tables." + err.message);
             }
         };
 

@@ -45,7 +45,7 @@ const PlayerLeaderboardContent: React.FC = () => {
         // }
         setPlayer(data);
       } catch (error) {
-        // console.error("Failed to fetch player leaderboard:", error);
+        console.error("Failed to fetch player leaderboard:", error);
         setPlayer(null);
       } finally {
         setLoading(false);

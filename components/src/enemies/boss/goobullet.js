@@ -22,7 +22,7 @@ export default class Goobullet extends Enemy{
         }
         super.game_tick(delta_time, players, towers);
     }
-    shoot_projectile(players){
+    shoot_projectile(){
         for (let i=0;i<30;i++){
             this.scene.projectiles.push(new GoobulletProjectile(this.scene, this.x, this.y, random_int(0,360), null, {damage:this.damage}));
         }

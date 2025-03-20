@@ -47,7 +47,7 @@ export default class PlayerInfoDisplay extends Phaser.GameObjects.Container {
             for (let row=0;row<data_table.length;row++) {
                 for (let column=0;column<data_table[0].length;column++) {
                     text += data_table[row][column]+" ".repeat(word_lengths[column]-data_table[row][column].length)
-                    if (row !== data_table[0].length-1) {
+                    if (column !== word_lengths.length-1) {
                         text += " "
                     }
                 }

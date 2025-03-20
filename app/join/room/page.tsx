@@ -11,13 +11,15 @@ const JoinRoomPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [inRoom, setInRoom] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [username, setStoredValue] = useState<string | null>(null);
   type User = { userID: string, username: string };
+
   const searchParams = useSearchParams();
   const username = searchParams?.get('username');
 
-  console.log(username)
   
   useEffect(() => {
+    setStoredValue(username);
     // Listen for updates to the user list
     socket.on('updateUsers', (userList) => {
       setIsLoading(false);
@@ -65,7 +67,8 @@ const JoinRoomPage = () => {
             <tbody className="bg-gray-900 divide-y divide-gray-600">
               {users.map((user, index) => (
                 <tr key={index}>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${user.username === username ? 'text-white' : 'text-orange-500'}`}>{user.username}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${user.
+                      === username ? 'text-white' : 'text-orange-500'}`}>{user.username}</td>
                 </tr>
               ))}
             </tbody>

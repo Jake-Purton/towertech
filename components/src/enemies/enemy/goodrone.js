@@ -1,7 +1,5 @@
-import * as Phaser from 'phaser';
 import Enemy from './default_enemy.js';
 import {GoodroneProjectile } from '../../projectile.js';
-const Vec = Phaser.Math.Vector2;
 
 export default class Goodrone extends Enemy{
     constructor(scene, x, y, path, difficulty, 

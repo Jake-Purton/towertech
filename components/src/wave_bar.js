@@ -11,7 +11,7 @@ export default class WaveBar extends HealthBar{
         this.text.setOrigin(0.5, 0.5);
     }
 
-    set_position(x, y) {
+    set_position() {
         this.setPosition(this.scene.level.texture_width/2, 30);
     }
 
