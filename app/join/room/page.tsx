@@ -1,25 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, Suspense} from 'react';
 import { socket } from "../../src/socket";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-const JoinRoomPage = () => {
+const JoinRoomPageContent = () => {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [inRoom, setInRoom] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [username, setStoredValue] = useState<string | null>(null);
+  // const [username, setStoredValue] = useState<string | null>(null);
   type User = { userID: string, username: string };
 
   const searchParams = useSearchParams();
-  const username = searchParams?.get('username');
+  const username = searchParams?.get('username') || "";
 
   
   useEffect(() => {
-    setStoredValue(username);
+    // setStoredValue(username);
     // Listen for updates to the user list
     socket.on('updateUsers', (userList) => {
       setIsLoading(false);
@@ -67,8 +67,7 @@ const JoinRoomPage = () => {
             <tbody className="bg-gray-900 divide-y divide-gray-600">
               {users.map((user, index) => (
                 <tr key={index}>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${user.
-                      === username ? 'text-white' : 'text-orange-500'}`}>{user.username}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${user.username === username ? 'text-white' : 'text-orange-500'}`}>{user.username}</td>
                 </tr>
               ))}
             </tbody>
@@ -84,6 +83,14 @@ const JoinRoomPage = () => {
       )}
 
     </div>
+  );
+};
+
+const JoinRoomPage: React.FC = () => {
+  return (
+      <Suspense fallback={<p>Loading...</p>}>
+        <JoinRoomPageContent />
+      </Suspense>
   );
 };
 
