@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { socket } from "../../src/socket";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 const JoinRoomPage = () => {
   const router = useRouter();
@@ -13,9 +14,11 @@ const JoinRoomPage = () => {
   const [username, setStoredValue] = useState<string | null>(null);
   type User = { userID: string, username: string };
 
+  const searchParams = useSearchParams();
+  const username = searchParams?.get('username');
+
   
   useEffect(() => {
-    const username = localStorage.getItem("player_username") ? localStorage.getItem("player_username") : "";
     setStoredValue(username);
     // Listen for updates to the user list
     socket.on('updateUsers', (userList) => {
@@ -30,12 +33,17 @@ const JoinRoomPage = () => {
       router.push("/game_controller");
     });
 
+    socket.on("You have been ejected", () => {
+      router.push("/join")
+    });
+
     socket.emit('getUsers');
 
     // Clean up the socket connection on component unmount
     return () => {
       socket.off('updateUsers');
       socket.off("gameStarted");
+      socket.off("You have been ejected")
     };
   }, []);
 
@@ -59,7 +67,8 @@ const JoinRoomPage = () => {
             <tbody className="bg-gray-900 divide-y divide-gray-600">
               {users.map((user, index) => (
                 <tr key={index}>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${user.username === username ? 'text-white' : 'text-orange-500'}`}>{user.username}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${user.
+                      === username ? 'text-white' : 'text-orange-500'}`}>{user.username}</td>
                 </tr>
               ))}
             </tbody>

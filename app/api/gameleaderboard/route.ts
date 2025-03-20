@@ -7,15 +7,11 @@ export async function GET(request: Request) {
   let difficulty = searchParams.get("difficulty");
   let map = searchParams.get("map") ? Number(searchParams.get("map")) : 0;
 
-  if (difficulty) {
-    console.log(difficulty)
-  } else {
+  if (!difficulty) {
     difficulty = ' '
   }
 
-  if (map) {
-    console.log(map)
-  } else {
+  if (!map) {
     map = 0
   }
 
