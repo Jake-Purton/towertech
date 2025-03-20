@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import {CannonBall, Rocket, PlasmaShot, EffectAOE} from '../projectile.js';
-import {modulo } from '../utiles.js';
+import {CannonBall, Rocket, PlasmaShot, EffectAOE, LaserCannonShot} from '../projectile.js';
+import {modulo, random_range} from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
 import {PartStats} from './part_stat_manager.js';
+import LineAttack from "../line_attack.js";
 
 class Weapon extends ProjectileShooter {
     constructor(scene, texture, projectile_class, {x_offset=0, y_offset=0, hold_distance=16, length=20,
@@ -76,6 +77,9 @@ class Weapon extends ProjectileShooter {
     get_projectile_source() {
         return this.parentContainer;
     }
+    get_kill_credit(enemy) {
+        this.parentContainer.get_kill_credit(enemy);
+    }
 }
 class PistolWeapon extends Weapon{
     constructor(scene, stats={}) {
@@ -102,10 +106,23 @@ class TeslaRifle extends Weapon{
     constructor(scene, stats={}) {
         super(scene, 'tesla_rifle', CannonBall, {stats:stats, length:30, hold_distance:60}, stats);
     }
+    shoot(effects) {
+        if (this.target !== null) {
+            let diff = this.get_relative_pos(this.target);
+            let dis = diff.length()
+            if (dis < this.fire_distance) {
+                let damage = this.damage * effects.get_damage_multiplier();
+                let laser = new LineAttack(this.scene, this, this.target,
+                    'TeslaRifle_projectile', damage, 0.13, 20, random_range(0,100))
+                this.scene.projectiles.push(laser);
+            }
+        }
+    }
+
 }
 class LaserCannon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'laser_cannon', CannonBall, {stats:stats, length:40, hold_distance:60}, stats);
+        super(scene, 'laser_cannon', LaserCannonShot, {stats:stats, length:40, hold_distance:60}, stats);
     }
 }
 class SwordOfVoid extends Weapon{

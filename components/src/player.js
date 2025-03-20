@@ -331,7 +331,6 @@ export default class Player extends Phaser.GameObjects.Container{
     manage_ping(delta_time) {
         this.ping_request_timer -= delta_time/this.scene.target_fps;
         this.time_since_last_ping_request += delta_time/this.scene.target_fps;
-        // console.log(this.time_since_last_ping_request*1000, this.ping, this.has_outgoing_ping_request)
         if (this.ping_request_timer < 0 && !this.has_outgoing_ping_request) {
             this.ping_request_timer = this.ping_request_cooldown;
 

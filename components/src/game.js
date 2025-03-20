@@ -62,6 +62,8 @@ export default class Game extends Phaser.Scene{
         // weapon projectiles
         this.load.image('rocket_projectile','/game_images/projectiles/rocket.png');
         this.load.image('plasma_blaster_projectile','/game_images/projectiles/plasma_blaster_projectile.png');
+        this.load.image('TeslaRifle_projectile','/game_images/projectiles/laser_rifle_projectile.png');
+        this.load.image('LaserCannon_projectile','/game_images/projectiles/laser_cannon_projectile_2.png');
 
         //// background
         this.load.image('background_1','/game_images/background_1.png');

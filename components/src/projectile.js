@@ -160,6 +160,13 @@ class PlasmaShot extends Projectile {
         super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
     }
 }
+class LaserCannonShot extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        // entity_properties.initial_scale = 0.3
+        super(scene, x, y, 'LaserCannon_projectile', speed, angle, team, properties, entity_properties);
+    }
+}
 
 class EffectAOE extends Projectile {
     constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1, source=null}={}) {
@@ -231,5 +238,4 @@ class GooMeleeDamage extends Projectile {
 
 export {CannonBall, Bullet, Rocket, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile,
         GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile,
-        PlasmaShot,
-        GoodroneProjectile};
+        PlasmaShot, LaserCannonShot, GoodroneProjectile};
