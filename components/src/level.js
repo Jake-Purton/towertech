@@ -7,7 +7,7 @@ const Vec = Phaser.Math.Vector2;
 export default class Level extends Phaser.Physics.Arcade.Sprite {
     static map_data = {
         // 'original': {map_texture: '', enemy_path:[[0,100],[200,150],[400,50],[600,200],[500,450],[200,200],[0,400]]},
-        'level 1': {map_texture:'background_1', width:800, height:800, path_radius:50, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.42]]},
+        'level 1': {map_texture:'background_1', width:800, height:800, path_radius:50, enemy_path:[[0,0.47],[0.425,0.47],[0.425,0.545],[0.14,0.545],[0.14,0.81],[0.76,0.81],[0.76,0.48]]},
         'level 2': {map_texture:'background_2', width:1500, height:750, path_radius:50 ,enemy_path:[
             [0.06,0],[0.06,0.344, 0.03],[0.23,0.344,0.03],[0.23,0.14,0.03],[0.44,0.14,0.03],[0.44,0.56,0.03],
             [0.11,0.56,0.03],[0.11,0.84,0.03],[0.61,0.84,0.03],[0.61,0.2,0.03],[0.73,0.2,0.03],[0.73,0.79,0.03],[0.88,0.79,0.03],[0.88,0.47]]},
@@ -17,7 +17,7 @@ export default class Level extends Phaser.Physics.Arcade.Sprite {
                 [0.9,0.08,0.03],[0.9,0.78,0.03],[0.59,0.78,0.03],[0.59,0.64,0.03],[0.82,0.64,0.03],[0.82,0.5,0.03],
                 [0.525,0.5,0.03],[0.525,0.79,0.03],[0.285,0.79,0.03],[0.285,0.64,0.03],[0.41,0.64,0.03],[0.41,0.285,0.03],[0.735,0.285]]}}
 
-constructor(scene, map_name, screen_width, screen_height) {
+    constructor(scene, map_name, screen_width, screen_height) {
         let info = Level.map_data[map_name];
         super(scene, 0, 0, info.map_texture);
         scene.add.existing(this);
@@ -32,29 +32,29 @@ constructor(scene, map_name, screen_width, screen_height) {
         this.texture_width = info.width;
         this.texture_height = info.height;
 
-        let texture_ratio = this.texture_width/this.texture_height;
-        if (screen_width/screen_height > texture_ratio) {
-            this.display_width = screen_height*texture_ratio;
+        let texture_ratio = this.texture_width / this.texture_height;
+        if (screen_width / screen_height > texture_ratio) {
+            this.display_width = screen_height * texture_ratio;
             this.display_height = screen_height;
         } else {
             this.display_width = screen_width;
-            this.display_height = screen_width/texture_ratio;
+            this.display_height = screen_width / texture_ratio;
         }
-        this.scene.cameras.main.setZoom(this.display_width/this.texture_width, this.display_height/this.texture_height);
-        this.scene.cameras.main.setScroll((this.texture_width-this.display_width)/2,(this.texture_height-this.display_height)/2);
-        this.scene.cameras.main.setViewport((screen_width-this.display_width)/2, (screen_height-this.display_height)/2, this.display_width, this.display_height);
+        this.scene.cameras.main.setZoom(this.display_width / this.texture_width, this.display_height / this.texture_height);
+        this.scene.cameras.main.setScroll((this.texture_width - this.display_width) / 2, (this.texture_height - this.display_height) / 2);
+        this.scene.cameras.main.setViewport((screen_width - this.display_width) / 2, (screen_height - this.display_height) / 2, this.display_width, this.display_height);
 
         this.path_radius = info.path_radius;
         this.enemy_path = this.load_path(info.enemy_path);
-        this.depth = -10;
+        this.setDepth(-1000);
 
-        this.setScale(this.texture_width/this.width, this.texture_height/this.height);
-        this.setPosition(this.texture_width/2, this.texture_height/2);
+        this.setScale(this.texture_width / this.width, this.texture_height / this.height);
+        this.setPosition(this.texture_width / 2, this.texture_height / 2);
 
         // game ui
         this.player_info_display = new PlayerInfoDisplay(scene, this.texture_width, 0)
-
-
+    }
+    init_waves() {
         // wave stuf
         this.current_wave = null;
 
@@ -62,8 +62,14 @@ constructor(scene, map_name, screen_width, screen_height) {
 
         this.wave_manager.load_waves(WavesJson)
     }
+    start_waves() {
+        this.wave_manager.start_waves()
+    }
     game_tick(delta_time) {
-        this.wave_manager.game_tick(delta_time);
+        if (this.wave_manager.game_tick(delta_time)) {
+            // new wave has started
+            this.respawn_players()
+        }
     }
     load_path(points){
         let path = new Phaser.Curves.Path(
@@ -107,5 +113,10 @@ constructor(scene, map_name, screen_width, screen_height) {
             }
         }
         return false
+    }
+    respawn_players() {
+        for (let player of Object.values(this.scene.players)) {
+            player.respawn()
+        }
     }
 }

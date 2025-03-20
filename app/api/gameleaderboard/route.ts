@@ -4,6 +4,16 @@ import { sql } from "@vercel/postgres";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const gameid = searchParams.get("gameid");
+  let difficulty = searchParams.get("difficulty");
+  let map = searchParams.get("map") ? Number(searchParams.get("map")) : 0;
+
+  if (!difficulty) {
+    difficulty = ' '
+  }
+
+  if (!map) {
+    map = 0
+  }
 
   try {
     let result;
@@ -46,6 +56,10 @@ export async function GET(request: Request) {
           playeringame ON gameleaderboard.gameid = playeringame.gameid
         JOIN 
           users ON playeringame.userid = users.id
+        WHERE
+          (gameleaderboard.difficulty = ${difficulty} OR ${difficulty} = ' ')
+        AND 
+          (gameleaderboard.map = ${map} OR ${map} = 0)
         ORDER BY 
           gameleaderboard.score DESC;
       `;

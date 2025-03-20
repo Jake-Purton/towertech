@@ -24,7 +24,7 @@ class Room {
 
   // Removes a user from the room
   removeUser(user) {
-    this.users = this.users.filter(u => u !== user);
+    this.users = this.users.filter(u => u.userID !== user);
   }
 
   // Gets the list of users in the room

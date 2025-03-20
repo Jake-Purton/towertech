@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
 const Vec = Phaser.Math.Vector2;
-import {CannonBall, Rocket, PlasmaShot} from '../projectile.js';
-import {modulo } from '../utiles.js';
+import {CannonBall, Rocket, PlasmaShot, EffectAOE, LaserCannonShot} from '../projectile.js';
+import {modulo, random_range} from '../utiles.js';
 import ProjectileShooter from '../projectile_shooter.js';
 import {PartStats} from './part_stat_manager.js';
+import LineAttack from "../line_attack.js";
 
 class Weapon extends ProjectileShooter {
     constructor(scene, texture, projectile_class, {x_offset=0, y_offset=0, hold_distance=16, length=20,
@@ -76,6 +77,9 @@ class Weapon extends ProjectileShooter {
     get_projectile_source() {
         return this.parentContainer;
     }
+    get_kill_credit(enemy) {
+        this.parentContainer.get_kill_credit(enemy);
+    }
 }
 class PistolWeapon extends Weapon{
     constructor(scene, stats={}) {
@@ -102,11 +106,60 @@ class TeslaRifle extends Weapon{
     constructor(scene, stats={}) {
         super(scene, 'tesla_rifle', CannonBall, {stats:stats, length:30, hold_distance:60}, stats);
     }
+    shoot(effects) {
+        if (this.target !== null) {
+            let diff = this.get_relative_pos(this.target);
+            let dis = diff.length()
+            if (dis < this.fire_distance) {
+                let damage = this.damage * effects.get_damage_multiplier();
+                let laser = new LineAttack(this.scene, this, this.target,
+                    'TeslaRifle_projectile', damage, 0.13, 20, random_range(0,100))
+                this.scene.projectiles.push(laser);
+            }
+        }
+    }
+
 }
 class LaserCannon extends Weapon{
     constructor(scene, stats={}) {
-        super(scene, 'laser_cannon', CannonBall, {stats:stats, length:40, hold_distance:60}, stats);
+        super(scene, 'laser_cannon', LaserCannonShot, {stats:stats, length:40, hold_distance:60}, stats);
+    }
+}
+class SwordOfVoid extends Weapon{
+    constructor(scene, stats={}) {
+        super(scene, 'sword_of_void', EffectAOE, {stats:stats, length:40, hold_distance:60}, stats);
+
+        this.sword_animation_length = 0.3
+    }
+    game_tick(delta_time) {
+        super.game_tick(delta_time);
+        this.sword_animation_timer -= delta_time/this.scene.target_fps;
+        this.animate_sword()
+    }
+    animate_sword() {
+        if (this.sword_animation_timer > 0) {
+            let progress = this.sword_animation_timer/this.sword_animation_length;
+            let angle_diff = (progress**0.5-0.5)*140
+            this.setOrigin(0.1,0.9);
+            this.setAngle(this.get_weapon_direction()+angle_diff)
+        } else {
+            this.setOrigin(0.5,0.5);
+            this.set_weapon_direction(this.get_weapon_direction())
+        }
+    }
+    shoot(effects) {
+        this.shots_fired += 1;
+
+        let damage = this.damage * effects.get_damage_multiplier();
+        let shoot_pos = this.get_projectile_source_position();
+        this.sword_animation_timer = this.sword_animation_length;
+
+        this.scene.projectiles.push(new this.projectile_class(
+            this.scene, shoot_pos.x, shoot_pos.y, 'Tower', null, this.body.halfWidth*1.5, this.body.halfWidth,
+            {damage: damage, time_to_live:0.1, source: this.get_projectile_source()},
+            {time_to_live:0.3}
+        ))
     }
 }
 
-export {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon };
+export {PistolWeapon, PlasmaBlaster, RocketLauncher, TeslaRifle, LaserCannon, SwordOfVoid };

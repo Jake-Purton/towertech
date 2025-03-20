@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { socket } from "../app/src/socket";
 import Game from './src/game.js';
@@ -38,7 +38,7 @@ const PhaserGame = () => {
               // debug: true,
             }
           },
-          scene: new Game(output_data, init_server, end_game_output),
+          scene: new Game(output_data, init_server, end_game_output, usersLen),
           backgroundColor: '#000000',
         };
 

@@ -163,6 +163,29 @@ app.prepare().then(() => {
 
     });
 
+    socket.on("removeUser", async (data) => {
+      console.log(data)
+      roomManager.removeUserFromRoom(data.userid, data.roomName)
+
+      const users = roomManager.getUsersInRoom(data.roomName);
+      socket.to(data.roomName).emit("updateUsers", users);
+      
+      try {
+        const user_sockets = await io.sockets.in(data.userid).fetchSockets();
+        const user_socket = user_sockets.find(socket => socket.id.toString() === data.userid);
+
+        user_socket.leave(data.roomName);
+
+        user_socket.emit("You have been ejected")
+
+      } catch (e) {
+        console.log(e)
+      }
+
+      socket
+
+    });
+
     socket.on("gameStarted", (roomCode) => {
       // the game has started
       // send a message to everyone in  that room saying that thge game has started

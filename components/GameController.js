@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { socket } from "../app/src/socket";
 import Controller from './src/controller/controller.js';
-import CreateTowerMenu from "./src/controller/create_tower_menu.js";
 
 const GameController = () => {
   const gameRef = useRef(null);
@@ -25,8 +24,8 @@ const GameController = () => {
 
         let scene_info = {
           output_data_func: output_data,
-          max_screen_width: 804, //1200
-          max_screen_height: 385, // 500
+          max_screen_width: 1200, //804,
+          max_screen_height: 500, //385
           mobile_device: mobile_device};
 
         const config = {
@@ -52,7 +51,7 @@ const GameController = () => {
               gravity: { y: 0 },
             }
           },
-          scene: [new Controller(scene_info), new CreateTowerMenu(scene_info)],
+          scene: new Controller(scene_info),
           backgroundColor: '#151421',
         };
 
@@ -78,21 +77,25 @@ const GameController = () => {
         return () => {
           socket.off("output_from_game_to_client");
           socket.off('end_game_client')
-          game.destroy(true);
+          game.destroy_ui(true);
+          game.destroy(true, true);
         };
 
         function end_game (data) {
 
-          console.log('here');
           router.push("/end_game_client?gameid=" + data.id + "&playerid=" + socket.id);
           // socket.leave(data.room)
-          game.destroy(true);
+          // game.destroy_ui(true);
+          game.destroy(true, true);
         }
 
         function input_data(data) {
           // console.log(data)
           if (data['PlayerID'] === socket.id) {
-            game.scene.getScene('GameController').take_input(data);
+            let scene = game.scene.getScene('GameController');
+            if (scene !== null) {
+              scene.take_input(data);
+            }
           }
         }
         function output_data(data) {

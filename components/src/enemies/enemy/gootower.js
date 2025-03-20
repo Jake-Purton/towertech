@@ -4,12 +4,13 @@ import {GootowerProjectile} from '../../projectile.js';
 export default class Gootower extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0, health=20, coin_value=1, melee_damage=1, 
-                    melee_attack_speed=1, target=null, cooldown=5, 
+                    melee_attack_speed=0.3, target=null, cooldown=5,
                     max_cooldown=5, shoot_angle=0, damage=3} = {}) {
+        let loot_table = {drop_chance:0.6,drops:{'laser_cannon':2, 'tank_treads':1}}
         super(scene, x, y, 'gootower', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value, melee_damage:melee_damage, 
                 melee_attack_speed:melee_attack_speed, target:target, cooldown:cooldown, 
-                max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage});
+                max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage}, loot_table);
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;

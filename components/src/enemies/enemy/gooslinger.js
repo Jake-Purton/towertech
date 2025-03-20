@@ -4,14 +4,15 @@ import {GooslingerProjectile } from '../../projectile.js';
 export default class Gooslinger extends Enemy{
     constructor(scene, x, y, path, difficulty,
                 {move_speed=0.6, health=13, coin_value=3,
-                    melee_damage=1, melee_attack_speed=1,
+                    melee_damage=1, melee_attack_speed=0.3,
                     target=null, cooldown=2, max_cooldown=2,
                     shoot_angle=0, damage=1} = {}) {
+        let loot_table = {drop_chance:1.5,drops:{'pistol_weapon':1, 'plasma_blaster':3}}
         super(scene, x, y, 'gooslinger', path, difficulty,
             {move_speed:move_speed, health:health, coin_value:coin_value,
                 melee_damage:melee_damage, melee_attack_speed:melee_attack_speed,
                 target:target, cooldown:cooldown, max_cooldown:max_cooldown,
-                shoot_angle:shoot_angle, damage:damage});
+                shoot_angle:shoot_angle, damage:damage}, loot_table);
     }
     game_tick(delta_time, players, towers){
         let time = delta_time/this.scene.target_fps;

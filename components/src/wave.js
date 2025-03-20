@@ -5,7 +5,7 @@ export default class Wave
 
     static currentWave = null;
 
-    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty)
+    constructor(game, length, spawnDelay, enemyArray, enemyWeights, numEnemies, difficulty, title, sub_title)
     {
         this.game = game;
         Wave.currentWave = this;
@@ -39,19 +39,33 @@ export default class Wave
         this.duration = length * this.game.target_fps;
         this.remainingTime = length * this.game.target_fps;
         this.timeBetweenWaves = 5 * this.game.target_fps;
+        this.totalTimeBetweenWaves = this.timeBetweenWaves;
 
         this.spawnDelay = spawnDelay * this.game.target_fps;
         this.nextSpawn = spawnDelay * this.game.target_fps;
         this.numEnemies = numEnemies;
-        this.totalEnemies = this.numEnemies;
+        this.totalEnemies = numEnemies;
 
         this.difficulty = difficulty;
+
+        // create wave titles
+        this.title_text = title;
+        this.title_obj = this.game.add.text(
+            this.game.level.texture_width/2, this.game.level.texture_height/2-30, title,
+            {fontStyle: 'bold', fontSize:50, color:'#111111'}).setOrigin(0.5).setDepth(100)
+        this.sub_title_obj = this.game.add.text(
+            this.game.level.texture_width/2, this.game.level.texture_height/2+30, sub_title,
+            {fontSize:30, color:'#333333'}).setOrigin(0.5).setDepth(100)
+        this.game.time.delayedCall(3000, () => {
+            this.title_obj.destroy()
+            this.sub_title_obj.destroy()
+        }, [], this.game);
     }
 
     game_tick(deltaTime)
     {
         // Subtract deltaTime from the remaining time.
-        if (this.game.enemies.length <= 0) {
+        if (this.game.enemies.length + this.numEnemies <= 0) {
             this.timeBetweenWaves -= deltaTime;
         }
         this.nextSpawn -= deltaTime;
@@ -64,7 +78,12 @@ export default class Wave
             // and reset the timer.
             this.nextSpawn = this.spawnDelay;
         }
-        return (this.remainingTime <= 0 || this.timeBetweenWaves <= 0)
+        let health = 0;
+        for (let enemy of this.game.enemies){
+            health += enemy.health/enemy.max_health;
+        }
+        let return_data = [health + this.numEnemies,this.totalEnemies,this.timeBetweenWaves,this.totalTimeBetweenWaves]
+        return (return_data)
     }
 
     find_enemy_to_spawn()

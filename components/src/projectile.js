@@ -82,10 +82,10 @@ class Projectile extends Entity {
     create_aoe() {
         let aoe = new EffectAOE(
             this.scene, this.x, this.y, this.team,
-            null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05})
+            null, this.aoe, this.body.halfWidth, {damage:this.damage/2, time_to_live:0.05, source: this.source})
         this.scene.projectiles.push(aoe)
         for (let i=0;i<20;i++) {
-            this.scene.particles.push(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
+            this.scene.add_particle(new SmokeParticle(this.scene, this.x, this.y, random_range(-1,1)*180))
         }
     }
     deal_damage(entity) {
@@ -94,12 +94,17 @@ class Projectile extends Entity {
         if (this.source !== null && defined(this.source.damage_dealt)) {
             this.source.damage_dealt += 1;
         }
-        entity.take_damage(this.damage, this.velocity.length(), this.velocity.angle(), this.knockback, this.source);
+        let angle = this.velocity.angle()
+        if (this.velocity.length() < 0.1) {
+            let diff = new Vec(entity.x-this.x, entity.y-this.y);
+            angle = diff.angle()
+        }
+        entity.take_damage(this.damage, this.velocity.length(), angle, this.knockback, this.source);
         this.apply_inflict_effect(entity);
     }
     make_hit_particles(entity) {
         for (let i = 0; i < 3; i++) {
-            this.scene.particles.push(new GooBlood(this.scene, entity.x, entity.y,
+            this.scene.add_particle(new GooBlood(this.scene, entity.x, entity.y,
                 this.velocity.length() * 0.4, this.velocity.angle() * 180 / Math.PI));
         }
     }
@@ -136,7 +141,7 @@ class FireProjectile extends Projectile {
         this.particle_cooldown -= delta_time/this.scene.target_fps;
         if (this.particle_cooldown < 0) {
             this.particle_cooldown = 0.2-this.alpha/10;
-            this.scene.particles.push(new FireParticle(this.scene, this.x, this.y, 8));
+            this.scene.add_particle(new FireParticle(this.scene, this.x, this.y, 8));
         }
     }
 }
@@ -144,8 +149,19 @@ class Rocket extends Projectile {
     constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
         entity_properties.rotate_to_direction = true
         entity_properties.initial_scale = 0.3
+        // entity_properties.no_drag_distance = 1000;
         properties.aoe = 50;
         super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
+    }
+    get_dead() {
+        if (this.velocity.length()<this.speed_min_to_kill) {
+            if (this.aoe !== 0) {
+                this.create_aoe()
+            }
+            return true;
+        }
+        return (this.pierce_count<0);
+
     }
 }
 class PlasmaShot extends Projectile {
@@ -155,11 +171,18 @@ class PlasmaShot extends Projectile {
         super(scene, x, y, texture, speed, angle, team, properties, entity_properties);
     }
 }
+class LaserCannonShot extends Projectile {
+    constructor(scene, x, y, texture, speed, angle, team, properties, entity_properties) {
+        entity_properties.rotate_to_direction = true;
+        // entity_properties.initial_scale = 0.3
+        super(scene, x, y, 'LaserCannon_projectile', speed, angle, team, properties, entity_properties);
+    }
+}
 
 class EffectAOE extends Projectile {
-    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1}={}) {
+    constructor(scene, x, y, team, effect, radius, base_half_width, {damage=0, time_to_live=1, source=null}={}) {
         super(scene, x, y, '', 0, 0, team,
-            {inflict_effect:effect, pierce_count:1000, damage:damage},
+            {inflict_effect:effect, pierce_count:1000, damage:damage, source:source},
             {initial_alpha:0, time_to_live:time_to_live, drag:0});
         this.body.setCircle(radius);
         this.body.reset(this.x-radius+base_half_width,this.y-radius+base_half_width);
@@ -172,19 +195,20 @@ class EffectAOE extends Projectile {
 class GoosniperProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=20, damage=4} = {}) {
         super(scene, x, y, 'goosniper_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:0, damage:damage},{target_distance:1000});
+            {target:target, auto_aim_strength:0, damage:damage},{target_distance:1000, rotate_to_direction:true});
     }
 }
 class GooslingerProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=10, damage=2} = {}) {
         super(scene, x, y, 'gooslinger_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:0, damage:damage},{target_distance:300});
+            {target:target, auto_aim_strength:0, damage:damage},{target_distance:300, rotate_to_direction:true,initial_scale:1.5});
     }
 }
 class GoocasterProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=8, damage=5, auto_aim_strength=1} = {}) {
         super(scene, x, y, 'goocaster_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:500});
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},
+            {target_distance:500, initial_angular_velocity:1, angular_drag:1,initial_scale:1.5});
     }
 }
 class GoobouncerProjectile extends Projectile {
@@ -208,17 +232,21 @@ class GoobulletProjectile extends Projectile {
 class GoodroneProjectile extends Projectile {
     constructor(scene, x, y, angle, target=null, {speed=10, damage=1, auto_aim_strength=0} = {}) {
         super(scene, x, y, 'goodrone_projectile', speed, angle, 'Enemy',
-            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},{target_distance:1000,no_drag_distance:100000});
+            {target:target, auto_aim_strength:auto_aim_strength, damage:damage},
+            {target_distance:1000,no_drag_distance:100000, initial_angular_velocity:3, angular_drag:1});
     }
 }
 class GooMeleeDamage extends Projectile {
-    constructor(scene, x, y, target=null, damage=1, type) {
+    constructor(scene, x, y, target=null, damage=1, type, time_to_live=0.1) {
         super(scene, x, y, type, 0, 0, 'Enemy',
-            {target:target, auto_aim_strength:0, damage:damage},{initial_alpha:0, target_distance:5, time_to_live:0.1});
+            {target:target, auto_aim_strength:0, damage:damage},
+            {initial_alpha:0, target_distance:5, time_to_live:time_to_live});
+    }
+    get_dead() {
+        return (this.time_to_live<0);
     }
 }
 
 export {CannonBall, Bullet, Rocket, FireProjectile, EffectAOE, GoosniperProjectile, GooslingerProjectile,
         GooMeleeDamage, GoocasterProjectile, GoobouncerProjectile, GootowerProjectile, GoobulletProjectile,
-        PlasmaShot,
-        GoodroneProjectile};
+        PlasmaShot, LaserCannonShot, GoodroneProjectile};
