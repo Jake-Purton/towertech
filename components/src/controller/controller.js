@@ -40,29 +40,29 @@ export default class Controller extends Phaser.Scene{
         // constants
         this.tower_data = {
             "CannonTower":{title:"Cannon", description:"It's a cannon.", level_stats:[
-                    {level:1, cost:5, damage:4, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
-                    {level:2, cost:10, damage:7, fire_rate:2.2, range:200, fire_distance:200, projectile_auto_aim_strength:10},
-                    {level:3, cost:15, damage:11, fire_rate:2.5, range:220, fire_distance:220, projectile_auto_aim_strength:10},
+                    {level:1, cost:5, damage:3, fire_rate:2, range:180, fire_distance:180, projectile_auto_aim_strength:10},
+                    {level:2, cost:10, damage:9, fire_rate:2.2, range:200, fire_distance:200, projectile_auto_aim_strength:10},
+                    {level:3, cost:15, damage:16, fire_rate:2.5, range:220, fire_distance:220, projectile_auto_aim_strength:10},
                 ]},
             "SniperTower":{title:"Sniper", description:"Huge damage per shot in a large range.", level_stats:[
                     {level:1, cost:10, damage:20, fire_rate:0.5, range:320, fire_distance:320, projectile_auto_aim_strength:10},
-                    {level:2, cost:15, damage:30, fire_rate:0.8, range:380, fire_distance:380, projectile_auto_aim_strength:10},
-                    {level:3, cost:25, damage:40, fire_rate:1.4, range:440, fire_distance:440, projectile_auto_aim_strength:10},
+                    {level:2, cost:15, damage:35, fire_rate:0.8, range:380, fire_distance:380, projectile_auto_aim_strength:10},
+                    {level:3, cost:25, damage:45, fire_rate:1.4, range:440, fire_distance:440, projectile_auto_aim_strength:10},
                 ]},
             "BallistaTower":{title:"Ballista", description:"Taken from the walls of Jerusalem.", level_stats:[
-                    {level:1, cost:20, damage:6, fire_rate:1.5, range:220, fire_distance:220, pierce_count:3},
-                    {level:2, cost:30, damage:12, fire_rate:2, range:250, fire_distance:250, pierce_count:5},
-                    {level:3, cost:40, damage:20, fire_rate:2.5, range:280, fire_distance:280, pierce_count:8},
+                    {level:1, cost:20, damage:12, fire_rate:1.5, range:220, fire_distance:220, pierce_count:3},
+                    {level:2, cost:30, damage:25, fire_rate:2, range:250, fire_distance:250, pierce_count:5},
+                    {level:3, cost:40, damage:40, fire_rate:2.5, range:280, fire_distance:280, pierce_count:8},
                 ]},
             "LaserTower":{title:"Laser", description:"Take that, Caveman!", level_stats:[
                     {level:1, cost:25, damage:3, fire_rate:10, range:200, fire_distance:200},
-                    {level:2, cost:40, damage:6, fire_rate:10, range:240, fire_distance:240},
-                    {level:3, cost:60, damage:10, fire_rate:10, range:280, fire_distance:280},
+                    {level:2, cost:40, damage:8, fire_rate:10, range:240, fire_distance:240},
+                    {level:3, cost:60, damage:15, fire_rate:10, range:280, fire_distance:280},
                 ]},
             "FlamethrowerTower":{title:"Flamer", description:"How's the taste of roasted goobers?", level_stats:[
-                    {level:1, cost:40, damage:3, fire_rate:8, range:160, fire_distance:160},
-                    {level:2, cost:50, damage:5, fire_rate:10, range:200, fire_distance:200},
-                    {level:3, cost:60, damage:8, fire_rate:12, range:240, fire_distance:240},
+                    {level:1, cost:40, damage:5, fire_rate:8, range:160, fire_distance:160},
+                    {level:2, cost:50, damage:10, fire_rate:10, range:200, fire_distance:200},
+                    {level:3, cost:60, damage:15, fire_rate:12, range:240, fire_distance:240},
                 ]},
             "HealingTower":{title:"Healer", description:"Heal your body and soul.", level_stats:[
                     {level:1, cost:10, effect_amplifier:6, range:120},
@@ -93,18 +93,18 @@ export default class Controller extends Phaser.Scene{
                 ]},
             "lightweight_frame":{title:"Lightweight Frame", description:"A lightweight frame built for speed at the cost of durability.", level_stats:[
                     {health:8, speed:12},
-                    {health:13, speed:15, upgrade_cost:6, upgrade_number:3},
-                    {health:18, speed:18, upgrade_cost:10, upgrade_number:3},
+                    {health:13, speed:15, upgrade_cost:6, upgrade_number:4},
+                    {health:18, speed:18, upgrade_cost:10, upgrade_number:5},
                 ]},
             "tank_frame":{title:"Tank Frame", description:"A heavily armored frame designed to absorb damage and protect the player.", level_stats:[
                     {health:20, speed:2},
-                    {health:35, speed:3, upgrade_cost:8, upgrade_number:3},
+                    {health:35, speed:3, upgrade_cost:8, upgrade_number:2},
                     {health:50, speed:4, upgrade_cost:12, upgrade_number:3},
                 ]},
             "energy_core_frame":{title:"Energy Core Frame", description:"A futuristic frame that enhances buff durations but leaves the user vulnerable to burst attacks.", level_stats:[
                     {health:10, speed:6},
-                    {health:16, speed:8, upgrade_cost:6, upgrade_number:3},
-                    {health:24, speed:10, upgrade_cost:20, upgrade_number:3},
+                    {health:16, speed:8, upgrade_cost:6, upgrade_number:4},
+                    {health:24, speed:10, upgrade_cost:20, upgrade_number:5},
                 ]},
             "titan_core":{title:"Titan Core", description:"An impenetrable core that grants immense defense but severely limits movement.", level_stats:[
                     {health:25, speed:5},
@@ -119,13 +119,13 @@ export default class Controller extends Phaser.Scene{
                 ]},
             "armored_walker":{title:"Armoured Walker", description:"Heavy armor plating makes these legs a walking fortress.", level_stats:[
                     {health:14, speed:6},
-                    {health:25, speed:7, upgrade_cost:8, upgrade_number:3},
+                    {health:25, speed:7, upgrade_cost:8, upgrade_number:2},
                     {health:40, speed:8, upgrade_cost:12, upgrade_number:3},
                 ]},
             "spider_leg":{title:"Spider Legs", description:"Spider Legs offer balanced boosts in speed and health, letting you crawl effortlessly through the battlefield.", level_stats:[
                     {health:10, speed:10},
-                    {health:18, speed:13, upgrade_cost:10, upgrade_number:3},
-                    {health:25, speed:16, upgrade_cost:15, upgrade_number:3},
+                    {health:18, speed:13, upgrade_cost:10, upgrade_number:2},
+                    {health:25, speed:16, upgrade_cost:15, upgrade_number:4},
                 ]},
             "phantom_step":{title:"Phantom Step", description:"A mysterious set of legs that allows players to phase out of danger momentarily, but mistiming can leave them exposed.", level_stats:[
                     {health:12, speed:9},
@@ -135,17 +135,17 @@ export default class Controller extends Phaser.Scene{
 
             "speedster_wheel":{title:"Speedster Wheel", description:"High-speed wheels for those who want to outrun enemies but risk losing control.", level_stats:[
                     {health:7, speed:14},
-                    {health:9, speed:20, upgrade_cost:4, upgrade_number:3},
-                    {health:11, speed:25, upgrade_cost:8, upgrade_number:3},
+                    {health:9, speed:20, upgrade_cost:4, upgrade_number:4},
+                    {health:11, speed:25, upgrade_cost:8, upgrade_number:5},
                 ]},
             "floating_wheel":{title:"Floating Wheel", description:"Hovering movement lets you glide over obstacles but makes you an easy airborne target.", level_stats:[
                     {health:3, speed:14},
-                    {health:5, speed:15, upgrade_cost:4, upgrade_number:3},
-                    {health:7, speed:18, upgrade_cost:8, upgrade_number:3},
+                    {health:5, speed:15, upgrade_cost:4, upgrade_number:5},
+                    {health:7, speed:18, upgrade_cost:8, upgrade_number:7},
                 ]},
             "tank_treads":{title:"Tank Treads", description:"Heavy-duty treads that offer durability at the cost of speed.", level_stats:[
                     {health:20, speed:3},
-                    {health:35, speed:4, upgrade_cost:8, upgrade_number:3},
+                    {health:35, speed:4, upgrade_cost:8, upgrade_number:2},
                     {health:50, speed:5, upgrade_cost:12, upgrade_number:3},
                 ]},
 
@@ -156,28 +156,28 @@ export default class Controller extends Phaser.Scene{
                 ]},
             "plasma_blaster":{title:"Plasma Blaster", description:"A rapid-fire plasma weapon with slight knockback, ideal for keeping enemies at bay.", level_stats:[
                     {damage:6, fire_rate:5, fire_distance:150},
-                    {damage:8, fire_rate:6, fire_distance:180, upgrade_cost:8, upgrade_number:3},
-                    {damage:10, fire_rate:8, fire_distance:210, upgrade_cost:12, upgrade_number:3},
+                    {damage:8, fire_rate:6, fire_distance:180, upgrade_cost:8, upgrade_number:2},
+                    {damage:10, fire_rate:8, fire_distance:210, upgrade_cost:16, upgrade_number:4},
                 ]},
             "rocket_launcher":{title:"Rocket Launcher", description:"A devastating explosive launcher that clears groups of enemies but struggles against agile targets.", level_stats:[
                     {damage:50, fire_rate:1, fire_distance:350, projectile_no_drag_distance:300, projectile_auto_aim_strength:10},
-                    {damage:80, fire_rate:1.4, fire_distance:400, projectile_no_drag_distance:350, upgrade_cost:30, upgrade_number:3, projectile_auto_aim_strength:10},
+                    {damage:80, fire_rate:1.4, fire_distance:400, projectile_no_drag_distance:350, upgrade_cost:30, upgrade_number:2, projectile_auto_aim_strength:10},
                     {damage:120, fire_rate:2, fire_distance:450, projectile_no_drag_distance:400, upgrade_cost:40, upgrade_number:3, projectile_auto_aim_strength:10},
                 ]},
             "tesla_rifle":{title:"Tesla Rifle", description:"A high-powered laser that delivers pinpoint accuracy but requires precise aim and resource management.", level_stats:[
                     {damage:6, fire_rate:10, fire_distance:240},
-                    {damage:12, fire_rate:10, fire_distance:300, upgrade_cost:20, upgrade_number:3},
-                    {damage:22, fire_rate:10, fire_distance:360, upgrade_cost:30, upgrade_number:3},
+                    {damage:12, fire_rate:10, fire_distance:300, upgrade_cost:20, upgrade_number:4},
+                    {damage:22, fire_rate:10, fire_distance:360, upgrade_cost:30, upgrade_number:4},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
                     {damage:6, fire_rate:10, fire_distance:200},
-                    {damage:12, fire_rate:10, fire_distance:250, upgrade_cost:20, upgrade_number:3},
-                    {damage:20, fire_rate:10, fire_distance:300, upgrade_cost:25, upgrade_number:3},
+                    {damage:12, fire_rate:10, fire_distance:250, upgrade_cost:20, upgrade_number:4},
+                    {damage:20, fire_rate:10, fire_distance:300, upgrade_cost:25, upgrade_number:5},
                 ]},
             "sword_of_void":{title:"Sword of Void", description:"A void-infused blade capable of tearing through bosses, but ineffective against enemies that multiply.", level_stats:[
                     {damage:40, fire_rate:3, fire_distance:200},
-                    {damage:55, fire_rate:3, fire_distance:250, upgrade_cost:30, upgrade_number:1},
-                    {damage:70, fire_rate:3, fire_distance:300, upgrade_cost:40, upgrade_number:2},
+                    {damage:60, fire_rate:3, fire_distance:250, upgrade_cost:30, upgrade_number:1},
+                    {damage:80, fire_rate:3, fire_distance:300, upgrade_cost:40, upgrade_number:2},
                 ]},
             }
     }
@@ -291,7 +291,7 @@ export default class Controller extends Phaser.Scene{
             case 'Set_Health':
                 this.player_health = input.health;
                 this.player_max_health = input.max_health;
-                if (defined(this.health_ui_text)) {
+                if (defined(this.health_ui_text) && this.health_ui_text !== null) {
                     this.health_ui_text.setText('Health: '+Math.round(this.player_health)+'/'+this.player_max_health);
                     this.health_ui_bar.setCrop(0,0,this.health_ui_bar.width*this.player_health/this.player_max_health, this.health_ui_bar.height);
                 }
