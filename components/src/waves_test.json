@@ -1,0 +1,25 @@
+{
+    "waves":
+        [
+            {
+                "type":"boss",
+                "title":"Wave 25 - Boss Wave",
+                "sub_title":"Beware the Goobuilder",
+                "length":100, 
+                "spawnDelay":1,
+                "enemyList":["goobuilder","goober","goowalker","goosplitter","goosprint"], 
+                "enemyWeights":[1,10,10,5,5], 
+                "enemyCount":21
+            }
+        ],  
+
+    "waveTemplate":
+        {
+            "length":30, 
+            "spawnDelay":1, 
+            "enemyList":["goober","goolime","gooslinger","goosplitter","goosniper","goosprint","goodrone","goofly","goocaster","goobouncer","goocharger","goowalker","gooshifter","goocrab","goodropper"], 
+            "enemyWeights":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], 
+            "enemyCount": 15, 
+            "maxCount":12
+        }
+}

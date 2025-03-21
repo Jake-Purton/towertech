@@ -32,7 +32,7 @@ export default class HealthBar extends Phaser.GameObjects.Container {
         if (max_health === null) {
             max_health = this.max_health
         }
-        health = clamp(health, 0, this.max_health);
+        health = clamp(health, 0, max_health);
         this.setVisible(health !== max_health);
         this.health = health;
         this.max_health = max_health;

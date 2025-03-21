@@ -189,6 +189,8 @@ export default class Game extends Phaser.Scene{
             'goosplitter_walk': {sprite_sheet:'goosplitter', frames:6, frameRate:8, repeat:-1},
             'goosprint_walk': {sprite_sheet:'goosprint', frames:6, frameRate:8, repeat:-1},
             'goowalker_walk': {sprite_sheet:'goowalker', frames:6, frameRate:8, repeat:-1},
+            'gootower_walk': {sprite_sheet:'gootower', frames:1, frameRate:8, repeat:-1},
+            'gootower_shoot': {sprite_sheet:'gootower', frames:1, startFrame:1, frameRate:4, repeat:0},
         }
 
         for (let anim of Object.keys(animations)) {
@@ -407,10 +409,12 @@ export default class Game extends Phaser.Scene{
                 tower.playerid = newID
             }
         }
+        if (this.players[newID]) {
+            this.players[newID].save_inventory();
+            this.players[newID].set_coins(this.players[newID].coins);
+            this.players[newID].set_health(this.players[newID].health, this.players[newID].max_health);
+        }
 
-        this.players[newID].save_inventory();
-        this.players[newID].set_coins(this.players[newID].coins);
-        this.players[newID].set_health(this.players[newID].health, this.players[newID].max_health);
     }
 
     take_input(input){
