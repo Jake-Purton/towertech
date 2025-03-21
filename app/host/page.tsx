@@ -46,6 +46,8 @@ const HostPage = () => {
       socket.connect();
     }
 
+    socket.emit("createRoom");
+
     socket.on("connect", () => {
       console.log("connect")
       socket.emit("createRoom");

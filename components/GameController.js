@@ -64,9 +64,14 @@ const GameController = () => {
             game.destroy();
           }
         });
+        const indexToken = localStorage.getItem('indexToken');
+        if (indexToken) {
+          socket.emit('getUsers', indexToken);
+        } else {
+          socket.emit('getUsers');
+        }
 
         socket.on("connect", () => {
-          const indexToken = localStorage.getItem('indexToken');
           if (indexToken) {
             socket.emit('getUsers', indexToken);
           } else {
