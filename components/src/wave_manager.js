@@ -95,25 +95,27 @@ export default class WaveManager
         // Iterate through the enemy list.
         for(let i = 0; i < allEnemies.length; i++)
         {
-            // Determine the probability that each value should be added to the array,
-            let probability = 1.0 / (allEnemies.length - i);
-            // And generate a random number with Math.random().
-            let randomVal = Math.random();
-
-            // If this value is less than or equal to the probability,
-            if (randomVal <= probability)
-            {
-                // Add the enemy and its weight to the array.
-                enemyList.push(allEnemies[i]);
-                enemyWeights.push(allWeights[i]);
-
-                // If the array is now full,
-                if (enemyList.length >= this.waveTemplateData.maxCount)
-                {
-                    // break from it.
-                    break;
-                }
-            }
+            // // Determine the probability that each value should be added to the array,
+            // let probability = 1.0 / (allEnemies.length - i);
+            // // And generate a random number with Math.random().
+            // let randomVal = Math.random();
+            //
+            // // If this value is less than or equal to the probability,
+            // if (randomVal <= probability)
+            // {
+            //     // Add the enemy and its weight to the array.
+            //     enemyList.push(allEnemies[i]);
+            //     enemyWeights.push(allWeights[i]);
+            //
+            //     // If the array is now full,
+            //     if (enemyList.length >= this.waveTemplateData.maxCount)
+            //     {
+            //         // break from it.
+            //         break;
+            //     }
+            // }
+            enemyList.push(allEnemies[i]);
+            enemyWeights.push(allWeights[i]);
         }
         let new_wave;
         if (is_boss_wave) {

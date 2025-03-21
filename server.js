@@ -50,7 +50,6 @@ app.prepare().then(() => {
 
     socket.on("getUsers", (indexToken) => {
       if (indexToken) {
-        console.log("here2")
         try {
           const decoded = jwt.verify(indexToken, JWT_SECRET);
           console.log(decoded)

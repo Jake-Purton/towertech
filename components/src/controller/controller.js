@@ -170,9 +170,9 @@ export default class Controller extends Phaser.Scene{
                     {damage:22, fire_rate:10, fire_distance:360, upgrade_cost:30, upgrade_number:4},
                 ]},
             "laser_cannon":{title:"Laser Cannon", description:"Fires arcs of lightning that bounce between enemies, making it great for groups but weak on lone threats.", level_stats:[
-                    {damage:6, fire_rate:10, fire_distance:200},
+                    {damage:8, fire_rate:8, fire_distance:200},
                     {damage:12, fire_rate:10, fire_distance:250, upgrade_cost:20, upgrade_number:4},
-                    {damage:20, fire_rate:10, fire_distance:300, upgrade_cost:25, upgrade_number:5},
+                    {damage:24, fire_rate:11.25, fire_distance:300, upgrade_cost:40, upgrade_number:5},
                 ]},
             "sword_of_void":{title:"Sword of Void", description:"A void-infused blade capable of tearing through bosses, but ineffective against enemies that multiply.", level_stats:[
                     {damage:40, fire_rate:3, fire_distance:200},
