@@ -392,7 +392,6 @@ export default class Game extends Phaser.Scene{
     }
 
     swapSocketID(oldID, newID) {
-        console.log("HERE JAKE");
         console.log("old: " + oldID + "new: " + newID);
         console.log(this.players);
         if (this.players[oldID]) {
@@ -402,7 +401,11 @@ export default class Game extends Phaser.Scene{
             this.players[newID].player_id = newID;
             delete this.players[oldID];
             console.log(this.players)
-
+        }
+        for (let tower of Object.values(this.towers)) {
+            if (tower.playerid === oldID) {
+                tower.playerid = newID
+            }
         }
 
         this.players[newID].save_inventory();

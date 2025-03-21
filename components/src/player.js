@@ -342,6 +342,11 @@ export default class Player extends Phaser.GameObjects.Container{
         } else if (this.has_outgoing_ping_request && this.time_since_last_ping_request*1000 > this.ping) {
             this.ping = Math.round(this.time_since_last_ping_request*1000);
             this.scene.level.player_info_display.update_list_text()
+            if (this.ping_request_timer < 0) {
+                this.ping_request_timer = this.ping_request_cooldown;
+                this.time_since_last_ping_request = 0;
+                this.scene.output_data(this.player_id, {type:'Ping_Request', request_timestamp:new Date().getTime()})
+            }
         }
     }
     receive_ping_reply(data) {
