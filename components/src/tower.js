@@ -244,7 +244,7 @@ class SlowingTower extends Tower{
     }
     shoot() {
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Tower', {source:this, name:"Slow", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'EffectTower', {source:this, name:"Slow", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun() {
         this.ready_to_shoot = true;
@@ -258,7 +258,7 @@ class HealingTower extends Tower{
     }
     shoot() {
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Healing", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'EffectTower', {source:this, name:"Healing", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun() {
         this.ready_to_shoot = true;
@@ -272,7 +272,7 @@ class BuffingTower extends Tower{
     }
     shoot() {
         this.scene.projectiles.push(new this.projectile_class(
-            this.scene, this.x, this.y, 'Enemy', {source:this, name:"Fast", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
+            this.scene, this.x, this.y, 'EffectTower', {source:this, name:"Fast", amplifier:this.effect_amplifier, duration:0.11}, this.range, this.body.halfWidth));
     }
     rotate_gun() {
         this.ready_to_shoot = true;

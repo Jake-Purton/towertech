@@ -43,6 +43,9 @@ class Projectile extends Entity {
             case "Enemy":
                 this.check_collision(players);
                 break;
+            case "EffectTower":
+                this.check_collision(players);
+                this.check_collision(towers);
         }
         this.follow_target();
         this.physics_tick(delta_time);
