@@ -44,10 +44,10 @@ const enemy_map = {
     'goodrone':Goodrone
 };
 
-export function spawn_enemy(scene, x, y, type, path, difficulty, porperties){
+export function spawn_enemy(scene, x, y, type, path, difficulty, properties){
     let new_enemy = null;
     if (type in enemy_map){
-        new_enemy = new enemy_map[type](scene, x, y, path, difficulty, porperties)
+        new_enemy = new enemy_map[type](scene, x, y, path, difficulty, properties)
     }
     return new_enemy;
 }

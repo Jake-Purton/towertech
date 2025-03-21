@@ -41,7 +41,6 @@ class Projectile extends Entity {
                 this.check_collision(enemies);
                 break;
             case "Enemy":
-                this.check_collision(towers);
                 this.check_collision(players);
                 break;
         }

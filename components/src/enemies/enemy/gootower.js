@@ -12,7 +12,7 @@ export default class Gootower extends Enemy{
                 melee_attack_speed:melee_attack_speed, target:target, cooldown:cooldown, 
                 max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage}, loot_table);
     }
-    game_tick(delta_time, players, towers){
+    game_tick(delta_time, players, towers) {
         let time = delta_time/this.scene.target_fps;
         this.cooldown -= time;
         if (this.cooldown <= 0){
@@ -24,9 +24,13 @@ export default class Gootower extends Enemy{
         if (this.find_target(players, towers)) {
             this.scene.projectiles.push(new GootowerProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target, {damage:this.damage}));
         }
+        this.play('gootower_shoot')
+        this.on("animationcomplete", ()=>{
+            this.play('gootower_walk')
+        });
     }
-    find_target(players, towers){
-        this.target = this.find_near_player_tower(players, towers);
+    find_target(players){
+        this.target = this.find_near_player(players);
         if (this.target == null) {
             return false;
         }

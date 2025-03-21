@@ -1,9 +1,9 @@
 import Wave from './wave.js';
 import BossWave from './wave_boss.js';
 import WaveBar from './wave_bar.js';
-import { random_int } from './utiles.js';
+import {clamp, random_choice} from './utiles.js';
 
-const boss = ['gooacid','goobullet','goobuilder']
+const bosses = ['gooacid','goobullet','goobuilder']
 
 export default class WaveManager
 {
@@ -29,7 +29,7 @@ export default class WaveManager
 
 
         let difficulties = {
-            Easy:0.6,
+            Easy:1,
             Medium:1.6,
             Hard:2.6}
         let diff = localStorage.getItem("gameDifficulty")
@@ -72,6 +72,7 @@ export default class WaveManager
         let numEnemies = this.waveTemplateData.enemyCount + 5 * (this.wave_index - this.waveData.length);
         let length = this.waveTemplateData.length + 5 * (this.wave_index - this.waveData.length) * this.waveTemplateData.spawnDelay
 
+        let spawnDelay = this.waveTemplateData.spawnDelay/(clamp(this.wave_index-this.waveData.length,1,Infinity))+0.5
 
         // Copy pointers to the allEnemies and allWeights arrays
         let allEnemies = this.waveTemplateData.enemyList;
@@ -81,14 +82,13 @@ export default class WaveManager
         let enemyList = [];
         let enemyWeights = [];
 
-        if (this.wave_index % 10 === 0){
-            let random_num = random_int(1,3)
-            enemyList.push(boss[random_num])
+        let title_suffix = ""
+        let is_boss_wave = false;
+        if ((this.wave_index+1) % 5 === 0){
+            enemyList.splice(0,0,random_choice(bosses))
             enemyWeights.push(1)
-        } 
-        else if(this.wave_index % 5 === 0){
-            enemyList.push('gootank')
-            enemyWeights.push(this.wave_index % 5)
+            title_suffix = " - Boss Wave"
+            is_boss_wave = true
         }
 
 
@@ -115,11 +115,19 @@ export default class WaveManager
                 }
             }
         }
-
-        return new Wave(this.game, length, this.waveTemplateData.spawnDelay,
-            enemyList, enemyWeights, numEnemies, difficulty,
-            "Wave "+(this.wave_index+1), "Literally Everything"
-        );
+        let new_wave;
+        if (is_boss_wave) {
+            new_wave = new BossWave(this.game, length, spawnDelay,
+                enemyList, enemyWeights, numEnemies, difficulty,
+                "Wave "+(this.wave_index+1)+title_suffix, "Literally Everything"
+            )
+        } else {
+            new_wave = new Wave(this.game, length, spawnDelay,
+                enemyList, enemyWeights, numEnemies, difficulty,
+                "Wave "+(this.wave_index+1)+title_suffix, "Literally Everything"
+            )
+        }
+        return new_wave;
 
 
 
@@ -148,7 +156,7 @@ export default class WaveManager
         // increment the wave index.
         this.wave_index ++;
 
-        // increases difficulty by number of players every 5 waves
+        // increases difficulty by number of players every wave
         let difficulty = (((this.wave_index + 1) ** 1.8)/3 + 0.5) * (Object.keys(this.game.players).length+1) * this.base_difficulty;
 
         let newWave = null;
