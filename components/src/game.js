@@ -362,7 +362,7 @@ export default class Game extends Phaser.Scene{
         this.end_game_output(game_data);
 
         this.game_over = true;
-        console.log('GAME OVER', game_data);
+        // console.log('GAME OVER', game_data);
 
         // game over dislpay
         this.add.text(
@@ -389,6 +389,25 @@ export default class Game extends Phaser.Scene{
         } else {
             new_particle.destroy()
         }
+    }
+
+    swapSocketID(oldID, newID) {
+        console.log("HERE JAKE");
+        console.log("old: " + oldID + "new: " + newID);
+        console.log(this.players);
+        if (this.players[oldID]) {
+            console.log("SWAPPED old: " + oldID + "new: " + newID);
+            console.log(this.players)
+            this.players[newID] = this.players[oldID];
+            this.players[newID].player_id = newID;
+            delete this.players[oldID];
+            console.log(this.players)
+
+        }
+
+        this.players[newID].save_inventory();
+        this.players[newID].set_coins(this.players[newID].coins);
+        this.players[newID].set_health(this.players[newID].health, this.players[newID].max_health);
     }
 
     take_input(input){

@@ -42,7 +42,14 @@ const HostPage = () => {
     handleDifficultyClick("Medium")
     handleMapClick("level 2");
 
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    socket.emit("createRoom");
+
     socket.on("connect", () => {
+      console.log("connect")
       socket.emit("createRoom");
     })
     getIPAddress();

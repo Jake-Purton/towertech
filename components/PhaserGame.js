@@ -17,6 +17,7 @@ const PhaserGame = () => {
       import('phaser').then(Phaser => {
         
         socket.on("game_input", input_data);
+        socket.on("swapSocketID", swapSocketID)
 
         let display_width = Math.min(window.innerWidth-20,3000);
         let display_height = Math.min(window.innerHeight-20,3000);
@@ -61,7 +62,7 @@ const PhaserGame = () => {
           // the token encoded with the room id for security
           const roomToken = localStorage.getItem('roomToken');
           // console.log(roomToken)
-          console.log("phaserGame.js: game data is", data)
+          // console.log("phaserGame.js: game data is", data)
 
           // if there is a token, we can send the data to the server
           if (roomToken) {
@@ -76,13 +77,13 @@ const PhaserGame = () => {
 
               const result = await response.json();
 
-              console.log("RESULT IS HERE: ", result);
+              // console.log("RESULT IS HERE: ", result);
 
               if (result.success) {
-                console.log('Game data successfully sent to the server');
+                // console.log('Game data successfully sent to the server');
                 router.push("/end_game?gameID=" + result.gameid);
               } else {
-                console.log('Failed to send game data to the server:', result.error);
+                // console.log('Failed to send game data to the server:', result.error);
               }
 
               // redirect host to next page
@@ -95,6 +96,10 @@ const PhaserGame = () => {
 
           // function that sends the end game message to the server
 
+        }
+
+        function swapSocketID (data) {
+          game.scene.getScene('GameScene').swapSocketID(data.oldID, data.newID);
         }
 
         function output_data(player_id, data) {

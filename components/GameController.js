@@ -8,11 +8,14 @@ const GameController = () => {
   const router = useRouter();
 
   useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+      console.log("HERE THE SOCKET ISNT WORKING", socket.connected)
+    };
 
     if (typeof window !== 'undefined') {
       import('phaser').then(Phaser => {
 
-        if (!socket.connected) socket.connect();
         socket.on("output_from_game_to_client", input_data);
         socket.on('end_game_client', end_game)
 
@@ -61,8 +64,20 @@ const GameController = () => {
             game.destroy();
           }
         });
-    
-        socket.emit('getUsers');
+        const indexToken = localStorage.getItem('indexToken');
+        if (indexToken) {
+          socket.emit('getUsers', indexToken);
+        } else {
+          socket.emit('getUsers');
+        }
+
+        socket.on("connect", () => {
+          if (indexToken) {
+            socket.emit('getUsers', indexToken);
+          } else {
+            socket.emit('getUsers');
+          }
+        })
 
         return () => {
           socket.off("output_from_game_to_client");
@@ -80,6 +95,7 @@ const GameController = () => {
         }
 
         function input_data(data) {
+          // console.log(data)
           if (data['PlayerID'] === socket.id) {
             let scene = game.scene.getScene('GameController');
             if (scene !== null) {
@@ -92,7 +108,6 @@ const GameController = () => {
           // console.log('data sent:', data)
           socket.emit("input_from_client_to_game", data);
         }
-
 
       });
     }

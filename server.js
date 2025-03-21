@@ -31,7 +31,7 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     socket.on("MESSAGE", handleMessage(socket));
-    socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager));
+    socket.on("JOIN_ROOM", handleJoinRoom(socket, roomManager, JWT_SECRET));
     // socket.on("disconnect", handleDisconnect(socket, roomManager));
     socket.on("createRoom", () => {
       const roomCode = roomManager.createRoomWithRandomName();
@@ -47,11 +47,30 @@ app.prepare().then(() => {
       console.log("room created with code: ", roomCode);
       socket.join(roomCode);
     });
-    socket.on("getUsers", () => {
+
+    socket.on("getUsers", (indexToken) => {
+      if (indexToken) {
+        console.log("here2")
+        try {
+          const decoded = jwt.verify(indexToken, JWT_SECRET);
+          console.log(decoded)
+          const swap = roomManager.swapSocketID(decoded.uIndex, decoded.roomId, socket.id);
+          // if the swap actually needed to happen
+          if (swap) {
+            // tell the game to swap the playerid
+            socket.to(decoded.roomId).emit("swapSocketID", {oldID: swap.oldID, newID: swap.newID})
+            console.log("HERE rc" + decoded.roomId)
+            socket.join(decoded.roomId)
+          }
+        } catch {
+          console.log("error with decoding index token")
+        }
+      }
 
       const users = roomManager.getUsersInRoom(roomManager.getUserRoom(socket.id));
       socket.emit("updateUsers", users);
     });
+
     socket.on("getUsersHost", (code) => {
 
       const users = roomManager.getUsersInRoom(code);
@@ -118,14 +137,22 @@ app.prepare().then(() => {
           const usersUserID = result.rows[0].id;
           const usersUserName = result.rows[0].name;
 
-          roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
+          const uIndex = roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
           socket.join(roomCode);
     
           console.log(userId, "joined room", roomCode);
           const users = roomManager.getUsersInRoom(roomCode);
           socket.to(roomCode).emit("updateUsers", users);
     
-          socket.emit("roomJoinSuccess", usersUserName);
+          const tokenOptions = { expiresIn: '1d' };
+          jwt.sign({ uIndex, roomId: roomCode }, JWT_SECRET, tokenOptions, (err, indexToken) => {
+            if (err) {
+              console.error("Error creating token:", err);
+              return;
+            }
+            socket.emit("roomJoinSuccess", ({username: usersUserName, token: indexToken}));
+          });
+
         } else {
           socket.emit("RoomErr", "Room number " + roomCode + " does not exist");
         }
@@ -173,6 +200,7 @@ app.prepare().then(() => {
 
     socket.on("output_from_game_to_client", (data) => {
       // console.log("output_from_game_to_client", data);
+      // console.log(roomManager.getUserRoom(data.PlayerID));
       // send data to the client
       socket.to(roomManager.getUserRoom(data.PlayerID)).emit("output_from_game_to_client", data);
       // socket.emit("output_from_game_to_client", data);
