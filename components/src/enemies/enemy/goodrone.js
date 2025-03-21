@@ -28,8 +28,8 @@ export default class Goodrone extends Enemy{
             this.scene.projectiles.push(new GoodroneProjectile(this.scene, this.x, this.y, this.shoot_angle, this.target, {damage:this.damage}));
         }
     }
-    find_target(players, towers){
-        this.target = this.find_near_player_tower(players, towers);
+    find_target(players){
+        this.target = this.find_near_player(players);
         if (this.target == null) {
             return false;
         }

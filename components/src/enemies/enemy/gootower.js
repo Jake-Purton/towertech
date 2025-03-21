@@ -29,7 +29,7 @@ export default class Gootower extends Enemy{
             this.play('gootower_walk')
         });
     }
-    find_target(players, towers){
+    find_target(players){
         this.target = this.find_near_player(players);
         if (this.target == null) {
             return false;
