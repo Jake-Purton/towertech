@@ -42,7 +42,11 @@ class RoomManager {
 
   generateRandomRoomName() {
     // random integer from 0 to 999_999
-    return Math.floor(Math.random() * 999_999).toString();
+    let name = Math.floor(Math.random() * 999_999).toString();
+    while (name.length < 6) {
+      name = "0" + name;
+    }
+    return name;
   }
 
   createRoomWithRandomName() {
