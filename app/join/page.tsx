@@ -97,12 +97,18 @@ const JoinPageContent: React.FC = () => {
             return;
         }
 
-        console.log("Joining room with code:", number, username, isLoggedIn);
+        if (!isLoggedIn && username.length >= 20) {
+            setMessage("Username too long (username should be fewer than 20 characters)");
+            return;
+        }
+
+        console.log("Joining room with code:", number, username.trim(), isLoggedIn);
+
         
-        localStorage.setItem('player_username', username)
+        localStorage.setItem('player_username', username.trim())
 
         if (!isLoggedIn) {
-            dataSender(number, username);
+            dataSender(number, username.trim());
         } else {
             const token = localStorage.getItem("token");
             if (token) {
