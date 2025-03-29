@@ -52,13 +52,11 @@ app.prepare().then(() => {
       if (indexToken) {
         try {
           const decoded = jwt.verify(indexToken, JWT_SECRET);
-          console.log(decoded)
           const swap = roomManager.swapSocketID(decoded.uIndex, decoded.roomId, socket.id);
           // if the swap actually needed to happen
           if (swap) {
             // tell the game to swap the playerid
             socket.to(decoded.roomId).emit("swapSocketID", {oldID: swap.oldID, newID: swap.newID})
-            console.log("HERE rc" + decoded.roomId)
             socket.join(decoded.roomId)
           }
         } catch {
@@ -78,8 +76,6 @@ app.prepare().then(() => {
 
     socket.on("end_game", (data) => {
 
-      console.log("GAME ENDED");
-
       const roomToken = data.token;
       const gameID = data.id;
 
@@ -89,8 +85,6 @@ app.prepare().then(() => {
           return;
         }
         const roomCode = decoded.roomCode;
-        console.log("Room code from token:", roomCode);
-
         socket.to(roomCode).emit('end_game_client', {room: roomCode, id: gameID})
 
         const users = roomManager.getUsersInRoom(roomCode);
@@ -99,7 +93,6 @@ app.prepare().then(() => {
         for (const user of users) {
 
           if (user.usersUserID) {
-            console.log("User ID:", user.usersUserID);
 
             const result = await sql `
               UPDATE playeringame
@@ -107,7 +100,6 @@ app.prepare().then(() => {
               WHERE userid = '0' AND playerid = ${user.userID};
             `;
 
-            console.log("result of updating id: ", result);
           }
         }
       });
@@ -117,7 +109,6 @@ app.prepare().then(() => {
     });
 
     socket.on("joinRoomAuthenticated", async ({ userId, roomCode, token }) => {
-      console.log("joinRoomAuthenticated", userId, roomCode, token);
       if (!token) {
         console.error("Token must be provided");
         socket.emit("RoomErr", "Token must be provided");
@@ -126,7 +117,6 @@ app.prepare().then(() => {
     
       try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        console.log("decoded", decoded);
     
         if (roomManager.getRoom(roomCode)) {
 
@@ -139,7 +129,6 @@ app.prepare().then(() => {
           const uIndex = roomManager.addUserToRoomAuth(userId, roomCode, usersUserName, usersUserID);
           socket.join(roomCode);
     
-          console.log(userId, "joined room", roomCode);
           const users = roomManager.getUsersInRoom(roomCode);
           socket.to(roomCode).emit("updateUsers", users);
     
@@ -163,7 +152,6 @@ app.prepare().then(() => {
     });
 
     socket.on("removeUser", async (data) => {
-      console.log(data)
       roomManager.removeUserFromRoom(data.userid, data.roomName)
 
       const users = roomManager.getUsersInRoom(data.roomName);
@@ -187,19 +175,15 @@ app.prepare().then(() => {
 
     socket.on("gameStarted", (roomCode) => {
       // the game has started
-      // send a message to everyone in  that room saying that thge game has started
+      // send a message to everyone in that room saying that the game has started
       socket.to(roomCode).emit("gameStarted", "the game has started!");
     });
 
     socket.on("input_from_client_to_game", (data) => {
-      // console.log("input_from_client_to_game", data);
-      // send data to the game
       socket.to(roomManager.getUserRoom(socket.id)).emit("game_input", data);
     });
 
     socket.on("output_from_game_to_client", (data) => {
-      // console.log("output_from_game_to_client", data);
-      // console.log(roomManager.getUserRoom(data.PlayerID));
       // send data to the client
       socket.to(roomManager.getUserRoom(data.PlayerID)).emit("output_from_game_to_client", data);
       // socket.emit("output_from_game_to_client", data);
