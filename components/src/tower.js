@@ -60,8 +60,8 @@ class Tower extends ProjectileShooter {
     game_tick(delta_time, enemies) {
         super.game_tick(delta_time);
         if (this.enabled){
-            this.shoot_cooldown -= delta_time/this.scene.target_fps;
-            this.time_since_attacking += delta_time/this.scene.target_fps;
+            this.shoot_cooldown -= delta_time;
+            this.time_since_attacking += delta_time;
 
             if (get_removed(this.target)) {
                 this.check_target(enemies);

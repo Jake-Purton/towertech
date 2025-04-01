@@ -52,8 +52,8 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
         this.shots_fired = 0;
     }
     game_tick(delta_time) {
-        this.shoot_cooldown -= delta_time/this.scene.target_fps;
-        this.time_since_attacking += delta_time/this.scene.target_fps;
+        this.shoot_cooldown -= delta_time;
+        this.time_since_attacking += delta_time;
     }
     check_target(enemies) {
         if (!this.stay_on_same_target || get_removed(this.target) || get_removed(this.target.scene)) {
@@ -148,7 +148,7 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
             if (dis > 180) {
                 dis = 360-dis;
             }
-            if (dis < this.max_turn_speed*delta_time) {
+            if (dis < this.max_turn_speed*delta_time*this.scene.target_fps) {
                 this.set_weapon_direction(target_angle);
                 this.ready_to_shoot = true;
             } else {
@@ -159,9 +159,9 @@ export default class ProjectileShooter extends Phaser.Physics.Arcade.Sprite {
                     flip = 1
                 }
                 if (diff % 360 < 180) {
-                    this.set_weapon_direction(current_angle + this.max_turn_speed * delta_time * flip)
+                    this.set_weapon_direction(current_angle + this.max_turn_speed * delta_time*this.scene.target_fps * flip)
                 } else {
-                    this.set_weapon_direction(current_angle - this.max_turn_speed * delta_time * flip)
+                    this.set_weapon_direction(current_angle - this.max_turn_speed * delta_time*this.scene.target_fps * flip)
                 }
             }
             // Rotates gun slowly when not attacking

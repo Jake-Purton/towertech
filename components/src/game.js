@@ -22,6 +22,8 @@ export default class Game extends Phaser.Scene{
         this.init_server = init_server_func;
         this.end_game_output = end_game_output;
 
+        this.prev_timestamp = 0;
+
         // gameplay info
         this.game_over = false;
         this.score = 0;
@@ -231,7 +233,8 @@ export default class Game extends Phaser.Scene{
 
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
-        delta = (delta*this.target_fps)/1000;
+        delta = (time-this.prev_timestamp)/1000;
+        this.prev_timestamp = time;
 
         /// handle players
         this.dummy_input();
@@ -312,7 +315,7 @@ export default class Game extends Phaser.Scene{
 
         // level(wave) management
         this.level.game_tick(delta);
-        this.start_waves_delay -= delta/this.target_fps;
+        this.start_waves_delay -= delta;
         if (this.start_waves_delay < 0) {
             this.level.start_waves()
         }

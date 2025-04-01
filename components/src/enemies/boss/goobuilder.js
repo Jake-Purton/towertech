@@ -14,7 +14,7 @@ export default class Goobuilder extends Enemy{
                 melee_attack_speed:melee_attack_speed, cooldown:cooldown, max_cooldown:max_cooldown, damage_to_base:10000}, loot_table);
     }
     game_tick(delta_time, players, towers){
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         this.cooldown -= time;
         if (this.cooldown <= 0){
             this.cooldown += this.max_cooldown;

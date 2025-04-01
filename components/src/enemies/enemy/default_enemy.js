@@ -64,7 +64,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         // this.game_tick(0); // sets the position to the start of the path
     }
     game_tick(delta_time){
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         if (this.gooblood_tracker > 0) {
             this.gooblood_tracker -= 1;
         }
@@ -79,7 +79,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path
-        this.path_t += (delta_time * this.move_speed * this.effects.get_speed_multiplier())/this.path.getLength();
+        this.path_t += (delta_time*this.scene.target_fps * this.move_speed * this.effects.get_speed_multiplier())/this.path.getLength();
         this.path_t = Phaser.Math.Clamp(this.path_t,0,1);
         let position = this.path.getPoint(this.path_t);
 
@@ -235,7 +235,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         return new Vec(object.x - this.x, object.y - this.y);
     }
     melee_hit(delta_time){
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         this.tick += time;
         if (this.tick > this.melee_attack_speed){
             this.tick -= this.melee_attack_speed;
@@ -250,7 +250,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.on_path = true
             return this.setPosition(this.target.x, this.target.y);
         } else {
-            let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
+            let change = new Vec((delta_time*this.scene.target_fps * this.move_speed * direction.x)/direction.length(),
+                (delta_time*this.scene.target_fps * this.move_speed * direction.y)/direction.length())
             return this.setPosition(this.x + change.x, this.y + change.y);
         }
     }

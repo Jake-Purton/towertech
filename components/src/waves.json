@@ -6,7 +6,7 @@
                 "title":"Wave 1",
                 "sub_title":"Goobers",
                 "length":15, 
-                "spawnDelay":2, 
+                "spawnDelay":2,
                 "enemyList":["goober"],
                 "enemyWeights":[5],
                 "enemyCount":5

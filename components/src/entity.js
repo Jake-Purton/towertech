@@ -84,21 +84,22 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         }
     }
     physics_tick(delta_time) {
-        this.time_to_live -= delta_time/this.scene.target_fps;
+        this.time_to_live -= delta_time;
+        let delta = delta_time*this.scene.target_fps;
 
         let acceleration = this.acceleration.clone()
-        acceleration.scale(delta_time);
+        acceleration.scale(delta);
         this.velocity.add(acceleration);
 
         if (this.distance_tracker >= this.no_drag_distance) {
-            this.velocity.x *= this.drag**delta_time;
-            this.velocity.y *= this.drag**delta_time;
+            this.velocity.x *= this.drag**delta;
+            this.velocity.y *= this.drag**delta;
         }
 
         let prev_position = this.body.position.clone();
 
-        this.body.position.x += this.velocity.x*delta_time;
-        this.body.position.y += this.velocity.y*delta_time;
+        this.body.position.x += this.velocity.x*delta;
+        this.body.position.y += this.velocity.y*delta;
 
         let delta_pos = prev_position.subtract(this.body.position);
         this.distance_tracker += delta_pos.length();
@@ -107,16 +108,16 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
         if (this.rotate_to_direction) {
             this.setAngle(this.velocity.angle()*180/Math.PI);
         } else {
-            this.angular_velocity *= this.angular_drag**delta_time;
-            this.angle_deg += this.angular_velocity*delta_time;
+            this.angular_velocity *= this.angular_drag**delta;
+            this.angle_deg += this.angular_velocity*delta;
             this.setAngle(this.angle_deg);
         }
-        this.setAlpha(clamp(this.alpha+this.alpha_change*delta_time/this.scene.target_fps,0,1));
-        this.setScale(clamp(this.scale+this.scale_change*delta_time/this.scene.target_fps,0,100));
+        this.setAlpha(clamp(this.alpha+this.alpha_change*delta_time,0,1));
+        this.setScale(clamp(this.scale+this.scale_change*delta_time,0,100));
 
         if (this.has_tint) {
             for (let i=0;i<3;i++) {
-                this.colour[i] = clamp(this.colour[i]+this.colour_change[i]*delta_time/this.scene.target_fps,0,255)
+                this.colour[i] = clamp(this.colour[i]+this.colour_change[i]*delta_time,0,255)
             }
             this.setTint(RGBtoHEX(this.colour));
             // console.log(this.colour, RGBtoHEX(this.colour));

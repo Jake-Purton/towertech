@@ -57,14 +57,14 @@ export default class Effects{
         return this.get_effect('Fast')*this.get_effect('Slow',1,false);
     }
     get_health_change(delta_time) {
-        return (this.get_effect('Healing',0)+this.get_effect('Burning',0))*delta_time/this.scene.target_fps
+        return (this.get_effect('Healing',0)+this.get_effect('Burning',0))*delta_time
     }
 
     game_tick(delta_time, parent_object) {
         // manage effect timers
         for (let effect_list of Object.values(this.effects)) {
             for (let effect of effect_list) {
-                effect.timer-=delta_time/this.scene.target_fps;
+                effect.timer-=delta_time;
             }
         }
         // remove expired effects
@@ -73,7 +73,7 @@ export default class Effects{
         }
         // manage particle effect timers
         for (let effect of Object.values(this.particle_cooldowns)) {
-            effect.timer -= delta_time/this.scene.target_fps;
+            effect.timer -= delta_time;
         }
 
         // particle effects

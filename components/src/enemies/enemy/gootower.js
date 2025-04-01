@@ -13,7 +13,7 @@ export default class Gootower extends Enemy{
                 max_cooldown:max_cooldown, shoot_angle:shoot_angle, damage:damage}, loot_table);
     }
     game_tick(delta_time, players, towers) {
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         this.cooldown -= time;
         if (this.cooldown <= 0){
             this.cooldown += this.max_cooldown;

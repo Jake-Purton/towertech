@@ -35,15 +35,15 @@ export default class LineAttack extends Phaser.Physics.Arcade.Sprite {
         this.base_texture = new Phaser.GameObjects.Image(scene, 0, 0, texture);
     }
     game_tick(delta_time) {
-        this.time_to_live -= delta_time/this.scene.target_fps;
-        this.particle_cooldown_timer -= delta_time/this.scene.target_fps;
+        this.time_to_live -= delta_time;
+        this.particle_cooldown_timer -= delta_time;
         this.animation_position = modulo(this.animation_position+this.animation_speed*delta_time, this.texture_width);
 
         this.position_graphic();
         this.make_particles();
 
         if (!get_removed(this.target)) {
-            let dmg = this.damage * delta_time/this.scene.target_fps/this.total_time_to_live;
+            let dmg = this.damage * delta_time/this.total_time_to_live;
             this.damage_dealt += dmg;
             this.target.take_damage(dmg, null, null, null, this.source);
         }

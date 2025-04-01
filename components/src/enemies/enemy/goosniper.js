@@ -22,7 +22,7 @@ export default class Goosniper extends Enemy{
         this.changed = false;
     }
     game_tick(delta_time, players, towers){
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         if (this.changed){
             this.cooldown -= time;
             if (this.cooldown <= 0){

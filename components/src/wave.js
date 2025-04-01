@@ -36,13 +36,13 @@ export default class Wave
         delete this.unsortedEnemies;
 
         // Initialise time, duration, and spawning timer variables.
-        this.duration = length * this.game.target_fps;
-        this.remainingTime = length * this.game.target_fps;
-        this.timeBetweenWaves = 5 * this.game.target_fps;
+        this.duration = length;
+        this.remainingTime = length;
+        this.timeBetweenWaves = 5;
         this.totalTimeBetweenWaves = this.timeBetweenWaves;
 
-        this.spawnDelay = spawnDelay * this.game.target_fps;
-        this.nextSpawn = spawnDelay * this.game.target_fps;
+        this.spawnDelay = spawnDelay;
+        this.nextSpawn = spawnDelay;
         this.numEnemies = numEnemies;
         this.totalEnemies = numEnemies;
 

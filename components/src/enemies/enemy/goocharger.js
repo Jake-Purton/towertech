@@ -12,7 +12,7 @@ export default class Goocharger extends Enemy{
         this.max_speed = max_speed;
     }
     game_tick(delta_time, players, towers){
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         let diff = this.max_speed - this.move_speed;
         this.move_speed += diff * 0.1 * time;
         super.game_tick(delta_time, players, towers);

@@ -140,7 +140,7 @@ class FireProjectile extends Projectile {
         this.particle_cooldown = 0;
     }
     make_trail_particles(delta_time) {
-        this.particle_cooldown -= delta_time/this.scene.target_fps;
+        this.particle_cooldown -= delta_time;
         if (this.particle_cooldown < 0) {
             this.particle_cooldown = 0.2-this.alpha/10;
             this.scene.add_particle(new FireParticle(this.scene, this.x, this.y, 8));

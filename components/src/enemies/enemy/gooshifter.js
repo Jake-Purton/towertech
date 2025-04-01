@@ -40,7 +40,8 @@ export default class Gooshifter extends Enemy{
             }
             this.on_path = false;
             let direction = this.relative_position(this.target);
-            let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
+            let change = new Vec((delta_time*this.scene.target_fps * this.move_speed * direction.x)/direction.length(),
+                (delta_time*this.scene.target_fps * this.move_speed * direction.y)/direction.length())
             this.velocity.setLength(this.velocity.length()*0.9);
             change.add(this.velocity);
             this.melee_hit(delta_time);

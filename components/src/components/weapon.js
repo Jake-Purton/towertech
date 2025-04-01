@@ -133,7 +133,7 @@ class SwordOfVoid extends Weapon{
     }
     game_tick(delta_time) {
         super.game_tick(delta_time);
-        this.sword_animation_timer -= delta_time/this.scene.target_fps;
+        this.sword_animation_timer -= delta_time;
         this.animate_sword()
     }
     animate_sword() {

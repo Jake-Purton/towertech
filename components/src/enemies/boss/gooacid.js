@@ -18,7 +18,7 @@ export default class Gooacid extends Enemy{
         this.jumping = false;
     }
     game_tick(delta_time, players, towers){
-        let time = delta_time/this.scene.target_fps;
+        let time = delta_time;
         if (this.jumping) {
             this.jump_velocity -= 0.15*delta_time
             this.jump_offset+=this.jump_velocity;

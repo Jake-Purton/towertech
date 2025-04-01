@@ -31,7 +31,8 @@ export default class Goolime extends Enemy{
         } else {
             this.on_path = false
             let direction = this.relative_position(this.target);
-            let change = new Vec((delta_time * this.move_speed * direction.x)/direction.length(), (delta_time * this.move_speed * direction.y)/direction.length())
+            let change = new Vec((delta_time*this.scene.target_fps * this.move_speed * direction.x)/direction.length(),
+                (delta_time*this.scene.target_fps * this.move_speed * direction.y)/direction.length())
             this.melee_hit(delta_time);
             return this.setPosition(this.x + change.x,this.y + change.y);
         }

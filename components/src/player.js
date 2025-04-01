@@ -143,20 +143,21 @@ export default class Player extends Phaser.GameObjects.Container{
         this.refresh_health_bar();
 
     }
-    game_tick(delta_time, enemies){ //function run by game.js every game tick
+    game_tick(delta_time, enemies){//function run by game.js every game tick
+        let delta = delta_time*this.scene.target_fps;
         this.manage_ping(delta_time);
         if (!this.dead) {
-            this.passive_healing_timer -= delta_time/this.scene.target_fps;
+            this.passive_healing_timer -= delta_time;
             if (this.passive_healing_timer < 0) {
-                this.add_health(this.passive_healing_rate*delta_time/this.scene.target_fps);
+                this.add_health(this.passive_healing_rate*delta_time);
             }
 
             // check nearby towers
             this.check_nearby_tower(this.scene.towers);
 
             // handle effects
-            this.add_health(this.effects.get_effect("Healing", 0)*delta_time/this.scene.target_fps);
-            this.take_damage(this.effects.get_effect("Burning", 0)*delta_time/this.scene.target_fps);
+            this.add_health(this.effects.get_effect("Healing", 0)*delta_time);
+            this.take_damage(this.effects.get_effect("Burning", 0)*delta_time);
             this.effects.game_tick(delta_time, this);
 
             // physics + movement
@@ -168,18 +169,18 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.move_direction.normalize();
             }
 
-            this.move_direction.scale(this.speed * delta_time);
+            this.move_direction.scale(this.speed * delta);
 
             if (this.username === "chris" || true) {
                 this.velocity.add(this.move_direction);
-                this.velocity.x *= this.drag**delta_time;
-                this.velocity.y *= this.drag**delta_time;
+                this.velocity.x *= this.drag**delta;
+                this.velocity.y *= this.drag**delta;
             } else {
                 this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
             }
 
-            this.body.position.x += this.velocity.x*delta_time;
-            this.body.position.y += this.velocity.y*delta_time;
+            this.body.position.x += this.velocity.x*delta;
+            this.body.position.y += this.velocity.y*delta;
             this.keep_in_map();
 
             // part management
@@ -331,8 +332,8 @@ export default class Player extends Phaser.GameObjects.Container{
         }
     }
     manage_ping(delta_time) {
-        this.ping_request_timer -= delta_time/this.scene.target_fps;
-        this.time_since_last_ping_request += delta_time/this.scene.target_fps;
+        this.ping_request_timer -= delta_time;
+        this.time_since_last_ping_request += delta_time;
         if (this.ping_request_timer < 0 && !this.has_outgoing_ping_request) {
             this.ping_request_timer = this.ping_request_cooldown;
 
