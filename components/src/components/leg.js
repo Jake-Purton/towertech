@@ -27,30 +27,32 @@ class Leg extends Phaser.GameObjects.Container{
     set_scale(scale) {
         this.setScale(scale*this.leg_height/this.left_leg.height);
     }
-    movement_animation(velocity){
+    movement_animation(velocity, delta_time){
         let speed = velocity.length();
         let limiter = Math.min(speed, 1);
+        let rotation_speed = 0.03 * speed * delta_time; // Scale rotation by delta_time
+
         if (this.rotate >= 1){
             this.increase = false;
         }
         if (this.rotate <= -1){
-            this.increase=true;
+            this.increase = true;
         }
         if (this.increase){
-            this.rotate = this.rotate + 0.03 * speed;
+            this.rotate += rotation_speed;
         } else {
-            this.rotate = this.rotate - 0.03 * speed;
+            this.rotate -= rotation_speed;
         }
-        this.left_leg.setRotation(this.rotate*limiter);
-        this.right_leg.setRotation(-this.rotate*limiter);
+        this.left_leg.setRotation(this.rotate * limiter);
+        this.right_leg.setRotation(-this.rotate * limiter);
 
         if (velocity.x < 0) {
-            this.left_leg.setScale(-1,1);
-            this.right_leg.setScale(-1,1);
+            this.left_leg.setScale(-1, 1);
+            this.right_leg.setScale(-1, 1);
             this.bringToTop(this.right_leg);
         } else {
-            this.left_leg.setScale(1,1);
-            this.right_leg.setScale(1,1);
+            this.left_leg.setScale(1, 1);
+            this.right_leg.setScale(1, 1);
             this.bringToTop(this.left_leg);
         }
     }
@@ -100,23 +102,26 @@ class SpiderLeg extends Phaser.GameObjects.Container {
     set_scale(scale) {
         this.setScale(scale*this.leg_height/this.legs[0].height);
     }
-    movement_animation(velocity) {
+    movement_animation(velocity, delta_time) {
         let speed = velocity.length();
         let limiter = Math.min(speed, 1);
-        for (let i=0;i<this.num_legs;i++) {
+
+        for (let i = 0; i < this.num_legs; i++) {
             let anim = this.leg_animations[i];
-            if (anim.rotate >= 1){
+            let rotation_speed = 0.03 * speed * delta_time; // Scale rotation by delta_time
+
+            if (anim.rotate >= 1) {
                 anim.increase = false;
             }
-            if (anim.rotate <= -1){
-                anim.increase=true;
+            if (anim.rotate <= -1) {
+                anim.increase = true;
             }
-            if (anim.increase){
-                anim.rotate = anim.rotate + 0.03 * speed;
+            if (anim.increase) {
+                anim.rotate += rotation_speed;
             } else {
-                anim.rotate = anim.rotate - 0.03 * speed;
+                anim.rotate -= rotation_speed;
             }
-            this.legs[i].setRotation(anim.rotate*limiter);
+            this.legs[i].setRotation(anim.rotate * limiter);
         }
     }
 }

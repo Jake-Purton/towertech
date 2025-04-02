@@ -169,26 +169,26 @@ export default class Player extends Phaser.GameObjects.Container{
                 this.move_direction.normalize();
             }
 
-            this.move_direction.scale(this.speed * delta);
+            this.move_direction.scale(this.speed * 10);
 
             if (this.username === "chris" || true) {
                 this.velocity.add(this.move_direction);
-                this.velocity.x *= this.drag**delta;
-                this.velocity.y *= this.drag**delta;
+                this.velocity.x *= Math.pow(this.drag, delta_time); // Apply drag scaled by delta_time
+                this.velocity.y *= Math.pow(this.drag, delta_time); // Apply drag scaled by delta_time
             } else {
                 this.velocity = this.move_direction.clone().setLength(this.move_direction.length()*5)
             }
 
-            this.body.position.x += this.velocity.x*delta;
-            this.body.position.y += this.velocity.y*delta;
+            this.body.position.x += this.velocity.x*delta_time;
+            this.body.position.y += this.velocity.y*delta_time;
             this.keep_in_map();
 
             // part management
             if (defined(this.leg_object)) {
-                this.leg_object.movement_animation(this.velocity);
+                this.leg_object.movement_animation(this.velocity, delta_time);
             }
             if (defined(this.body_object)) {
-                this.body_object.movement_animation(this.velocity);
+                this.body_object.movement_animation(this.velocity, delta_time);
             }
             if (defined(this.weapon_object)) {
                 if (this.key_inputs.Attack) {

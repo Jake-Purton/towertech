@@ -22,8 +22,6 @@ export default class Game extends Phaser.Scene{
         this.init_server = init_server_func;
         this.end_game_output = end_game_output;
 
-        this.prev_timestamp = 0;
-
         // gameplay info
         this.game_over = false;
         this.score = 0;
@@ -233,14 +231,14 @@ export default class Game extends Phaser.Scene{
 
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
-        delta = (time-this.prev_timestamp)/1000;
-        this.prev_timestamp = time;
+        let jake_delta = delta/1000.0;
+        console.log("" + jake_delta)
 
         /// handle players
         this.dummy_input();
         let all_dead = true;
         for (let player of Object.values(this.players)) {
-            player.game_tick(delta, this.enemies);
+            player.game_tick(jake_delta, this.enemies);
             if (player.get_dead()) {
                 player.die();
             } else {
@@ -253,13 +251,13 @@ export default class Game extends Phaser.Scene{
 
         /// handle towers
         for (let tower of Object.values(this.towers)){
-            tower.game_tick(delta, this.enemies, this.players);
+            tower.game_tick(jake_delta, this.enemies, this.players);
         }
 
-        /// handle dropped items
+        /// handle dropped items 
         let remove_list = [];
         for (let dropped_item of this.dropped_items) {
-            dropped_item.game_tick(delta, this.players);
+            dropped_item.game_tick(jake_delta, this.players);
             if (dropped_item.get_dead()) {
                 remove_list.push(dropped_item);
             }
@@ -272,7 +270,7 @@ export default class Game extends Phaser.Scene{
         /// handle projectiles
         remove_list = [];
         for (let projectile of this.projectiles) {
-            projectile.game_tick(delta, this.enemies, this.towers, this.players);
+            projectile.game_tick(jake_delta, this.enemies, this.towers, this.players);
             if (projectile.get_dead()){
                 remove_list.push(projectile);
             }
@@ -285,7 +283,7 @@ export default class Game extends Phaser.Scene{
         /// handle particles
         remove_list = [];
         for (let particle of this.particles) {
-            particle.game_tick(delta);
+            particle.game_tick(jake_delta);
             if (particle.get_dead()){
                 remove_list.push(particle);
             }
@@ -298,7 +296,7 @@ export default class Game extends Phaser.Scene{
         /// handle enemies
         remove_list = [];
         for (let enemy of this.enemies){
-            enemy.game_tick(delta, this.players, this.towers);
+            enemy.game_tick(jake_delta, this.players, this.towers);
             if (enemy.get_finished_path()) {
                 remove_list.push(enemy);
                 this.health -= enemy.damage_to_base;
@@ -314,8 +312,8 @@ export default class Game extends Phaser.Scene{
         }
 
         // level(wave) management
-        this.level.game_tick(delta);
-        this.start_waves_delay -= delta;
+        this.level.game_tick(jake_delta);
+        this.start_waves_delay -= jake_delta;
         if (this.start_waves_delay < 0) {
             this.level.start_waves()
         }
