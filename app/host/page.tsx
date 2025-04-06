@@ -42,28 +42,16 @@ const HostPage = () => {
     handleDifficultyClick("Medium")
     handleMapClick("level 2");
 
-    socket.on("connection_finished" , () => {
-      socket.emit("createRoom")
-    })
-
     if (!socket.connected) {
       socket.connect();
-    } else {
-      socket.emit("createRoom")
     }
 
-    // console.log(socket.connected)
+    socket.emit("createRoom");
 
-    // socket.emit("createRoom");
-
-    // socket.on("connect", () => {
-    //   console.log("connect")
-    //   socket.emit("createRoom");
-    // });
-    socket.on("reconnect", () => {
-      console.log("reconnect")
+    socket.on("connect", () => {
+      console.log("connect")
       socket.emit("createRoom");
-    });
+    })
 
     getIPAddress();
 

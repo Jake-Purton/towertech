@@ -188,8 +188,6 @@ app.prepare().then(() => {
       socket.to(roomManager.getUserRoom(data.PlayerID)).emit("output_from_game_to_client", data);
       // socket.emit("output_from_game_to_client", data);
     });
-    socket.emit("connection_finished")
-      
   });
 
   httpServer
