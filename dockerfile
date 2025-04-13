@@ -7,7 +7,7 @@ RUN npm install -g pnpm@latest-10
 
 # Install dependencies
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 # Build the app
 FROM node:20-alpine AS builder
@@ -34,6 +34,8 @@ RUN pnpm build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+RUN npm install -g pnpm@latest-10
+
 ENV NODE_ENV=production
 
 # Copy built assets and production dependencies
@@ -41,9 +43,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/server.js ./server.js
+COPY --from=builder /app/src ./src
 
-# Expose port 3000
 EXPOSE 3000
 
-# Start the app
 CMD ["pnpm", "start"]
