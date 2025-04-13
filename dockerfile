@@ -23,6 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Run the Next.js build
+RUN pnpm install --frozen-lockfile
 RUN pnpm build
 
 # Production image
