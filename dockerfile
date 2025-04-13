@@ -22,6 +22,10 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy app source
 COPY . .
 
+# dummy env
+ARG NEXT_PRIVATE_JWT_SECRET="dummy_secret"
+ENV NEXT_PRIVATE_JWT_SECRET=$NEXT_PRIVATE_JWT_SECRET
+
 # Run the Next.js build
 RUN pnpm install --frozen-lockfile
 RUN pnpm build
