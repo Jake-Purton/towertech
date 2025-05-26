@@ -75,7 +75,16 @@ const HostPage = () => {
   }, []);
 
   // Create the URL for the QR code
-  const joinUrl = ipAddress ? `http://${ipAddress}:3000/join?roomCode=${roomCode}` : '';
+  const joinUrl = React.useMemo(() => {
+    if (!ipAddress || !roomCode) return '';
+    // If ipAddress looks like a domain, use https and no port
+    const isDomain = /[a-zA-Z]/.test(ipAddress);
+    if (isDomain) {
+      return `https://${ipAddress}/join?roomCode=${roomCode}`;
+    }
+    // Otherwise, assume it's a local IP and use http with port 3000
+    return `http://${ipAddress}:3000/join?roomCode=${roomCode}`;
+  }, [ipAddress, roomCode]);
 
   const startGame = (): void => {
     if (users.length > 0 && !gameStarted) {
