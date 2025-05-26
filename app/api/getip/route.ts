@@ -3,6 +3,12 @@ import { networkInterfaces } from 'os';
 
 export async function GET() {
   try {
+    // Check for DOMAIN_NAME env var first
+    const domainName = process.env.DOMAIN_NAME;
+    if (domainName) {
+      return NextResponse.json({ ip: domainName });
+    }
+
     const nets = networkInterfaces();
     let ipAddress = '';
 
