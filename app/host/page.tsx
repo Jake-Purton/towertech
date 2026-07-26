@@ -26,7 +26,7 @@ const HostPage = () => {
     setSelectedMap(map);
     localStorage.setItem("gameMap", map);
   };
-  
+
   useEffect(() => {
     // Get IP address
     const getIPAddress = async () => {
@@ -75,7 +75,10 @@ const HostPage = () => {
   }, []);
 
   // Create the URL for the QR code
-  const joinUrl = ipAddress ? `http://${ipAddress}:3000/join?roomCode=${roomCode}` : '';
+  const url: string = process.env.NEXT_PUBLIC_HOST_URL ? process.env.NEXT_PUBLIC_HOST_URL : (ipAddress ? ipAddress : `localhost`);
+  const port: string = process.env.NEXT_PUBLIC_HOST_URL ? "" : ":3000";
+  const http: string = process.env.NEXT_PUBLIC_HOST_URL ? "https" : "http";
+  const joinUrl = `${http}://${url}${port}/join?roomCode=${roomCode}`;
 
   const startGame = (): void => {
     if (users.length > 0 && !gameStarted) {
@@ -133,8 +136,8 @@ const HostPage = () => {
               onClick={() => handleMapClick("level 1")}
             >
             </button>
-            <p 
-              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+            <p
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold"
               onClick={() => handleMapClick("level 1")}
             >
               Level 1
@@ -149,8 +152,8 @@ const HostPage = () => {
               onClick={() => handleMapClick("level 2")}
             >
             </button>
-            <p 
-              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+            <p
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold"
               onClick={() => handleMapClick("level 2")}
             >
               Level 2
@@ -165,8 +168,8 @@ const HostPage = () => {
               onClick={() => handleMapClick("level 3")}
             >
             </button>
-            <p 
-              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold" 
+            <p
+              className="absolute inset-0 flex items-center justify-center text-black text-xl font-bold"
               onClick={() => handleMapClick("level 3")}
             >
               Level 3
@@ -176,7 +179,7 @@ const HostPage = () => {
       </div>
       {/* MIDDLE */}
       <div className="flex-grow max-w-2xl bg-gray-800/95 p-8 rounded-2xl shadow-2xl border-y-8 border-orange-600 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
-        
+
         <h1 className="text-5xl font-bold text-orange-600 drop-shadow-md">Room Code</h1>
 
         <div className="flex flex-col items-center gap-10 w-full max-w-lg mt-10">
@@ -187,7 +190,7 @@ const HostPage = () => {
                   {roomCode}
                 </div>
               </div>
-              
+
               {/* QR Code Section */}
               {ipAddress && (
                 <div className="bg-white p-4 rounded-xl">
@@ -198,7 +201,7 @@ const HostPage = () => {
                   />
                 </div>
               )}
-              
+
               <p className="text-sm text-gray-400">
                 Join URL: {joinUrl}
               </p>
@@ -259,4 +262,3 @@ const HostPage = () => {
 };
 
 export default HostPage;
-
