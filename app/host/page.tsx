@@ -13,6 +13,7 @@ const HostPage = () => {
   const [roomCode, setRoomCode] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [ipAddress, setIpAddress] = useState<string>("");
+  const [hostUrl, setHostUrl] = useState<string>("");
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("Medium");
   const [selectedMap, setSelectedMap] = useState<string>("level 1");
@@ -39,6 +40,20 @@ const HostPage = () => {
       }
     };
 
+    const getHostUrl = async () => {
+      try {
+        const response = await fetch("/api/config", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Configuration request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setHostUrl(data.hostUrl || "");
+      } catch (error) {
+        console.error("Failed to get host URL:", error);
+      }
+    };
+
     handleDifficultyClick("Medium")
     handleMapClick("level 2");
 
@@ -54,6 +69,7 @@ const HostPage = () => {
     })
 
     getIPAddress();
+    getHostUrl();
 
     const handleRoomCode = (data) => {
       console.log("Room code received:", data);
@@ -75,9 +91,9 @@ const HostPage = () => {
   }, []);
 
   // Create the URL for the QR code
-  const url: string = process.env.NEXT_PUBLIC_HOST_URL ? process.env.NEXT_PUBLIC_HOST_URL : (ipAddress ? ipAddress : `localhost`);
-  const port: string = process.env.NEXT_PUBLIC_HOST_URL ? "" : ":3000";
-  const http: string = process.env.NEXT_PUBLIC_HOST_URL ? "https" : "http";
+  const url: string = hostUrl || ipAddress || "localhost";
+  const port: string = hostUrl ? "" : ":3000";
+  const http: string = hostUrl ? "https" : "http";
   const joinUrl = `${http}://${url}${port}/join?roomCode=${roomCode}`;
 
   const startGame = (): void => {
