@@ -27,7 +27,7 @@ class Leg extends Phaser.GameObjects.Container{
     set_scale(scale) {
         this.setScale(scale*this.leg_height/this.left_leg.height);
     }
-    movement_animation(velocity){
+    movement_animation(velocity, delta_time=1){
         let speed = velocity.length();
         let limiter = Math.min(speed, 1);
         if (this.rotate >= 1){
@@ -37,9 +37,9 @@ class Leg extends Phaser.GameObjects.Container{
             this.increase=true;
         }
         if (this.increase){
-            this.rotate = this.rotate + 0.03 * speed;
+            this.rotate = this.rotate + 0.03 * speed * delta_time;
         } else {
-            this.rotate = this.rotate - 0.03 * speed;
+            this.rotate = this.rotate - 0.03 * speed * delta_time;
         }
         this.left_leg.setRotation(this.rotate*limiter);
         this.right_leg.setRotation(-this.rotate*limiter);
@@ -100,7 +100,7 @@ class SpiderLeg extends Phaser.GameObjects.Container {
     set_scale(scale) {
         this.setScale(scale*this.leg_height/this.legs[0].height);
     }
-    movement_animation(velocity) {
+    movement_animation(velocity, delta_time=1) {
         let speed = velocity.length();
         let limiter = Math.min(speed, 1);
         for (let i=0;i<this.num_legs;i++) {
@@ -112,9 +112,9 @@ class SpiderLeg extends Phaser.GameObjects.Container {
                 anim.increase=true;
             }
             if (anim.increase){
-                anim.rotate = anim.rotate + 0.03 * speed;
+                anim.rotate = anim.rotate + 0.03 * speed * delta_time;
             } else {
-                anim.rotate = anim.rotate - 0.03 * speed;
+                anim.rotate = anim.rotate - 0.03 * speed * delta_time;
             }
             this.legs[i].setRotation(anim.rotate*limiter);
         }

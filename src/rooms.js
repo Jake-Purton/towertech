@@ -1,142 +1,177 @@
-// a user in room is 
-// userID -> socket id
+import { randomUUID } from "node:crypto";
+
+// a user in room is
+// userID -> socket id (changes if the player reconnects after the recovery window)
 // username
 // usersUserID -> Database id
-// the index in the list which is another way they can be identified
+// seatID -> stable id for the player's place in the room, stored in their index token
+// previousIDs -> socket ids this player has had before, so a reconnecting host can be told about them
 
 // Represents a room
 class Room {
-  // Creates a room with a given name
-  constructor(name) {
+  // Creates a room with a given name, hosted by the given socket
+  constructor(name, hostSocketId) {
     this.users = []; // list of users in the room
     this.roomName = name; // name of the room
+    this.hostSocketId = hostSocketId; // socket running the game, all player input is sent here
+    this.cleanupTimer = null; // pending deletion while the host is disconnected
   }
 
-  // Adds a user to the room, returns the index in the room list
+  // Adds a user to the room, returns the seat id that identifies them from now on
   addUser(userID, username, usersUserID) {
-    const i = this.users.push({userID, username, usersUserID});
-    return i-1;
+    const seatID = randomUUID();
+    this.users.push({ userID, username, usersUserID, seatID, previousIDs: [] });
+    return seatID;
   }
 
-  swapSocketID(index, newID) {
-    this.users[index].userID = newID;
+  getUser(userID) {
+    return this.users.find(u => u.userID === userID);
+  }
+
+  getUserBySeat(seatID) {
+    return this.users.find(u => u.seatID === seatID);
   }
 
   // Removes a user from the room
-  removeUser(user) {
-    this.users = this.users.filter(u => u.userID !== user);
+  removeUser(userID) {
+    this.users = this.users.filter(u => u.userID !== userID);
   }
 
   // Gets the list of users in the room
   getUsers() {
-    // returns the {userID, username, userUserID} triples
-    return this.users;
+    // returns the {userID, username, usersUserID} triples
+    return this.users.map(({ userID, username, usersUserID }) => ({ userID, username, usersUserID }));
   }
 }
 
 class RoomManager {
   constructor() {
-    // dictionary of rooms
-    this.rooms = {};
+    this.rooms = new Map(); // room name -> Room
+    this.userRooms = new Map(); // player socket id -> room name, avoids scanning every room per message
   }
 
   generateRandomRoomName() {
     // random integer from 0 to 999_999
-    let name = Math.floor(Math.random() * 999_999).toString();
-    while (name.length < 6) {
-      name = "0" + name;
-    }
-    return name;
+    return Math.floor(Math.random() * 1_000_000).toString().padStart(6, "0");
   }
 
-  createRoomWithRandomName() {
-    var name = this.generateRandomRoomName();
+  createRoomWithRandomName(hostSocketId) {
+    let name = this.generateRandomRoomName();
     // while the name already exists
-    while (this.rooms[name]) {
+    while (this.rooms.has(name)) {
       // generate a new name
       name = this.generateRandomRoomName();
     }
 
-    // create the room
-    this.createRoom(name);
+    this.rooms.set(name, new Room(name, hostSocketId));
     return name;
-  }
-  createRoom(name) {
-    if (!this.rooms[name]) {
-      // create a new room with that name
-      this.rooms[name] = new Room(name);
-    }
   }
 
   deleteRoom(name) {
-    delete this.rooms[name];
+    const room = this.rooms.get(name);
+    if (!room) {
+      return;
+    }
+    clearTimeout(room.cleanupTimer);
+    for (const user of room.users) {
+      this.userRooms.delete(user.userID);
+    }
+    this.rooms.delete(name);
   }
 
   getRoom(name) {
-    return this.rooms[name];
+    return this.rooms.get(name);
   }
 
-  addUserToRoom(userId, roomName, username) {
-    if (this.rooms[roomName]) {
-      return this.rooms[roomName].addUser(userId, username, null);
+  getRoomHostedBy(socketId) {
+    for (const room of this.rooms.values()) {
+      if (room.hostSocketId === socketId) {
+        return room.roomName;
+      }
+    }
+    return null;
+  }
+
+  isHost(socketId, roomName) {
+    const room = this.rooms.get(roomName);
+    return Boolean(room) && room.hostSocketId === socketId;
+  }
+
+  setHost(roomName, socketId) {
+    const room = this.rooms.get(roomName);
+    if (room) {
+      room.hostSocketId = socketId;
+      this.cancelCleanup(roomName);
     }
   }
 
-  addUserToRoomAuth(userId, roomName, username, usersUserID) {
-    if (this.rooms[roomName]) {
-      return this.rooms[roomName].addUser(userId, username, usersUserID);
+  // delete the room after `delay` ms unless the host comes back first
+  scheduleCleanup(roomName, delay, onExpire) {
+    const room = this.rooms.get(roomName);
+    if (room) {
+      clearTimeout(room.cleanupTimer);
+      room.cleanupTimer = setTimeout(onExpire, delay);
+      room.cleanupTimer.unref();
+    }
+  }
+
+  cancelCleanup(roomName) {
+    const room = this.rooms.get(roomName);
+    if (room) {
+      clearTimeout(room.cleanupTimer);
+      room.cleanupTimer = null;
+    }
+  }
+
+  // returns the user's seat id, or undefined if the room does not exist
+  addUserToRoom(userId, roomName, username, usersUserID = null) {
+    const room = this.rooms.get(roomName);
+    if (room) {
+      this.userRooms.set(userId, roomName);
+      return room.addUser(userId, username, usersUserID);
     }
   }
 
   removeUserFromRoom(userId, roomName) {
-    if (this.rooms[roomName]) {
-      this.rooms[roomName].removeUser(userId);
+    const room = this.rooms.get(roomName);
+    if (room) {
+      room.removeUser(userId);
+      this.userRooms.delete(userId);
     }
   }
 
-  swapSocketID(index, roomName, newID) {
-    // console.log("swapping")
-    if (this.rooms[roomName]) {
-      // console.log("here 200")
-      const oldID = this.rooms[roomName].users[index].userID;
-      console.log("roomsjs old: " + oldID)
-      console.log("roomsjs new: " + newID)
-      if (oldID === newID) {
-        console.log("NULLNULL rooms.js")
-        return null;
-      } else {
-        console.log("YESYES rooms.js")
-        console.log("roomsjs old: " + oldID + " roomsjs new: " + newID);
-
-        this.rooms[roomName].swapSocketID(index, newID);
-        return { oldID, newID };
-      }
+  // point the player in `seatID` at a new socket, returns {oldID, newID} if anything changed
+  swapSocketID(seatID, roomName, newID) {
+    const room = this.rooms.get(roomName);
+    const user = room?.getUserBySeat(seatID);
+    if (!user || user.userID === newID) {
+      return null;
     }
+    const oldID = user.userID;
+    user.previousIDs.push(oldID);
+    user.userID = newID;
+    this.userRooms.delete(oldID);
+    this.userRooms.set(newID, roomName);
+    return { oldID, newID };
+  }
+
+  // every {oldID, newID} pair for the room, for a host that may have missed some swaps while disconnected
+  getSocketIDHistory(roomName) {
+    const room = this.rooms.get(roomName);
+    if (!room) {
+      return [];
+    }
+    return room.users.flatMap(user => user.previousIDs.map(oldID => ({ oldID, newID: user.userID })));
   }
 
   getUsersInRoom(roomName) {
-    if (this.rooms[roomName]) {
-      // return a list of {userID, username usersUserID} triples
-      return this.rooms[roomName].getUsers();
-    }
-    return [];
+    const room = this.rooms.get(roomName);
+    // return a list of {userID, username usersUserID} triples
+    return room ? room.getUsers() : [];
   }
 
   getUserRoom(userId) {
-    // iterate through all room names
-    for (const roomName in this.rooms) {
-
-      // if the user is in the room
-      var userPairs = this.rooms[roomName].getUsers();
-
-      for (const userPair of userPairs) {
-        if (userPair.userID === userId) {
-          return roomName;
-        }
-      }
-
-    }
-    return null;
+    return this.userRooms.get(userId) ?? null;
   }
 }
 

@@ -21,7 +21,7 @@ export default class Gooacid extends Enemy{
         let time = delta_time/this.scene.target_fps;
         if (this.jumping) {
             this.jump_velocity -= 0.15*delta_time
-            this.jump_offset+=this.jump_velocity;
+            this.jump_offset+=this.jump_velocity*delta_time;
             if (this.jump_offset < 0) {
                 this.jumping = false;
                 this.jump_offset = 0
