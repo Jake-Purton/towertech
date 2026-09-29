@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - cicd
+      - claude-fix
 
 jobs:
   build-and-push:
