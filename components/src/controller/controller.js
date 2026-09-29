@@ -23,6 +23,9 @@ export default class Controller extends Phaser.Scene{
 
         // variables
         this.player_created = false;
+        this.joystick_pending = null;
+        this.joystick_send_timer = null;
+        this.joystick_send_interval_ms = 1000/30;
         this.ui_active = false;
 
         this.player_coins = 0;
@@ -902,10 +905,28 @@ export default class Controller extends Phaser.Scene{
     upgrade_part = (item_name, item_stats) => {
         this.output_data({type:'Upgrade_Part', item_name:item_name, item_stats: item_stats})
     }
+    // pointermove fires at the touchscreen's rate (often 120Hz+), so send at most one joystick
+    // position per interval and always follow up with the latest one
     joystick_holding = (x,y) => {
-        this.output_data({type:'Joystick_Input', x:x, y:y, Direction: 'Down'});
+        this.joystick_pending = {x:x, y:y};
+        if (this.joystick_send_timer) {
+            return;
+        }
+        this.send_joystick_position();
+    }
+    send_joystick_position = () => {
+        this.joystick_send_timer = null;
+        if (!this.joystick_pending) {
+            return;
+        }
+        this.output_data({type:'Joystick_Input', x:this.joystick_pending.x, y:this.joystick_pending.y, Direction: 'Down'});
+        this.joystick_pending = null;
+        this.joystick_send_timer = setTimeout(this.send_joystick_position, this.joystick_send_interval_ms);
     }
     joystick_release = () => {
+        clearTimeout(this.joystick_send_timer);
+        this.joystick_send_timer = null;
+        this.joystick_pending = null;
         this.output_data({type:'Joystick_Input', Direction: 'Up'});
     }
     print = (text) => {

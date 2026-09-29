@@ -65,9 +65,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     game_tick(delta_time){
         let time = delta_time/this.scene.target_fps;
-        if (this.gooblood_tracker > 0) {
-            this.gooblood_tracker -= 1;
-        }
+        this.gooblood_tracker = Math.max(0, this.gooblood_tracker-delta_time);
         // handle effects
         this.add_health(this.effects.get_effect("Healing", 0)*time);
         this.take_damage(this.effects.get_effect("Burning", 0)*time);
@@ -75,7 +73,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         this.melee_hit(delta_time);
 
-        this.velocity.scale(0.95);
+        this.velocity.scale(0.95**delta_time);
 
         // Moves enemy round path
         // returns true if the enemy has got to the end of the path

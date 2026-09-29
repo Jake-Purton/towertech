@@ -10,13 +10,13 @@ class Wheel extends Phaser.Physics.Arcade.Sprite {
         this.wheel_width = width;
         this.set_scale(1);
     }
-    movement_animation(velocity) {
+    movement_animation(velocity, delta_time=1) {
         let speed = velocity.length();
         if (velocity.x < 0) {
             speed *= -1;
         }
         if (this.rotates) {
-            this.rotate = this.rotate + 0.03 * speed;
+            this.rotate = this.rotate + 0.03 * speed * delta_time;
             this.setRotation(this.rotate)
         } else {
             this.setRotation(velocity.angle())

@@ -184,7 +184,7 @@ export default class Player extends Phaser.GameObjects.Container{
 
             // part management
             if (defined(this.leg_object)) {
-                this.leg_object.movement_animation(this.velocity);
+                this.leg_object.movement_animation(this.velocity, delta_time);
             }
             if (defined(this.body_object)) {
                 this.body_object.movement_animation(this.velocity);
@@ -520,10 +520,14 @@ export default class Player extends Phaser.GameObjects.Container{
                     this.health_healed += health-this.health;
                 }
             }
+            // healing and burning change health a little every frame, but controllers and the info
+            // display only show whole numbers, so only send when the shown value would change
+            let shown_health_changed = (Math.round(health) !== Math.round(this.health) ||
+                max_health !== this.max_health || (health === 0) !== (this.health === 0));
             this.health = health;
             this.max_health = max_health;
             this.refresh_health_bar()
-            if (this.player_id !== 'UI_PLAYER_DISPLAY') {
+            if (this.player_id !== 'UI_PLAYER_DISPLAY' && shown_health_changed) {
                 this.scene.output_data(this.player_id, {
                     type: 'Set_Health',
                     health: this.health,

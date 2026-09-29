@@ -47,17 +47,17 @@ class Projectile extends Entity {
                 this.check_collision(players);
                 this.check_collision(towers);
         }
-        this.follow_target();
+        this.follow_target(delta_time);
         this.physics_tick(delta_time);
         this.make_trail_particles(delta_time);
     }
     make_trail_particles() {}
-    follow_target() {
+    follow_target(delta_time) {
         if (this.target !== null && typeof(this.target.scene) !== "undefined") {
             let prev_length = this.velocity.length()
             let relative_position = new Vec(this.target.x-this.x, this.target.y-this.y);
             if (relative_position.length() < this.auto_aim_range) {
-                relative_position.setLength(this.auto_aim_stength);
+                relative_position.setLength(this.auto_aim_stength*delta_time);
                 this.velocity.add(relative_position);
                 this.velocity.setLength(prev_length);
             }

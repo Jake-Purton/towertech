@@ -61,12 +61,25 @@ const HostPage = () => {
       socket.connect();
     }
 
-    socket.emit("createRoom");
-
-    socket.on("connect", () => {
-      console.log("connect")
-      socket.emit("createRoom");
-    })
+    // Create one room per visit to this page. If the connection drops for longer than socket.io's
+    // recovery window we come back with a new socket id, so reclaim the same room instead of
+    // making a new one that nobody has joined
+    let roomRequested = false;
+    const handleConnect = () => {
+      if (!roomRequested) {
+        roomRequested = true;
+        socket.emit("createRoom");
+      } else if (!socket.recovered) {
+        const roomToken = localStorage.getItem("roomToken");
+        if (roomToken) {
+          socket.emit("rejoinHost", roomToken);
+        }
+      }
+    };
+    if (socket.connected) {
+      handleConnect();
+    }
+    socket.on("connect", handleConnect);
 
     getIPAddress();
     getHostUrl();
@@ -85,6 +98,7 @@ const HostPage = () => {
     socket.on("updateUsers", handleUpdateUsers);
 
     return () => {
+      socket.off("connect", handleConnect);
       socket.off("roomCode", handleRoomCode);
       socket.off("updateUsers", handleUpdateUsers);
     };

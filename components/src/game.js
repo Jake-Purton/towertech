@@ -18,6 +18,7 @@ export default class Game extends Phaser.Scene{
 
         // constants
         this.target_fps = 60;
+        this.max_delta_ms = 100; // clamp for long stalls, game slows down below 10fps instead of jumping
         this.output_data = output_data_func;
         this.init_server = init_server_func;
         this.end_game_output = end_game_output;
@@ -231,7 +232,7 @@ export default class Game extends Phaser.Scene{
 
         // change delta to be a value close to one that accounts for fps change
         // e.g. if fps is 30, and meant to 60 it will set delta to 2 so everything is doubled
-        delta = (delta*this.target_fps)/1000;
+        delta = (Math.min(delta, this.max_delta_ms)*this.target_fps)/1000;
 
         /// handle players
         this.dummy_input();

@@ -21,29 +21,48 @@ const JoinRoomPageContent = () => {
   useEffect(() => {
     // setStoredValue(username);
     // Listen for updates to the user list
-    socket.on('updateUsers', (userList) => {
+    const handleUpdateUsers = (userList: User[]) => {
       setIsLoading(false);
       if (userList.length === 0) {
         setInRoom(false)
       }
       setUsers(userList);
-    });
-    socket.on("gameStarted", () =>{
+    };
+    const handleGameStarted = () => {
       // route to a different page
       router.push("/game_controller");
-    });
-
-    socket.on("You have been ejected", () => {
+    };
+    const handleEjected = () => {
       router.push("/join")
-    });
+    };
+    // the index token lets the server move our seat over if we reconnect with a new socket id
+    const requestUsers = () => {
+      const indexToken = localStorage.getItem("indexToken");
+      if (indexToken) {
+        socket.emit("getUsers", indexToken);
+      } else {
+        socket.emit("getUsers");
+      }
+    };
+    const handleConnect = () => {
+      if (!socket.recovered) {
+        requestUsers();
+      }
+    };
 
-    socket.emit("getUsers");
+    socket.on('updateUsers', handleUpdateUsers);
+    socket.on("gameStarted", handleGameStarted);
+    socket.on("You have been ejected", handleEjected);
+    socket.on("connect", handleConnect);
 
-    // Clean up the socket connection on component unmount
+    requestUsers();
+
+    // Clean up the socket listeners on component unmount
     return () => {
-      socket.off('updateUsers');
-      socket.off("gameStarted");
-      socket.off("You have been ejected")
+      socket.off('updateUsers', handleUpdateUsers);
+      socket.off("gameStarted", handleGameStarted);
+      socket.off("You have been ejected", handleEjected);
+      socket.off("connect", handleConnect);
     };
   }, []);
 
