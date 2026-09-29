@@ -395,6 +395,11 @@ export default class Controller extends Phaser.Scene{
                 this.scale.startFullscreen();
             } catch {}
         }
+        // Android browsers allow locking orientation once fullscreen, iOS doesn't support either
+        // and the returned promise rejects there, which is fine
+        try {
+            screen.orientation?.lock?.('landscape')?.catch(() => {});
+        } catch {}
     }
 
     destroy_ui = (destroy_all=true) => {

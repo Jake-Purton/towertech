@@ -15,6 +15,15 @@ const GameController = () => {
       socket.connect();
     };
 
+    // arriving from the lobby can leave the page scrolled, and the controller is laid out from the top
+    window.scrollTo(0, 0);
+    const html_style = document.documentElement.style;
+    const body_style = document.body.style;
+    const previous_overflow = [html_style.overflow, body_style.overflow, body_style.overscrollBehavior];
+    html_style.overflow = 'hidden';
+    body_style.overflow = 'hidden';
+    body_style.overscrollBehavior = 'none';
+
     socket.on("connect", on_connect);
     socket.on("output_from_game_to_client", input_data);
     socket.on('end_game_client', end_game);
@@ -45,6 +54,8 @@ const GameController = () => {
         },
         scale: {
           mode: Phaser.Scale.RESIZE,
+          // fullscreen the page's container rather than just the canvas
+          fullscreenTarget: gameRef.current.parentElement,
           autoCenter: Phaser.Scale.CENTER_BOTH,
           orientation: Phaser.Scale.LANDSCAPE,
         },
@@ -67,6 +78,7 @@ const GameController = () => {
 
     return () => {
       unmounted = true;
+      [html_style.overflow, body_style.overflow, body_style.overscrollBehavior] = previous_overflow;
       socket.off("connect", on_connect);
       socket.off("output_from_game_to_client", input_data);
       socket.off('end_game_client', end_game);
@@ -118,7 +130,7 @@ const GameController = () => {
     }
   }, []);
 
-  return <div ref={gameRef} />;
+  return <div ref={gameRef} className="w-full h-full" />;
 };
 
 export default GameController;
